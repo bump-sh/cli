@@ -1,0 +1,277 @@
+{
+  "components": {
+    "requestBodies": {
+      "Preview": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "definition": {
+                  "description": "Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x file serialized as a string, in YAML or JSON.\n",
+                  "example": "{asyncapi: \"2.0\", \"info\": { \"title: ... }}\n",
+                  "type": "string"
+                },
+                "references": {
+                  "description": "Import external references used by `definition`. It's usually resources not accessible by Bump servers, like local files or internal URLs.",
+                  "items": {
+                    "$ref": "#/components/schemas/Reference"
+                  },
+                  "type": "array"
+                },
+                "specification": {
+                  "description": "Specification for the definition, as a path: `speficiation_name/specification_version/format`. Example: `openapi/v2/yaml`.",
+                  "enum": [
+                    "openapi/v2/yaml",
+                    "openapi/v2/json",
+                    "openapi/v3/yaml",
+                    "openapi/v3/json"
+                  ],
+                  "example": "openapi/v2/yaml",
+                  "type": "string"
+                },
+                "validation": {
+                  "description": "Validation strategy:\n- `basic`: basic validation (default)\n- `strict`: validate the file against its specification\n",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "definition"
+              ]
+            }
+          }
+        },
+        "description": "The version object"
+      },
+      "Version": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "properties": {
+                "auto_create_documentation": {
+                  "default": false,
+                  "description": "Create the documentation if not existing yet. Must be used with a `hub_id` or `hub_slug`, and a `documentation_slug`.",
+                  "type": "boolean"
+                },
+                "definition": {
+                  "description": "Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x file serialized as a string, in YAML or JSON.\n",
+                  "example": "{openapi: \"3.0\", \"info\": { \"title: ... }}\n",
+                  "type": "string"
+                },
+                "documentation_id": {
+                  "description": "UUID of the documentation. Required if `documentation_slug` is empty.",
+                  "type": "string"
+                },
+                "documentation_slug": {
+                  "description": "Slug of the documentation. Required if `documentation_id` is empty.",
+                  "type": "string"
+                },
+                "hub_id": {
+                  "description": "UUID of the hub if the documentation is part of a hub.",
+                  "type": "string"
+                },
+                "hub_slug": {
+                  "description": "Slug of the hub if the documentation is part of a hub.",
+                  "type": "string"
+                },
+                "references": {
+                  "description": "Import external references used by `definition`. It's usually resources not accessible by Bump servers, like local files or internal URLs.",
+                  "items": {
+                    "$ref": "#/components/schemas/Reference"
+                  },
+                  "type": "array"
+                },
+                "specification": {
+                  "description": "Specification for the definition, as a path: `speficiation_name/specification_version/format`. Example: `openapi/v2/yaml`.",
+                  "enum": [
+                    "openapi/v2/yaml",
+                    "openapi/v2/json",
+                    "openapi/v3/yaml",
+                    "openapi/v3/json"
+                  ],
+                  "example": "openapi/v2/yaml",
+                  "type": "string"
+                },
+                "validation": {
+                  "description": "Validation strategy:\n- `basic`: basic validation (default)\n- `strict`: validate the file against its specification\n",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "definition"
+              ]
+            }
+          }
+        },
+        "description": "The version object"
+      }
+    },
+    "responses": {
+      "InvalidDefinition": {
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        },
+        "description": "Definition is not valid."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "properties": {
+          "errors": {
+            "description": "Hash of invalid attributes with their error messages.",
+            "example": {
+              "raw_definition": [
+                "The property '#/paths//docs/{:id}/validations/post' contains additional properties [\"yolo\"] outside of the schema when none are allowed"
+              ]
+            },
+            "type": "object"
+          },
+          "message": {
+            "description": "Human readable error message.",
+            "example": "Invalid definition file",
+            "type": "string"
+          }
+        }
+      },
+      "Pong": {
+        "properties": {
+          "pong": {
+            "description": "Sentence about ping and pong",
+            "example": "And that's how ping-pong ball is bumped",
+            "type": "string"
+          }
+        }
+      },
+      "Preview": {
+        "properties": {
+          "expires_at": {
+            "description": "Preview expiration date and time.",
+            "example": "2010-04-14T17:05:00+01:00",
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "description": "Unique id for the preview URL: `https://bump.sh/preview/:id`.",
+            "example": "3ef8f52f-9056-4113-840e-2f7183b90e06",
+            "type": "string"
+          }
+        }
+      },
+      "Reference": {
+        "properties": {
+          "content": {
+            "description": "Content of the external reference, as a string.",
+            "type": "string"
+          },
+          "location": {
+            "description": "Location of the external reference as it's called from `definition`, without the relative path (the part after `#/`). Can be an URL of a file system path.",
+            "example": "https://example.com/api/models/pet.yml",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "This is the official Bump API documentation. Obviously created with Bump.\n",
+    "title": "Bump Api",
+    "version": "1.0"
+  },
+  "openapi": "3.0.2",
+  "paths": {
+    "/ping": {
+      "get": {
+        "description": "Responds a pong if the API is up and running.",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pong"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "default": {
+            "description": "API is currently down"
+          }
+        },
+        "summary": "Check the API status"
+      }
+    },
+    "/previews": {
+      "post": {
+        "description": "Create a preview for a given documentation file. The preview will have a unique temporary URL, and will be active for 30 minutes.\n",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Preview"
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Preview"
+                }
+              }
+            },
+            "description": "Success"
+          },
+          "422": {
+            "$ref": "#./InvalidDefinition.yaml"
+          }
+        },
+        "summary": "Create a preview"
+      }
+    },
+    "/validations": {
+      "post": {
+        "description": "Validate a definition against its schema (OpenAPI or AsyncAPI) and return errors without creating a new version. This is useful in a CI process, to validate that a changed definition file is valid and won't fail when being deployed on Bump.\n",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Version"
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidDefinition"
+          }
+        },
+        "summary": "Validate a documentation definition"
+      }
+    },
+    "/versions": {
+      "post": {
+        "description": "Deploy a new version for a given documentation, which will become the current version.\n",
+        "requestBody": {
+          "$ref": "#/components/requestBodies/Version"
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          },
+          "422": {
+            "$ref": "#/components/responses/InvalidDefinition"
+          }
+        },
+        "summary": "Create a new version"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://bump.sh/api/v1"
+    }
+  ],
+  "x-topics": [
+    {
+      "content": "# Api token authentication\n\nUse the token from your documentation settings as the username of the basic auth, with no password.\n\nExample: `curl https://bump.sh/api/v1/docs/1/versions -u DOC_TOKEN:`\n\nNote that adding a colon after your token prevents cURL from asking for a password.\n",
+      "title": "Authentication"
+    }
+  ]
+}
