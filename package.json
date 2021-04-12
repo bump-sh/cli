@@ -12,6 +12,7 @@
     "@types/node": "^10.17.56",
     "@typescript-eslint/eslint-plugin": "^4.21.0",
     "@typescript-eslint/parser": "^4.21.0",
+    "cross-spawn": "^6.0.5",
     "eslint": "^7.24.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
@@ -55,7 +56,8 @@
     "test": "echo NO TESTS",
     "fmt": "eslint . --ext .ts --config .eslintrc --fix",
     "version": "oclif-dev readme && git add README.md",
-    "pack": "oclif-dev pack"
+    "pack": "oclif-dev pack",
+    "integration-test": "node ./tests/integration.js"
   },
   "types": "lib/index.d.ts",
   "dependencies": {
