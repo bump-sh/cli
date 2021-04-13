@@ -1,6 +1,7 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 
-import { loadSpec } from '../fs';
+import * as flags from '../flags';
+import * as fs from '../fs';
 
 export default class Validate extends Command {
   static description =
@@ -14,38 +15,14 @@ Coast is clear!
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    doc: flags.string({
-      char: 'd',
-      description: 'Documentation public id or slug, default: ""',
-    }),
-    'doc-name': flags.string({
-      char: 'n',
-      description: 'Documentation name. Used with --auto-create flag.',
-      dependsOn: ['auto-create'],
-    }),
-    hub: flags.string({
-      char: 'b',
-      description: 'Hub id or slug',
-    }),
-    token: flags.string({
-      char: 't',
-      description: 'Documentation or Hub token, default: ""',
-    }),
-    specification: flags.string({
-      char: 's',
-      description: 'Specification of the definition',
-    }),
-    strict: flags.boolean({
-      description: 'Strict validation mode, default: "false"',
-    }),
-    'auto-create': flags.boolean({
-      description:
-        'Automatically create the documentation if needed (only available with a --hub and when specifying a name for documentation --doc-name), default: false',
-      dependsOn: ['hub', 'doc-name'],
-    }),
-    'no-external-references': flags.boolean({
-      description: 'Do not import external references ($ref), default: false',
-    }),
+    doc: flags.doc(),
+    'doc-name': flags.docName(),
+    hub: flags.hub(),
+    token: flags.token(),
+    specification: flags.specification(),
+    strict: flags.strict(),
+    'auto-create': flags.autoCreate(),
+    'no-external-references': flags.noExternalReferences(),
   };
 
   static args = [
