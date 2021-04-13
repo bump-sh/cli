@@ -1,24 +1,35 @@
-import axios from 'axios';
+import * as Config from '@oclif/config';
+import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
 import { Ping } from './models';
+import { vars } from './vars';
 
-function api<T>(url: string): Promise<T> {
-  return axios
-    .get(url)
-    .then((response) => {
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(response.statusText);
-      }
-      return response;
-    })
-    .then((data) => {
-      return data.data;
+class BumpApi {
+  protected readonly instance: AxiosInstance;
+
+  public constructor(protected config: Config.IConfig) {
+    const baseURL = `${vars.apiUrl}${vars.apiBasePath}`;
+
+    this.instance = axios.create({
+      baseURL,
     });
-}
 
-function getPing(): Promise<Ping> {
-  return api<Ping>('http://localhost:3000/api/v1/ping');
+    this._initializeResponseInterceptor();
+  }
+
+  public getPing = (): Promise<Ping> => {
+    return this.instance.get<void, Ping>('/ping');
+  };
+
+  private _initializeResponseInterceptor = () => {
+    this.instance.interceptors.response.use(this._handleResponse, this._handleError);
+  };
+
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  private _handleResponse = ({ data }: AxiosResponse<Ping>): any => data;
+
+  private _handleError = (error: AxiosError) => Promise.reject(error);
 }
 
 export * from './models';
-export { getPing };
+export { BumpApi };
