@@ -40,7 +40,7 @@ Coast is clear!
     this.log(`Validating ${args.FILE}…`);
 
     fs.loadAPI(args.FILE).then((api) => {
-      this.log(`Spec ${api.spec} version ${api.version} parsed`);
+      this.log(`Spec ${api.specName} version ${api.version} parsed`);
     });
 
     return;
