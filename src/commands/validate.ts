@@ -2,7 +2,7 @@ import { Command } from '@oclif/command';
 
 import * as flags from '../flags';
 import { fileArg } from '../args';
-import * as fs from '../fs';
+import { API } from '../definition';
 
 export default class Validate extends Command {
   static description =
@@ -33,7 +33,7 @@ Coast is clear!
 
     this.log(`Validating ${args.FILE}…`);
 
-    fs.loadAPI(args.FILE).then((api) => {
+    await API.loadAPI(args.FILE).then((api) => {
       this.log(`Spec ${api.specName} version ${api.version} parsed`);
     });
 
