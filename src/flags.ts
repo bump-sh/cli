@@ -36,13 +36,6 @@ const token = flags.build({
   description: 'Documentation or Hub token, default: ""',
 });
 
-const strict = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
-  return flags.boolean({
-    description: 'Strict validation mode, default: false',
-    ...options,
-  });
-};
-
 const autoCreate = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   return flags.boolean({
     description:
@@ -52,4 +45,4 @@ const autoCreate = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   });
 };
 
-export { doc, docName, hub, token, strict, autoCreate };
+export { doc, docName, hub, token, autoCreate };

@@ -53,9 +53,34 @@ USAGE
 
 COMMANDS
   help      display help for bump
+  preview   Create a documentation preview for the given file
 ```
 
 ## Commands
+
+* [`bump preview [FILE]`](#bump-preview-file)
+
+### `bump preview [FILE]`
+
+You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command.
+
+```
+Create a documentation preview for the given file
+
+USAGE
+  $ bump preview FILE
+
+ARGUMENTS
+  FILE  Path or URL to your API documentation file. OpenAPI (2.0 to 3.1.0) and AsyncAPI (2.0)
+        specifications are currently supported.
+
+OPTIONS
+  -h, --help  show CLI help
+
+EXAMPLE
+  $ bump preview FILE
+  * Your preview is visible at: https://bump.sh/preview/45807371-9a32-48a7-b6e4-1cb7088b5b9b
+```
 
 ## Development
 
