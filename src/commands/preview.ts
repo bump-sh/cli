@@ -1,10 +1,7 @@
-// Dependencies
-import cli from 'cli-ux';
-
-// Local
 import Command from '../command';
 import * as flags from '../flags';
 import { fileArg } from '../args';
+import { cli } from '../cli';
 
 export default class Preview extends Command {
   static description = 'Create a documentation preview for the given file';
