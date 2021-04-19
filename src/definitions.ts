@@ -78,21 +78,33 @@ class API {
     let mainReference;
     let location = paths.shift();
 
-    // console.log($refs['_root$Ref']);
     while (typeof location !== 'undefined') {
       if (location.includes(this.filepath)) {
         mainReference = location;
       } else {
         const content = $refs.get(location);
+        // Fetch originalPaths added on the `$Ref` objects from the $RefParser lib
+        // See https://github.com/APIDevTools/json-schema-ref-parser/pull/228
+        // for details.
+        /* eslint-disable @typescript-eslint/no-explicit-any */
+        const originalPaths = ($refs as any)._$refs[location].originalPaths;
         if (!content) {
           throw new UnsupportedFormat('Reference ${location} was not parsed');
         }
 
-        this.references.push({
-          // TODO: replace basepath to the same basepath of this.filepath
-          location,
-          content,
-        });
+        if (!originalPaths) {
+          this.references.push({
+            location,
+            content,
+          });
+        } else {
+          for (const originalPath of originalPaths) {
+            this.references.push({
+              location: originalPath,
+              content,
+            });
+          }
+        }
       }
       location = paths.shift();
     }
