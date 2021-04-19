@@ -1,7 +1,7 @@
 import * as Config from '@oclif/config';
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
-import { Ping } from './models';
+import { PingRes, PreviewRes, PreviewReq, Responses } from './models';
 import { vars } from './vars';
 
 class BumpApi {
@@ -17,8 +17,12 @@ class BumpApi {
     this._initializeResponseInterceptor();
   }
 
-  public getPing = (): Promise<Ping> => {
-    return this.instance.get<void, Ping>('/ping');
+  public getPing = (): Promise<PingRes> => {
+    return this.instance.get<void, PingRes>('/ping');
+  };
+
+  public postPreview = (body?: PreviewReq): Promise<PreviewRes> => {
+    return this.instance.post<void, PreviewRes>('/previews', body);
   };
 
   private _initializeResponseInterceptor = () => {
@@ -26,7 +30,7 @@ class BumpApi {
   };
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
-  private _handleResponse = ({ data }: AxiosResponse<Ping>): any => data;
+  private _handleResponse = ({ data }: AxiosResponse<Responses>): any => data;
 
   private _handleError = (error: AxiosError) => Promise.reject(error);
 }
