@@ -1,0 +1,11 @@
+{
+  "declaration": false,
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "module": "commonjs",
+    "sourceMap": true
+  },
+  "ts-node": {
+    "files": true
+  }
+}

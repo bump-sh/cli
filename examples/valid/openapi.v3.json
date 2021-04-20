@@ -110,7 +110,7 @@
         "content": {
           "application/json": {
             "schema": {
-              "$ref": "#/components/schemas/Error"
+              "$ref": "schemas/all.yml#/Error"
             }
           }
         },
@@ -118,24 +118,6 @@
       }
     },
     "schemas": {
-      "Error": {
-        "properties": {
-          "errors": {
-            "description": "Hash of invalid attributes with their error messages.",
-            "example": {
-              "raw_definition": [
-                "The property '#/paths//docs/{:id}/validations/post' contains additional properties [\"yolo\"] outside of the schema when none are allowed"
-              ]
-            },
-            "type": "object"
-          },
-          "message": {
-            "description": "Human readable error message.",
-            "example": "Invalid definition file",
-            "type": "string"
-          }
-        }
-      },
       "Pong": {
         "properties": {
           "pong": {
@@ -222,7 +204,7 @@
             "description": "Success"
           },
           "422": {
-            "$ref": "#./InvalidDefinition.yaml"
+            "$ref": "#/components/responses/InvalidDefinition"
           }
         },
         "summary": "Create a preview"

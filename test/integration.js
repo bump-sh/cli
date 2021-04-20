@@ -5,8 +5,8 @@ const cmd = './bin/run';
 const tests = [
   ['--version'],
   ['--help'],
-  ['validate', 'examples/asyncapi.v2.yml'],
-  ['validate', 'examples/openapi.v3.json'],
+  ['validate', 'examples/valid/asyncapi.no-refs.v2.yml'],
+  ['validate', 'examples/valid/openapi.v3.json'],
 ];
 
 for (let i = 0; i < tests.length; i++) {

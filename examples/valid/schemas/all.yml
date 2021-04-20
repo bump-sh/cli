@@ -1,0 +1,12 @@
+Error:
+  properties:
+    errors:
+      description: Hash of invalid attributes with their error messages.
+      example:
+        raw_definition:
+          - "The property '#/paths//docs/{:id}/validations/post' contains additional properties [\"yolo\"] outside of the schema when none are allowed"
+      type: object
+    message:
+      description: Human readable error message.
+      example: Invalid definition file
+      type: string
