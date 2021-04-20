@@ -86,7 +86,7 @@ EXAMPLE
 
 Make sure to have Node.js (At least v10) installed on your machine.
 
-- Install dependencies with
+- Install node dependencies with
   
   ```sh-session
   $ npm install
@@ -96,9 +96,16 @@ Make sure to have Node.js (At least v10) installed on your machine.
   
   ```sh-session
   $ npm run build
+  $ npm run clean # to remove build artifacts
   ```
   
-- Run the linter & test suites
+- Format the codebase to comply with the linter rules
+  
+  ```sh-session
+  $ npm run codestyle
+  ```
+  
+- Run the test suites
   
   ```sh-session
   $ npm run test
