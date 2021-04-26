@@ -13,6 +13,7 @@ Built with [`oclif`](https://oclif.io) a framework to write commandline scripts 
 * [Installation](#installation)
 * [Usage](#usage)
 * [Commands](#commands)
+* [Development](#development)
 
 ## Installation
 
@@ -37,8 +38,10 @@ TODO
 $ npm install -g bump-cli
 $ bump COMMAND
 running command...
+
 $ bump (-v|--version|version)
 bump-cli/0.1.0 linux-x64 node-v15.12.0
+
 $ bump --help
 Bump CLI to interact with the API of developers.bump.sh
 
@@ -49,32 +52,42 @@ USAGE
   $ bump [COMMAND]
 
 COMMANDS
-  hello  describe the command here
-  help   display help for bump
+  help      display help for bump
 ```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 
 ## Commands
 
-* [`bump preview [FILE]`](#bump-preview-file)
+## Development
 
-### `bump preview [FILE]`
+Make sure to have Node.js (At least v10) installed on your machine.
 
-describe the command here
+- Install dependencies with
+  
+  ```sh-session
+  $ npm install
+  ```
+  
+- Compile the Typescript code
+  
+  ```sh-session
+  $ npm run build
+  ```
+  
+- Run the linter & test suites
+  
+  ```sh-session
+  $ npm run test
+  $ npm run test-coverage # Run tests with coverage
+  ```
 
-```
-USAGE
-  $ bump preview [FILE]
+## Contributing
 
-OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+Bug reports and pull requests are welcome on GitHub at https://github.com/bump-sh/bump-node-cli. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-EXAMPLE
-  $ bump preview
-  hello world from ./src/preview.ts!
-```
+## License
 
-_See code: [src/commands/preview.ts](https://github.com/bump-sh/bump-node-cli/blob/v0.1.0/src/commands/preview.ts)_
+The node package is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+## Code of Conduct
+
+Everyone interacting in the Bump::CLI project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/bump-sh/bump-cli/blob/master/CODE_OF_CONDUCT.md).
