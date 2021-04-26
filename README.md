@@ -13,6 +13,7 @@ Built with [`oclif`](https://oclif.io) a framework to write commandline scripts 
 * [Installation](#installation)
 * [Usage](#usage)
 * [Commands](#commands)
+* [Development](#development)
 
 ## Installation
 
@@ -37,8 +38,10 @@ TODO
 $ npm install -g bump-cli
 $ bump COMMAND
 running command...
+
 $ bump (-v|--version|version)
 bump-cli/0.1.0 linux-x64 node-v15.12.0
+
 $ bump --help
 Bump CLI to interact with the API of developers.bump.sh
 
@@ -49,32 +52,87 @@ USAGE
   $ bump [COMMAND]
 
 COMMANDS
-  hello  describe the command here
-  help   display help for bump
+  deploy    Deploy a given file specification against its schema definition (OpenAPI or AsyncAPI)
+  help      display help for bump
+  ping      Ping bump.sh to say hello
+  preview   Create a documentation preview for the given file
 ```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.2.2/src/commands/help.ts)_
 
 ## Commands
 
 * [`bump preview [FILE]`](#bump-preview-file)
+* [`bump deploy [FILE]`](#bump-deploy-file)
 
 ### `bump preview [FILE]`
 
-describe the command here
+You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command.
 
 ```
+Create a documentation preview for the given file
+
 USAGE
-  $ bump preview [FILE]
+  $ bump preview FILE
+
+ARGUMENTS
+  FILE  Path or URL to your API documentation file. OpenAPI (2.0 to 3.0.2) and AsyncAPI (2.0)
+        specifications are currently supported.
 
 OPTIONS
-  -f, --force
-  -h, --help       show CLI help
-  -n, --name=name  name to print
+  -h, --help                         show CLI help
+  -s, --specification=specification  Specification of the definition
+  --no-external-references           Do not import external references ($ref), default: false
+  --strict                           Strict validation mode, default: false
 
 EXAMPLE
-  $ bump preview
-  hello world from ./src/preview.ts!
+  $ bump preview FILE
+  * Your preview is visible at: https://bump.sh/preview/45807371-9a32-48a7-b6e4-1cb7088b5b9b (Expires at 2021-04-26T23:22:43+02:00)
 ```
 
-_See code: [src/commands/preview.ts](https://github.com/bump-sh/bump-node-cli/blob/v0.1.0/src/commands/preview.ts)_
+### `bump deploy [FILE]`
+
+Deploy the definition file as the current version of the documentation with the following command:
+
+```sh-session
+$ bump deploy path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
+```
+
+If you already have a hub in your [Bump.sh](https://bump.sh) account, you can automatically create a documentation inside it and deploy to it with:
+
+```sh-session
+$ bump deploy path/to/your/file.yml --auto-create --doc DOC_SLUG --hub HUB_ID_OR_SLUG --token HUB_TOKEN
+```
+
+## Development
+
+Make sure to have Node.js (At least v10) installed on your machine.
+
+- Install dependencies with
+  
+  ```sh-session
+  $ npm install
+  ```
+  
+- Compile the Typescript code
+  
+  ```sh-session
+  $ npm run build
+  ```
+  
+- Run the linter & test suites
+  
+  ```sh-session
+  $ npm run test
+  $ npm run test-coverage # Run tests with coverage
+  ```
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/bump-sh/bump-node-cli. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+
+## License
+
+The node package is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+
+## Code of Conduct
+
+Everyone interacting in the Bump::CLI project’s codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/bump-sh/bump-cli/blob/master/CODE_OF_CONDUCT.md).
