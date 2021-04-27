@@ -50,6 +50,28 @@ describe('API definition class', () => {
     });
   });
 
+  describe('with an http file containing relative URL refs', () => {
+    test
+      .nock('http://example.org', (api) =>
+        api
+          .get('/openapi')
+          .replyWithFile(200, 'examples/valid/openapi.v3.json', {
+            'Content-Type': 'application/json',
+          })
+          .get('/schemas/all.yml')
+          .replyWithFile(200, 'examples/valid/schemas/all.yml', {
+            'Content-Type': 'application/yaml',
+          }),
+      )
+      .it('parses external file successfully', async () => {
+        const api = await API.loadAPI('http://example.org/openapi');
+        expect(api.version).to.equal('3.0.2');
+        expect(api.references.map((ref) => ref.location)).to.contain(
+          'http://example.org/schemas/all.yml',
+        );
+      });
+  });
+
   describe('with an invalid definition file', () => {
     for (const [example, error] of Object.entries({
       './examples/invalid/openapi.yml': 'Unsupported API specification',
