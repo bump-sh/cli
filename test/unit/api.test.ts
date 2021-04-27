@@ -24,12 +24,15 @@ describe('BumpApi HTTP client class', () => {
             Authorization: matchAuthorizationHeader,
           },
         },
-        (api) =>
-          api.get('/api/v1/ping').reply(200, {
-            pong: 'bonjour',
-          }),
+        (api) => api.post('/api/v1/versions').reply(201, {}),
       )
-      .do(async (ctx) => await new BumpApi(ctx.config, 'my-secret-token').getPing())
+      .do(
+        async (ctx) =>
+          await new BumpApi(ctx.config).postVersion(
+            { documentation: 'hello', definition: '' },
+            'my-secret-token',
+          ),
+      )
       .it('sends valid User-Agent & Authorization headers', async () => {
         expect(matchUserAgentHeader.firstCall.args[0]).to.match(
           new RegExp(`@oclif/test/([0-9\.]+) ${os.platform()}-${os.arch()}`),

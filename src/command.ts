@@ -9,14 +9,9 @@ import pjson from '../package.json';
 export default abstract class Command extends Base {
   private base = `${pjson.name}@${pjson.version}`;
   _bump!: BumpApi;
-  private _token?: string;
-
-  set token(value: string) {
-    if (value && !this._token) this._token = value;
-  }
 
   get bump(): BumpApi {
-    if (!this._bump) this._bump = new BumpApi(this.config, this._token);
+    if (!this._bump) this._bump = new BumpApi(this.config);
     return this._bump;
   }
 

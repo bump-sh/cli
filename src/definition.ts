@@ -88,9 +88,9 @@ class API {
           throw new UnsupportedFormat('Reference ${absPath} is empty');
         }
 
-        /* eslint-disable @typescript-eslint/no-explicit-any */
         /* The internals of the $RefParser doesn't have types exposed */
         /* thus the need to cast 'as any' to be able to dig into the obj */
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const refType = ($refs as any)._$refs[absPath].pathType;
         /* Resolve all reference paths to the main api definition file */
         const location: string =

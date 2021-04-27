@@ -21,6 +21,13 @@ export default class APIError extends CLIError {
       case 422:
         [info, exit] = APIError.invalidDefinition(httpError.response.data);
         break;
+      case 401:
+        [info, exit] = APIError.unauthenticated();
+        break;
+      case 404:
+      case 400:
+        [info, exit] = APIError.notFound(httpError.response.data);
+        break;
     }
 
     if (info.length) {
@@ -35,6 +42,21 @@ export default class APIError extends CLIError {
 
   static is(error: Error): error is APIError {
     return error instanceof CLIError && 'http' in error;
+  }
+
+  static notFound(error: Error): MessagesAndExitCode {
+    const genericMessage =
+      error.message || "It seems the documentation provided doesn't exist.";
+
+    return [
+      [
+        genericMessage,
+        `Please check the given ${chalk.underline('--documentation')}, ${chalk.underline(
+          '--token',
+        )} or ${chalk.underline('--hub')} flags`,
+      ],
+      104,
+    ];
   }
 
   static invalidDefinition(error: InvalidDefinitionError): MessagesAndExitCode {
@@ -78,5 +100,15 @@ export default class APIError extends CLIError {
     }
 
     return info;
+  }
+
+  static unauthenticated(): MessagesAndExitCode {
+    return [
+      [
+        'You are not allowed to deploy to this documentation.',
+        'please check your --token flag or BUMP_TOKEN variable',
+      ],
+      101,
+    ];
   }
 }
