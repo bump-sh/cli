@@ -8,5 +8,12 @@
     "plugin:@typescript-eslint/recommended",
     "prettier",
     "plugin:prettier/recommended"
-  ]
+  ],
+
+  "rules": {
+    "padding-line-between-statements": [
+        "error",
+        { "blankLine": "always", "prev": "multiline-expression", "next": "multiline-expression" }
+    ]
+  }
 }

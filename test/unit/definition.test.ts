@@ -32,9 +32,11 @@ describe('API definition class', () => {
         expect(api.references.map((ref) => ref.location)).to.include(
           'http://example.org/param-lights.json',
         );
+
         expect(api.references.map((ref) => ref.location)).to.include(
           'params/streetlightId.json',
         );
+
         expect(api.references.map((ref) => ref.location)).to.not.include(
           './params/streetlightId.json',
         );
