@@ -1,18 +1,9 @@
 import * as Config from '@oclif/config';
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-import { CLIError } from '@oclif/errors';
 
-import { PingResponse, PreviewResponse, PreviewRequest, Responses } from './models';
+import { PingResponse, PreviewRequest, PreviewResponse, Responses } from './models';
 import { vars } from './vars';
-
-export class APIError extends CLIError {
-  http: AxiosError;
-
-  constructor(httpError: AxiosError) {
-    super(httpError);
-    this.http = httpError;
-  }
-}
+import APIError from './error';
 
 class BumpApi {
   protected readonly instance: AxiosInstance;
@@ -50,4 +41,4 @@ class BumpApi {
 }
 
 export * from './models';
-export { BumpApi };
+export { BumpApi, APIError };

@@ -67,7 +67,7 @@ describe('preview subcommand', () => {
           expect(err.message).to.contain('"openapi" wasn\'t supplied.');
           throw err;
         })
-        .exit(100)
+        .exit(122)
         .it('Fails with an error message from the API response', ({ stdout }) => {
           expect(stdout).to.not.match(/preview is visible at/);
         });
@@ -80,10 +80,10 @@ describe('preview subcommand', () => {
         .stdout()
         .command(['preview', 'examples/valid/openapi.v3.json'])
         .catch((err) => {
-          expect(err.message).to.contain('Request failed with status code 500');
+          expect(err.message).to.contain('Unhandled API error (status: 500)');
           throw err;
         })
-        .exit(2)
+        .exit(100)
         .it('Fails rendering and displays a generic error', ({ stdout }) => {
           expect(stdout).to.not.match(/preview is visible at/);
         });

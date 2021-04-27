@@ -12,7 +12,7 @@ export interface PreviewResponse {
   public_url?: string;
 }
 
-export interface Preview422Error {
+export interface InvalidDefinitionError {
   message?: string;
   errors: { [keys: string]: unknown };
 }
