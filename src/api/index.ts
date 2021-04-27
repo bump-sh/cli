@@ -9,11 +9,15 @@ class BumpApi {
   protected readonly client: AxiosInstance;
 
   // Check https://oclif.io/docs/config for details about Config.IConfig
-  public constructor(protected config: Config.IConfig) {
+  public constructor(protected config: Config.IConfig, token?: string) {
     const baseURL = `${vars.apiUrl}${vars.apiBasePath}`;
-    const headers = {
+    const headers: { 'User-Agent': string; Authorization?: string } = {
       'User-Agent': config.userAgent,
     };
+
+    if (token) {
+      headers.Authorization = `Basic ${Buffer.from(token).toString('base64')}`;
+    }
 
     this.client = axios.create({
       baseURL,

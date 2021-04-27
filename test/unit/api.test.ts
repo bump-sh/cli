@@ -11,8 +11,9 @@ nock.disableNetConnect();
 const test = base.add('config', () => Config.load());
 
 describe('BumpApi HTTP client class', () => {
-  describe('Checking API status', () => {
+  describe('nominal authenticated API call', () => {
     const matchUserAgentHeader = sinon.spy(sinon.stub().returns(true));
+    const matchAuthorizationHeader = sinon.spy(sinon.stub().returns(true));
 
     test
       .nock(
@@ -20,6 +21,7 @@ describe('BumpApi HTTP client class', () => {
         {
           reqheaders: {
             'User-Agent': matchUserAgentHeader,
+            Authorization: matchAuthorizationHeader,
           },
         },
         (api) =>
@@ -27,10 +29,14 @@ describe('BumpApi HTTP client class', () => {
             pong: 'bonjour',
           }),
       )
-      .do(async (ctx) => await new BumpApi(ctx.config).getPing())
-      .it('sends valid User-Agent request header', async () => {
+      .do(async (ctx) => await new BumpApi(ctx.config, 'my-secret-token').getPing())
+      .it('sends valid User-Agent & Authorization headers', async () => {
         expect(matchUserAgentHeader.firstCall.args[0]).to.match(
           new RegExp(`@oclif/test/([0-9\.]+) ${os.platform()}-${os.arch()}`),
+        );
+
+        expect(matchAuthorizationHeader.firstCall.args[0]).to.equal(
+          'Basic bXktc2VjcmV0LXRva2Vu',
         );
       });
   });
