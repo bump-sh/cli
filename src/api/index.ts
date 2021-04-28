@@ -8,10 +8,11 @@ import APIError from './error';
 class BumpApi {
   protected readonly instance: AxiosInstance;
 
-  public constructor(protected config: Config.IConfig, version: string) {
+  // Check https://oclif.io/docs/config for details about Config.IConfig
+  public constructor(protected config: Config.IConfig) {
     const baseURL = `${vars.apiUrl}${vars.apiBasePath}`;
     const headers = {
-      'User-Agent': version,
+      'User-Agent': config.userAgent,
     };
 
     this.instance = axios.create({

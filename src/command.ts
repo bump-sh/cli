@@ -12,12 +12,8 @@ export default abstract class Command extends Base {
   _bump!: BumpApi;
 
   get bump(): BumpApi {
-    if (!this._bump) this._bump = new BumpApi(this.config, this.version);
+    if (!this._bump) this._bump = new BumpApi(this.config);
     return this._bump;
-  }
-
-  get version(): string {
-    return this.base;
   }
 
   async catch(error: Error): Promise<void> {
