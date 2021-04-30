@@ -82,7 +82,7 @@ class API {
     let absPath = paths.shift();
 
     while (typeof absPath !== 'undefined') {
-      if (absPath === path.resolve(this.filepath)) {
+      if (absPath === this.filepath || absPath === path.resolve(this.filepath)) {
         mainReference = absPath;
       } else {
         const content = $refs.get(absPath);
