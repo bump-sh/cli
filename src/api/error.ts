@@ -1,10 +1,12 @@
 import { CLIError } from '@oclif/errors';
 import chalk from 'chalk';
 import { AxiosError } from 'axios';
+import d from 'debug';
 
 import { InvalidDefinitionError } from './models';
 
 type MessagesAndExitCode = [string[], number];
+const debug = d('bump-cli:api-client');
 
 export default class APIError extends CLIError {
   http: AxiosError;
@@ -13,6 +15,7 @@ export default class APIError extends CLIError {
 
   constructor(httpError: AxiosError, info: string[] = [], exit = 100) {
     const status = httpError?.response?.status;
+    debug(httpError);
 
     switch (httpError?.response?.status) {
       case 422:
@@ -35,23 +38,45 @@ export default class APIError extends CLIError {
   }
 
   static invalidDefinition(error: InvalidDefinitionError): MessagesAndExitCode {
-    const info = [];
-    const genericMessage = 'Invalid definition file';
+    let info: string[] = [];
+    const genericMessage = error.message || 'Invalid definition file';
     const exit = 122;
 
     if (error && 'errors' in error) {
       for (const [attr, message] of Object.entries(error.errors)) {
-        if (message) {
-          info.push(`${chalk.underline(attr)} ${message}`);
-        }
-      }
-      if ('message' in error) {
-        info.push(error.message || genericMessage);
+        info = info.concat(APIError.humanAttributeError(attr, message));
       }
     } else {
       info.push(genericMessage);
     }
 
     return [info, exit];
+  }
+
+  static humanAttributeError(attribute: string, messages: unknown): string[] {
+    let info: string[] = [];
+
+    if (messages instanceof Array) {
+      const allMessages = (messages as unknown[])
+        .map((message, idx) => {
+          if (message instanceof Object) {
+            return this.humanAttributeError(idx.toString(), message);
+          } else {
+            return message;
+          }
+        })
+        .join(', ');
+      info.push(`${chalk.underline(attribute)} ${allMessages}`);
+    } else if (messages instanceof Object) {
+      for (const [child, child_messages] of Object.entries(messages)) {
+        info = info.concat(
+          this.humanAttributeError(`${attribute}.${child}`, child_messages),
+        );
+      }
+    } else if (messages) {
+      info.push(`${chalk.underline(attribute)} ${messages}`);
+    }
+
+    return info;
   }
 }
