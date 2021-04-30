@@ -48,18 +48,15 @@ class API {
 
     const definition = this.resolveContent($refs);
 
-    if (
-      typeof definition.openapi === 'string' ||
-      typeof definition.swagger === 'string'
-    ) {
+    if (API.isOpenAPI(definition)) {
       this.specName = 'OpenAPI';
       this.version = (definition.openapi || definition.swagger) as string;
-      this.definition = (definition as unknown) as OpenAPI;
+      this.definition = definition;
       this.spec = SupportedFormat.openapi[this.versionWithoutPatch()];
-    } else if (typeof definition.asyncapi === 'string') {
+    } else if (API.isAsyncAPI(definition)) {
       this.specName = 'AsyncAPI';
       this.version = definition.asyncapi;
-      this.definition = (definition as unknown) as AsyncAPI;
+      this.definition = definition;
       this.spec = SupportedFormat.asyncapi[this.version];
     } else {
       throw new UnsupportedFormat();
@@ -126,6 +123,20 @@ class API {
     return content;
   }
 
+  static isOpenAPI(
+    definition: JSONSchema4Object | JSONSchema6Object,
+  ): definition is OpenAPI {
+    return (
+      typeof definition.openapi === 'string' || typeof definition.swagger === 'string'
+    );
+  }
+
+  static isAsyncAPI(
+    definition: JSONSchema4Object | JSONSchema6Object,
+  ): definition is AsyncAPI {
+    return 'asyncapi' in definition;
+  }
+
   static async loadAPI(path: string): Promise<API> {
     return $RefParser
       .resolve(path, {
@@ -149,16 +160,16 @@ type APIReference = {
 type APIDefinition = OpenAPI | AsyncAPI;
 
 // http://spec.openapis.org/oas/v3.1.0#oasObject
-interface OpenAPI {
+type OpenAPI = JSONSchema4Object & {
   readonly openapi?: string;
   readonly swagger?: string;
   readonly info: string;
-}
+};
 
 // https://www.asyncapi.com/docs/specifications/2.0.0#A2SObject
-interface AsyncAPI {
+type AsyncAPI = JSONSchema4Object & {
   readonly asyncapi: string;
   readonly info: string;
-}
+};
 
 export { API };

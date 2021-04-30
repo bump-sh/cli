@@ -30,6 +30,10 @@ export default class APIError extends CLIError {
     this.http = httpError;
   }
 
+  static is(error: Error): error is APIError {
+    return error instanceof CLIError && 'http' in error;
+  }
+
   static invalidDefinition(error: InvalidDefinitionError): MessagesAndExitCode {
     const info = [];
     const genericMessage = 'Invalid definition file';

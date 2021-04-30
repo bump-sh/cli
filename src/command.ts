@@ -1,5 +1,4 @@
 import { Command as Base } from '@oclif/command';
-import { CLIError } from '@oclif/errors';
 
 import { API } from './definition';
 import { BumpApi, APIError } from './api';
@@ -16,11 +15,9 @@ export default abstract class Command extends Base {
     return this._bump;
   }
 
-  async catch(error: Error): Promise<void> {
-    if (error && error instanceof CLIError && 'http' in error) {
-      const httpError: APIError = error;
-
-      this.error(httpError.message, { exit: httpError.exitCode });
+  async catch(error?: Error): Promise<void> {
+    if (error && APIError.is(error)) {
+      this.error(error.message, { exit: error.exitCode });
     }
 
     throw error;
