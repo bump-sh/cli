@@ -17,8 +17,6 @@ export interface InvalidDefinitionError {
   errors: { [keys: string]: unknown };
 }
 
-export type Responses = PingResponse | PreviewResponse;
-
 export interface PreviewRequest {
   definition: string;
   references?: Reference[];

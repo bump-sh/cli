@@ -1,37 +1,22 @@
-import * as os from 'os';
-import * as sinon from 'sinon';
 import nock from 'nock';
-import pjson from '../../package.json';
 import { expect, test } from '@oclif/test';
 
 nock.disableNetConnect();
 
 describe('preview subcommand', () => {
   describe('Successful preview', () => {
-    const matchUserAgentHeader = sinon.spy(sinon.stub().returns(true));
-
     test
-      .nock(
-        'https://bump.sh',
-        {
-          reqheaders: {
-            'User-Agent': matchUserAgentHeader,
-          },
-        },
-        (api) =>
-          api.post('/api/v1/previews').reply(200, {
-            id: '123abc-cba321',
-            expires_at: new Date(),
-            public_url: 'https://bump.sh/preview/123abc-cba321',
-          }),
+      .nock('https://bump.sh', (api) =>
+        api.post('/api/v1/previews').reply(200, {
+          id: '123abc-cba321',
+          expires_at: new Date(),
+          public_url: 'https://bump.sh/preview/123abc-cba321',
+        }),
       )
       .stdout()
       .stderr()
       .command(['preview', 'examples/valid/openapi.v3.json'])
       .it('Creates a preview from an openapi file', ({ stdout, stderr }) => {
-        expect(matchUserAgentHeader.firstCall.args[0]).to.contain(
-          `${pjson.name}/${pjson.version} ${os.platform()}-${os.arch()}`,
-        );
         expect(stderr).to.match(/Let's render a preview on Bump... done/);
 
         expect(stdout).to.match(/preview is visible at/);

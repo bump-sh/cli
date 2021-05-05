@@ -29,12 +29,12 @@ export default class Preview extends Command {
       definition: JSON.stringify(api.definition),
       references,
     };
-    const response: PreviewResponse = await this.bump.postPreview(request);
+    const response: { data: PreviewResponse } = await this.bump.postPreview(request);
 
     cli.action.stop();
 
     cli.styledSuccess(
-      `Your preview is visible at: ${response.public_url} (Expires at ${response.expires_at})`,
+      `Your preview is visible at: ${response.data.public_url} (Expires at ${response.data.expires_at})`,
     );
 
     return;
