@@ -6,7 +6,7 @@ import { vars } from './vars';
 import APIError from './error';
 
 class BumpApi {
-  protected readonly instance: AxiosInstance;
+  protected readonly client: AxiosInstance;
 
   // Check https://oclif.io/docs/config for details about Config.IConfig
   public constructor(protected config: Config.IConfig) {
@@ -15,7 +15,7 @@ class BumpApi {
       'User-Agent': config.userAgent,
     };
 
-    this.instance = axios.create({
+    this.client = axios.create({
       baseURL,
       headers,
     });
@@ -24,17 +24,17 @@ class BumpApi {
   }
 
   public getPing = (): Promise<AxiosResponse<PingResponse>> => {
-    return this.instance.get<PingResponse>('/ping');
+    return this.client.get<PingResponse>('/ping');
   };
 
   public postPreview = (
     body?: PreviewRequest,
   ): Promise<AxiosResponse<PreviewResponse>> => {
-    return this.instance.post<PreviewResponse>('/previews', body);
+    return this.client.post<PreviewResponse>('/previews', body);
   };
 
   private initializeResponseInterceptor = () => {
-    this.instance.interceptors.response.use((data) => data, this.handleError);
+    this.client.interceptors.response.use((data) => data, this.handleError);
   };
 
   private handleError = (error: AxiosError) => Promise.reject(new APIError(error));
