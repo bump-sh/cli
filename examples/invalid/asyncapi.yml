@@ -1,0 +1,8 @@
+{
+  "info": {
+    "description": "This is the official Bump API documentation. Obviously created with Bump.\n",
+    "title": "Bump Api",
+    "version": "1.0"
+  },
+  "asyncapi": "2.0.0",
+}
