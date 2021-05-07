@@ -52,20 +52,22 @@ USAGE
   $ bump [COMMAND]
 
 COMMANDS
+  deploy   Create a new version of your documentation for the given file or URL
   help      display help for bump
-  preview   Create a documentation preview for the given file
+  preview   Create a documentation preview for the given file or URL
 ```
 
 ## Commands
 
 * [`bump preview [FILE]`](#bump-preview-file)
+* [`bump deploy [FILE]`](#bump-deploy-file)
 
 ### `bump preview [FILE]`
 
 You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command.
 
 ```
-Create a documentation preview for the given file
+Create a documentation preview for the given file or URL
 
 USAGE
   $ bump preview FILE
@@ -81,6 +83,22 @@ EXAMPLE
   $ bump preview FILE
   * Your preview is visible at: https://bump.sh/preview/45807371-9a32-48a7-b6e4-1cb7088b5b9b
 ```
+
+### `bump deploy [FILE]`
+
+Deploy the definition file as the current version of the documentation with the following command:
+
+```sh-session
+$ bump deploy path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
+```
+
+If you already have a hub in your [Bump.sh](https://bump.sh) account, you can automatically create a documentation inside it and deploy to it with:
+
+```sh-session
+$ bump deploy path/to/your/file.yml --auto-create --doc DOC_SLUG --hub HUB_ID_OR_SLUG --token HUB_TOKEN
+```
+
+Please check `bump deploy --help` for more usage details
 
 ## Development
 

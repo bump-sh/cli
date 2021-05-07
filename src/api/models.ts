@@ -26,3 +26,12 @@ export interface Reference {
   location?: string;
   content?: string;
 }
+
+export interface VersionRequest {
+  documentation: string;
+  definition: string;
+  hub?: string;
+  documentation_name?: string;
+  auto_create_documentation?: boolean;
+  references?: Reference[];
+}

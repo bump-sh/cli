@@ -7,7 +7,9 @@ export * from '@oclif/command/lib/flags';
 // Custom flags for bum-cli
 const doc = flags.build({
   char: 'd',
-  description: 'Documentation public id or slug, default: ""',
+  required: true,
+  description:
+    'Documentation public id or slug. Can be provided via BUMP_ID environment variable',
   default: () => {
     const envDoc = process.env.BUMP_ID;
     if (envDoc) return envDoc;
@@ -23,7 +25,7 @@ const docName = flags.build({
 
 const hub = flags.build({
   char: 'b',
-  description: 'Hub id or slug',
+  description: 'Hub id or slug. Can be provided via BUMP_HUB_ID environment variable',
   default: () => {
     const envHub = process.env.BUMP_HUB_ID;
     if (envHub) return envHub;
@@ -33,14 +35,20 @@ const hub = flags.build({
 
 const token = flags.build({
   char: 't',
-  description: 'Documentation or Hub token, default: ""',
+  required: true,
+  description:
+    'Documentation or Hub token. Can be provided via BUMP_TOKEN environment variable',
+  default: () => {
+    const envToken = process.env.BUMP_TOKEN;
+    if (envToken) return envToken;
+  },
 });
 
 const autoCreate = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   return flags.boolean({
     description:
-      'Automatically create the documentation if needed (only available with a --hub and when specifying a name for documentation --doc-name), default: false',
-    dependsOn: ['hub', 'doc-name'],
+      'Automatically create the documentation if needed (only available with a --hub flag). Documentation name can be provided with --doc-name flag. Default: false',
+    dependsOn: ['hub'],
     ...options,
   });
 };
