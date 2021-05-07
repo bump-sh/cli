@@ -120,7 +120,7 @@ Make sure to have Node.js (At least v10) installed on your machine.
 - Format the codebase to comply with the linter rules
   
   ```sh-session
-  $ npm run codestyle
+  $ npm run fmt
   ```
   
 - Run the test suites
