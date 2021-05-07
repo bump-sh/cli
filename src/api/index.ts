@@ -42,6 +42,15 @@ class BumpApi {
     });
   };
 
+  public postValidation = (
+    body: VersionRequest,
+    token: string,
+  ): Promise<AxiosResponse<void>> => {
+    return this.client.post<void>('/validations', body, {
+      headers: this.authorizationHeader(token),
+    });
+  };
+
   private initializeResponseInterceptor = () => {
     this.client.interceptors.response.use((data) => data, this.handleError);
   };

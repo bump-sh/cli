@@ -30,6 +30,7 @@ $> bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --token <your_d
     hub: flags.hub(),
     token: flags.token(),
     'auto-create': flags.autoCreate(),
+    'dry-run': flags.dryRun(),
   };
 
   static args = [fileArg];
@@ -43,26 +44,37 @@ $> bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --token <your_d
   async run(): Promise<void> {
     const { args, flags } = this.parse(Deploy);
     const [api, references] = await this.prepareDefinition(args.FILE);
+    const action = flags['dry-run'] ? 'validate' : 'deploy';
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+    const [documentation, token] = [flags.doc!, flags.token!];
 
-    cli.action.start("* Let's deploy a new documentation version on Bump");
+    cli.action.start(`* Let's ${action} a new documentation version on Bump`);
 
     const request: VersionRequest = {
-      documentation: flags.doc!, // eslint-disable-line @typescript-eslint/no-non-null-assertion
+      documentation,
       hub: flags.hub,
       documentation_name: flags['doc-name'],
-      auto_create_documentation: flags['auto-create'],
+      auto_create_documentation: flags['auto-create'] && !flags['dry-run'],
       definition: JSON.stringify(api.definition),
       references,
     };
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const response = await this.bump.postVersion(request, flags.token!);
+
+    const response = flags['dry-run']
+      ? await this.bump.postValidation(request, token)
+      : await this.bump.postVersion(request, token);
 
     cli.action.stop();
 
-    if (response.status === 201) {
-      cli.styledSuccess('Your new documentation version will soon be ready');
-    } else if (response.status === 204) {
-      this.warn('Your documentation has not changed!');
+    switch (response.status) {
+      case 200:
+        cli.styledSuccess('Definition is valid');
+        break;
+      case 201:
+        cli.styledSuccess('Your new documentation version will soon be ready');
+        break;
+      case 204:
+        this.warn('Your documentation has not changed!');
+        break;
     }
 
     return;

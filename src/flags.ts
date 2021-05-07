@@ -53,4 +53,12 @@ const autoCreate = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   });
 };
 
-export { doc, docName, hub, token, autoCreate };
+const dryRun = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
+  return flags.boolean({
+    description:
+      'Validate a new documentation version. Does everything a normal deploy would do except publishing the new version. Useful in automated environments such as test platforms or continuous integration. Default: false',
+    ...options,
+  });
+};
+
+export { doc, docName, hub, token, autoCreate, dryRun };
