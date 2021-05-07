@@ -5,7 +5,7 @@ import { cli } from '../cli';
 import { PreviewResponse, PreviewRequest } from '../api/models';
 
 export default class Preview extends Command {
-  static description = 'Create a documentation preview for the given file or URL';
+  static description = 'create a documentation preview from the given file or URL';
 
   static examples = [
     `$ bump preview FILE
