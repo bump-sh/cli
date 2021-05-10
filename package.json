@@ -1,6 +1,6 @@
 {
   "name": "bump-cli",
-  "description": "Bump CLI to interact with the API of developers.bump.sh",
+  "description": "The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh",
   "version": "0.1.0",
   "author": "Paul Bonaud <paulr@bump.sh>",
   "bin": {
@@ -23,6 +23,7 @@
     "globby": "^10.0.2",
     "mocha": "^8.3.2",
     "nock": "^13.0.11",
+    "np": "^7.5.0",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "sinon": "^10.0.0",
@@ -61,11 +62,13 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf lib oclif.manifest.json",
-    "codestyle": "eslint . --ext .ts --config .eslintrc --fix",
+    "lint": "eslint . --ext .ts --config .eslintrc",
+    "fmt": "eslint . --ext .ts --config .eslintrc --fix",
     "pack": "oclif-dev pack",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf lib && npm run build && oclif-dev manifest && oclif-dev readme",
-    "pretest": "eslint . --ext .ts --config .eslintrc",
+    "pretest": "npm run clean && npm run build && npm run lint",
+    "publish": "np",
     "test": "mocha \"test/**/*.test.ts\"",
     "test-coverage": "nyc npm run test",
     "test-integration": "node ./test/integration.js",
