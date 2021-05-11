@@ -7,6 +7,11 @@ export class Vars {
     return process.env.BUMP_HOST;
   }
 
+  apiUserAgent(base: string): string {
+    const content = [base, process.env.BUMP_USER_AGENT].filter(Boolean);
+    return content.join(' ');
+  }
+
   get apiUrl(): string {
     return this.host.startsWith('http') ? this.host : `https://${this.host}`;
   }

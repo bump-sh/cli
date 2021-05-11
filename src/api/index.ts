@@ -12,7 +12,7 @@ class BumpApi {
   public constructor(protected config: Config.IConfig) {
     const baseURL = `${vars.apiUrl}${vars.apiBasePath}`;
     const headers: { 'User-Agent': string; Authorization?: string } = {
-      'User-Agent': config.userAgent,
+      'User-Agent': vars.apiUserAgent(config.userAgent),
     };
 
     this.client = axios.create({
