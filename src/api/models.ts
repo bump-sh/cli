@@ -35,3 +35,8 @@ export interface VersionRequest {
   auto_create_documentation?: boolean;
   references?: Reference[];
 }
+
+export interface VersionResponse {
+  id?: string;
+  doc_public_url?: string;
+}

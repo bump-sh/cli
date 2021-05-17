@@ -8,13 +8,19 @@ const test = base.env({ BUMP_TOKEN: 'BAR' });
 describe('deploy subcommand', () => {
   describe('Successful runs', () => {
     test
-      .nock('https://bump.sh', (api) => api.post('/api/v1/versions').reply(201))
+      .nock('https://bump.sh', (api) =>
+        api
+          .post('/api/v1/versions')
+          .reply(201, { doc_public_url: 'http://localhost/doc/1' }),
+      )
       .stdout()
       .stderr()
       .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('sends new version to Bump', ({ stdout, stderr }) => {
         expect(stderr).to.match(/Let's deploy a new documentation version/);
-        expect(stdout).to.contain('Your new documentation version will soon be ready');
+        expect(stdout).to.contain(
+          'Your new documentation version will soon be ready at http://localhost/doc/1',
+        );
       });
 
     test

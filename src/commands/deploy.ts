@@ -2,7 +2,7 @@ import Command from '../command';
 import * as flags from '../flags';
 import { fileArg } from '../args';
 import { cli } from '../cli';
-import { VersionRequest } from '../api/models';
+import { VersionRequest, VersionResponse } from '../api/models';
 
 export default class Deploy extends Command {
   static description =
@@ -76,7 +76,13 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
         cli.styledSuccess('Definition is valid');
         break;
       case 201:
-        cli.styledSuccess('Your new documentation version will soon be ready');
+        const version: VersionResponse = response.data
+          ? response.data
+          : { doc_public_url: 'https://bump.sh' };
+
+        cli.styledSuccess(
+          `Your new documentation version will soon be ready at ${version.doc_public_url}`,
+        );
         break;
       case 204:
         this.warn('Your documentation has not changed!');

@@ -1,7 +1,13 @@
 import * as Config from '@oclif/config';
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
-import { PingResponse, PreviewRequest, PreviewResponse, VersionRequest } from './models';
+import {
+  PingResponse,
+  PreviewRequest,
+  PreviewResponse,
+  VersionRequest,
+  VersionResponse,
+} from './models';
 import { vars } from './vars';
 import APIError from './error';
 
@@ -36,8 +42,8 @@ class BumpApi {
   public postVersion = (
     body: VersionRequest,
     token: string,
-  ): Promise<AxiosResponse<void>> => {
-    return this.client.post<void>('/versions', body, {
+  ): Promise<AxiosResponse<VersionResponse>> => {
+    return this.client.post<VersionResponse>('/versions', body, {
       headers: this.authorizationHeader(token),
     });
   };
