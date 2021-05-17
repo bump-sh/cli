@@ -19,6 +19,7 @@ describe('deploy subcommand', () => {
 
     test
       .nock('https://bump.sh', (api) => api.post('/api/v1/versions').reply(204))
+      .stdout()
       .stderr()
       .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('sends unchanged version to Bump', ({ stderr }) => {
@@ -30,6 +31,7 @@ describe('deploy subcommand', () => {
       .env({ BUMP_ID: 'coucou' })
       .nock('https://bump.sh', (api) => api.post('/api/v1/versions').reply(201))
       .stdout()
+      .stderr()
       .command(['deploy', 'examples/valid/openapi.v3.json'])
       .it('sends version to Bump with doc read from env variable', ({ stdout }) => {
         expect(stdout).to.contain('Your new documentation version will soon be ready');
@@ -39,6 +41,7 @@ describe('deploy subcommand', () => {
       test
         .nock('https://bump.sh', (api) => api.post('/api/v1/validations').reply(200))
         .stdout()
+        .stderr()
         .command([
           'deploy',
           'examples/valid/openapi.v3.json',
@@ -56,6 +59,8 @@ describe('deploy subcommand', () => {
             .post('/api/v1/validations', (body) => !body.auto_create_documentation)
             .reply(200),
         )
+        .stdout()
+        .stderr()
         .command([
           'deploy',
           'examples/valid/openapi.v3.json',

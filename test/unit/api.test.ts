@@ -12,7 +12,6 @@ const test = base.add('config', () => Config.load());
 
 describe('BumpApi HTTP client class', () => {
   describe('nominal authenticated API call', () => {
-    const matchUserAgentHeader = sinon.spy(sinon.stub().returns(true));
     const matchAuthorizationHeader = sinon.spy(sinon.stub().returns(true));
 
     test
@@ -20,7 +19,6 @@ describe('BumpApi HTTP client class', () => {
         'https://bump.sh',
         {
           reqheaders: {
-            'User-Agent': matchUserAgentHeader,
             Authorization: matchAuthorizationHeader,
           },
         },
@@ -33,13 +31,45 @@ describe('BumpApi HTTP client class', () => {
             'my-secret-token',
           ),
       )
-      .it('sends valid User-Agent & Authorization headers', async () => {
-        expect(matchUserAgentHeader.firstCall.args[0]).to.match(
-          new RegExp(`@oclif/test/([0-9\.]+) ${os.platform()}-${os.arch()}`),
-        );
-
+      .it('sends valid Authorization headers', async () => {
         expect(matchAuthorizationHeader.firstCall.args[0]).to.equal(
           'Basic bXktc2VjcmV0LXRva2Vu',
+        );
+      });
+  });
+
+  describe('Customizing the API client with env variables', () => {
+    const matchUserAgentHeader = sinon.spy(sinon.stub().returns(true));
+
+    test
+      .env(
+        { BUMP_HOST: 'http://localhost', BUMP_USER_AGENT: 'ua-extra-content' },
+        { clear: true },
+      )
+      .nock(
+        'http://localhost',
+        {
+          reqheaders: {
+            'User-Agent': matchUserAgentHeader,
+          },
+        },
+        (api) => api.post('/api/v1/versions').reply(201, {}),
+      )
+      .do(
+        async (ctx) =>
+          await new BumpApi(ctx.config).postVersion(
+            {
+              documentation: 'hello',
+              definition: '',
+            },
+            'token',
+          ),
+      )
+      .it('sends User-Agent with custom content', async () => {
+        expect(matchUserAgentHeader.firstCall.args[0]).to.match(
+          new RegExp(
+            `^@oclif/test/([0-9\.]+) ${os.platform()}-${os.arch()} node-v[0-9\.]+ ua-extra-content$`,
+          ),
         );
       });
   });
