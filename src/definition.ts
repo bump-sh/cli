@@ -35,15 +35,15 @@ class UnsupportedFormat extends CLIError {
 }
 
 class API {
-  readonly filepath: string;
+  readonly location: string;
   readonly definition: APIDefinition;
   readonly references: APIReference[];
   readonly version: string;
   readonly specName: string;
   readonly spec?: SpecSchema;
 
-  constructor(filepath: string, $refs: $RefParser.$Refs) {
-    this.filepath = filepath;
+  constructor(location: string, $refs: $RefParser.$Refs) {
+    this.location = location;
     this.references = [];
 
     const definition = this.resolveContent($refs);
@@ -79,7 +79,7 @@ class API {
     let absPath = paths.shift();
 
     while (typeof absPath !== 'undefined') {
-      if (absPath === this.filepath || absPath === path.resolve(this.filepath)) {
+      if (absPath === this.location || absPath === path.resolve(this.location)) {
         mainReference = absPath;
       } else {
         const content = $refs.get(absPath);
