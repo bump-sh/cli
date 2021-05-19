@@ -66,9 +66,7 @@ describe('API definition class', () => {
       .it('parses external file successfully', async () => {
         const api = await API.loadAPI('http://example.org/openapi');
         expect(api.version).to.equal('3.0.2');
-        expect(api.references.map((ref) => ref.location)).to.contain(
-          'http://example.org/schemas/all.yml',
-        );
+        expect(api.references.map((ref) => ref.location)).to.contain('schemas/all.yml');
       });
   });
 

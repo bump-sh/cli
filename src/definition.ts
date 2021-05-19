@@ -73,6 +73,28 @@ class API {
     return `${major}.${minor}.x`;
   }
 
+  /* Resolve reference absolute paths to the main api location when possible */
+  resolveRelativeLocation(absPath: string): string {
+    const url = (location: string): Location | { hostname: string } => {
+      try {
+        return new URL(location);
+      } catch {
+        return { hostname: '' };
+      }
+    };
+    const definitionUrl = url(this.location);
+    const refUrl = url(absPath);
+
+    if (
+      absPath.match(/^\//) ||
+      (absPath.match(/^https?:\/\//) && definitionUrl.hostname === refUrl.hostname)
+    ) {
+      return path.relative(path.dirname(this.location), absPath);
+    } else {
+      return absPath;
+    }
+  }
+
   resolveContent($refs: $RefParser.$Refs): JSONSchema4Object | JSONSchema6Object {
     const paths = $refs.paths();
     let mainReference;
@@ -88,18 +110,8 @@ class API {
           throw new UnsupportedFormat('Reference ${absPath} is empty');
         }
 
-        /* The internals of the $RefParser doesn't have types exposed */
-        /* thus the need to cast 'as any' to be able to dig into the obj */
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const refType = ($refs as any)._$refs[absPath].pathType;
-        /* Resolve all reference paths to the main api definition file */
-        const location: string =
-          refType === 'file'
-            ? path.relative(path.dirname(this.filepath), absPath)
-            : absPath;
-
         this.references.push({
-          location,
+          location: this.resolveRelativeLocation(absPath),
           content,
         });
       }
