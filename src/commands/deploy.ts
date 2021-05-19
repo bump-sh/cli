@@ -11,15 +11,21 @@ export default class Deploy extends Command {
   static examples = [
     `Deploy a new version of an existing documentation
 
-$> bump deploy FILE --doc <your_doc_id_or_slug> --token <your_doc_token>
+$ bump deploy FILE --doc <your_doc_id_or_slug> --token <your_doc_token>
 * Let's deploy a new documentation version on Bump... done
 * Your new documentation version will soon be ready
 `,
     `Deploy a new version of an existing documentation attached to a hub
 
-$> bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --token <your_doc_token>
+$ bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --token <your_doc_token>
 * Let's deploy a new documentation version on Bump... done
 * Your new documentation version will soon be ready
+`,
+    `Validate a new documentation version before deploying it
+
+$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
+* Let's validate a new documentation version on Bump... done
+* Definition is valid
 `,
   ];
 

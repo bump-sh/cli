@@ -94,6 +94,12 @@ If you already have a hub in your [Bump.sh](https://bump.sh) account, you can au
 $ bump deploy path/to/your/file.yml --auto-create --doc DOC_SLUG --hub HUB_ID_OR_SLUG --token HUB_TOKEN
 ```
 
+Simulate a deployment of your definition file to make sure it is valid with the `--dry-run` flag, it is particularly useful in a Continuous Integration environment running a test deployment outside your main branch:
+
+```sh-session
+$ bump deploy path/to/your/file.yml --dry-run --doc DOC_ID_OR_SLUG --token DOC_TOKEN
+```
+
 Please check `bump deploy --help` for more usage details
 
 ## Development
