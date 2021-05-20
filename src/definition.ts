@@ -1,10 +1,11 @@
 import { CLIError } from '@oclif/errors';
 import $RefParser from '@apidevtools/json-schema-ref-parser';
+import { defaults } from '@apidevtools/json-schema-ref-parser/lib/options';
 import asyncapi from '@asyncapi/specs';
 import {
-  JSONSchema4Type,
+  JSONSchema4,
   JSONSchema4Object,
-  JSONSchema6Type,
+  JSONSchema6,
   JSONSchema6Object,
 } from 'json-schema';
 import path from 'path';
@@ -36,6 +37,7 @@ class UnsupportedFormat extends CLIError {
 
 class API {
   readonly location: string;
+  readonly rawDefinition: string;
   readonly definition: APIDefinition;
   readonly references: APIReference[];
   readonly version: string;
@@ -46,24 +48,40 @@ class API {
     this.location = location;
     this.references = [];
 
-    const definition = this.resolveContent($refs);
+    const [raw, parsed] = this.resolveContent($refs);
+    this.rawDefinition = raw as string;
 
-    if (API.isOpenAPI(definition)) {
-      this.specName = 'OpenAPI';
-      this.version = (definition.openapi || definition.swagger) as string;
-      this.definition = definition;
-      this.spec = SupportedFormat.openapi[this.versionWithoutPatch()];
-    } else if (API.isAsyncAPI(definition)) {
-      this.specName = 'AsyncAPI';
-      this.version = definition.asyncapi;
-      this.definition = definition;
-      this.spec = SupportedFormat.asyncapi[this.version];
-    } else {
-      throw new UnsupportedFormat();
-    }
+    this.definition = parsed;
+    this.specName = this.getSpecName(parsed);
+    this.version = this.getVersion(parsed);
+    this.spec = this.getSpec(parsed);
 
     if (this.spec === undefined) {
       throw new UnsupportedFormat(`${this.specName} ${this.version}`);
+    }
+  }
+
+  getSpec(definition: APIDefinition): Record<string, unknown> {
+    if (API.isAsyncAPI(definition)) {
+      return SupportedFormat.asyncapi[this.version];
+    } else {
+      return SupportedFormat.openapi[this.versionWithoutPatch()];
+    }
+  }
+
+  getSpecName(definition: APIDefinition): string {
+    if (API.isAsyncAPI(definition)) {
+      return 'AsyncAPI';
+    } else {
+      return 'OpenAPI';
+    }
+  }
+
+  getVersion(definition: APIDefinition): string {
+    if (API.isAsyncAPI(definition)) {
+      return definition.asyncapi;
+    } else {
+      return (definition.openapi || definition.swagger) as string;
     }
   }
 
@@ -95,7 +113,7 @@ class API {
     }
   }
 
-  resolveContent($refs: $RefParser.$Refs): JSONSchema4Object | JSONSchema6Object {
+  resolveContent($refs: $RefParser.$Refs): [string, APIDefinition] {
     const paths = $refs.paths();
     let mainReference;
     let absPath = paths.shift();
@@ -104,15 +122,17 @@ class API {
       if (absPath === this.location || absPath === path.resolve(this.location)) {
         mainReference = absPath;
       } else {
-        const content = $refs.get(absPath);
+        // $refs.get is not properly typed so we need to force it
+        // with the resulting type of our custom defined parser
+        const { raw } = $refs.get(absPath) as JSONSchemaWithRaw;
 
-        if (!content) {
+        if (!raw) {
           throw new UnsupportedFormat('Reference ${absPath} is empty');
         }
 
         this.references.push({
           location: this.resolveRelativeLocation(absPath),
-          content,
+          content: raw,
         });
       }
       absPath = paths.shift();
@@ -124,15 +144,21 @@ class API {
       );
     }
 
-    const content = $refs.get(mainReference);
+    // $refs.get is not properly typed so we need to force it
+    // with the resulting type of our custom defined parser
+    const { raw, parsed } = $refs.get(mainReference) as JSONSchemaWithRaw;
 
-    if (!content || !(content instanceof Object) || !('info' in content)) {
+    if (!parsed || !(parsed instanceof Object) || !('info' in parsed)) {
       throw new UnsupportedFormat(
         "Definition needs to be an object with at least an 'info' key",
       );
     }
 
-    return content;
+    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed)) {
+      throw new UnsupportedFormat();
+    }
+
+    return [raw, parsed];
   }
 
   static isOpenAPI(
@@ -150,9 +176,28 @@ class API {
   }
 
   static async loadAPI(path: string): Promise<API> {
+    const JSONParser = defaults.parse.json;
+    const YAMLParser = defaults.parse.yaml;
+    // We override the default parsers from $RefParser to be able
+    // to keep the raw content of the files parsed
+    const withRawTextParser = (
+      parser: $RefParser.ParserOptions,
+    ): $RefParser.ParserOptions => {
+      return {
+        ...parser,
+        parse: async (file: $RefParser.FileInfo): Promise<JSONSchemaWithRaw> => {
+          const parsed = (await parser.parse(file)) as JSONSchema4 | JSONSchema6;
+          return { parsed, raw: defaults.parse.text.parse(file) };
+        },
+      };
+    };
+
     return $RefParser
       .resolve(path, {
-        parse: { json: true },
+        parse: {
+          json: withRawTextParser(JSONParser),
+          yaml: withRawTextParser(YAMLParser),
+        },
         dereference: { circular: false },
       })
       .then(($refs) => {
@@ -164,9 +209,14 @@ class API {
   }
 }
 
+type JSONSchemaWithRaw = {
+  readonly parsed: JSONSchema4 | JSONSchema6;
+  readonly raw: string;
+};
+
 type APIReference = {
   location: string;
-  content: JSONSchema4Type | JSONSchema6Type;
+  content: string;
 };
 
 type APIDefinition = OpenAPI | AsyncAPI;

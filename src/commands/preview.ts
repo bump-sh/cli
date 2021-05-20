@@ -21,12 +21,12 @@ export default class Preview extends Command {
 
   async run(): Promise<void> {
     const { args } = this.parse(Preview);
-    const [api, references] = await this.prepareDefinition(args.FILE);
+    const [definition, references] = await this.prepareDefinition(args.FILE);
 
     cli.action.start("* Let's render a preview on Bump");
 
     const request: PreviewRequest = {
-      definition: JSON.stringify(api.definition),
+      definition,
       references,
     };
     const response: { data: PreviewResponse } = await this.bump.postPreview(request);
