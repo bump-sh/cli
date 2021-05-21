@@ -1,9 +1,9 @@
 import { Command as Base } from '@oclif/command';
+import debug from 'debug';
 
 import { API } from './definition';
 import { BumpApi, APIError } from './api';
 import { Reference } from './api/models';
-import { cli } from './cli';
 import pjson from '../package.json';
 
 export default abstract class Command extends Base {
@@ -23,11 +23,15 @@ export default abstract class Command extends Base {
     throw error;
   }
 
+  d(message: string): void {
+    return debug(`bump-cli:command:${this.constructor.name.toLowerCase()}`)(message);
+  }
+
   async prepareDefinition(filepath: string): Promise<[API, Reference[]]> {
     const api = await API.loadAPI(filepath);
     const references = [];
 
-    cli.debug(`* ${filepath} looks like an ${api.specName} spec version ${api.version}`);
+    this.d(`${filepath} looks like an ${api.specName} spec version ${api.version}`);
 
     for (let i = 0; i < api.references.length; i++) {
       const reference = api.references[i];
