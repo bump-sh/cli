@@ -49,7 +49,7 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
   */
   async run(): Promise<void> {
     const { args, flags } = this.parse(Deploy);
-    const [api, references] = await this.prepareDefinition(args.FILE);
+    const [definition, references] = await this.prepareDefinition(args.FILE);
     const action = flags['dry-run'] ? 'validate' : 'deploy';
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
     const [documentation, token] = [flags.doc!, flags.token!];
@@ -61,7 +61,7 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
       hub: flags.hub,
       documentation_name: flags['doc-name'],
       auto_create_documentation: flags['auto-create'] && !flags['dry-run'],
-      definition: JSON.stringify(api.definition),
+      definition,
       references,
     };
 

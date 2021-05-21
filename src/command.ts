@@ -27,7 +27,7 @@ export default abstract class Command extends Base {
     return debug(`bump-cli:command:${this.constructor.name.toLowerCase()}`)(message);
   }
 
-  async prepareDefinition(filepath: string): Promise<[API, Reference[]]> {
+  async prepareDefinition(filepath: string): Promise<[string, Reference[]]> {
     const api = await API.loadAPI(filepath);
     const references = [];
 
@@ -37,10 +37,10 @@ export default abstract class Command extends Base {
       const reference = api.references[i];
       references.push({
         location: reference.location,
-        content: JSON.stringify(reference.content),
+        content: reference.content,
       });
     }
 
-    return [api, references];
+    return [api.rawDefinition, references];
   }
 }

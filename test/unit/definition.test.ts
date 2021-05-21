@@ -74,7 +74,7 @@ describe('API definition class', () => {
     for (const [example, error] of Object.entries({
       './examples/invalid/openapi.yml': 'Unsupported API specification',
       './examples/invalid/array.yml': 'Unsupported API specification',
-      './examples/invalid/string.yml': 'not a valid JSON Schema',
+      './examples/invalid/string.yml': 'Unsupported API specification',
     })) {
       test
         .do(async () => await API.loadAPI(example))
