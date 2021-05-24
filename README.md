@@ -47,7 +47,7 @@ $ bump --help
 The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh
 
 VERSION
-  bump-cli/0.1.0 linux-x64 node-v15.12.0
+  bump-cli/2.0.0 linux-x64 node-v15.12.0
 
 USAGE
   $ bump [COMMAND]
