@@ -68,7 +68,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf lib && npm run build && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run clean && npm run build && npm run lint",
-    "publish": "np",
+    "publish": "np --no-release-draft",
     "test": "mocha \"test/**/*.test.ts\"",
     "test-coverage": "nyc npm run test",
     "test-integration": "node ./test/integration.js",
