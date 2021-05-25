@@ -1,0 +1,11 @@
+schema:
+  title: ProjectAccessResponse
+  type: object
+  properties:
+    id:
+      type: integer
+    usename:
+      type: string
+example:
+  - "id": 1
+    "username": "raymond_smith"

@@ -1,0 +1,12 @@
+accessRequestsProjects:
+  get:
+    description: Lists access requests for a project
+    parameters:
+      - name: id
+        in: path
+    responses:
+      '200':
+        description: Successful operation
+        content:
+          'application/json':
+            $ref: 'models/ProjectAccessResponse.yaml'
