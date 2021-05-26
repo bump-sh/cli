@@ -59,4 +59,4 @@ jobs:
           tag_name: ${{ needs.check_tag.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITHUB_REPOSITORY: bump-sh/cli
+          GITHUB_REPOSITORY: paulrbr/bump-node-cli
