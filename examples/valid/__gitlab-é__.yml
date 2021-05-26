@@ -1,0 +1,16 @@
+openapi: 3.0.0
+info:
+  description: |
+    An OpenAPI definition for the GitLab REST API.
+  version: v4
+  title: GitLab API
+
+paths:
+  # ...
+
+
+  # ACCESS REQUESTS (PROJECTS)
+  /v4/projects/{id}/access_requests:
+    $ref: 'v4/access_requests.yaml#/accessRequestsProjects'
+
+  # ...

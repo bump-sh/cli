@@ -114,17 +114,18 @@ class API {
   }
 
   resolveContent($refs: $RefParser.$Refs): [string, APIDefinition] {
-    const paths = $refs.paths();
-    let mainReference;
-    let absPath = paths.shift();
+    const values = $refs.values();
+    let mainReference: JSONSchemaWithRaw = { parsed: {}, raw: '' };
 
-    while (typeof absPath !== 'undefined') {
+    for (const [absPath, reference] of Object.entries(values)) {
       if (absPath === this.location || absPath === path.resolve(this.location)) {
-        mainReference = absPath;
-      } else {
-        // $refs.get is not properly typed so we need to force it
+        // $refs.values is not properly typed so we need to force it
         // with the resulting type of our custom defined parser
-        const { raw } = $refs.get(absPath) as JSONSchemaWithRaw;
+        mainReference = reference as JSONSchemaWithRaw;
+      } else {
+        // $refs.values is not properly typed so we need to force it
+        // with the resulting type of our custom defined parser
+        const { raw } = reference as JSONSchemaWithRaw;
 
         if (!raw) {
           throw new UnsupportedFormat('Reference ${absPath} is empty');
@@ -135,18 +136,9 @@ class API {
           content: raw,
         });
       }
-      absPath = paths.shift();
     }
 
-    if (typeof mainReference === 'undefined') {
-      throw new UnsupportedFormat(
-        "JSON Schema $ref parser couldn't parse the main definition",
-      );
-    }
-
-    // $refs.get is not properly typed so we need to force it
-    // with the resulting type of our custom defined parser
-    const { raw, parsed } = $refs.get(mainReference) as JSONSchemaWithRaw;
+    const { raw, parsed } = mainReference;
 
     if (!parsed || !(parsed instanceof Object) || !('info' in parsed)) {
       throw new UnsupportedFormat(

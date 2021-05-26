@@ -50,6 +50,13 @@ describe('API definition class', () => {
     });
   });
 
+  describe('with a file path containing special characters', () => {
+    test.it('parses successfully', async () => {
+      const api = await API.loadAPI('./examples/valid/__gitlab-é__.yml');
+      expect(api.version).to.equal('3.0.0');
+    });
+  });
+
   describe('with an http file containing relative URL refs', () => {
     test
       .nock('http://example.org', (api) =>
