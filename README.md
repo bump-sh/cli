@@ -12,8 +12,8 @@
 The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of [developers.bump.sh](https://developers.bump.sh). It is built with [`oclif`](https://oclif.io) in Typescript.
 
 [![Version](https://img.shields.io/npm/v/bump-cli.svg)](https://npmjs.org/package/bump-cli)
-[![Tests](https://github.com/bump-sh/bump-node-cli/actions/workflows/checks.yml/badge.svg)](https://github.com/bump-sh/bump-node-cli/actions/workflows/checks.yml)
-[![License](https://img.shields.io/npm/l/bump-cli.svg)](https://github.com/bump-sh/bump-node-cli/blob/master/package.json)
+[![Tests](https://github.com/bump-sh/cli/actions/workflows/checks.yml/badge.svg)](https://github.com/bump-sh/cli/actions/workflows/checks.yml)
+[![License](https://img.shields.io/npm/l/bump-cli.svg)](https://github.com/bump-sh/cli/blob/master/package.json)
 
 ## Table of contents
 
@@ -134,7 +134,7 @@ Make sure to have Node.js (At least v10) installed on your machine.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/bump-sh/bump-node-cli. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at https://github.com/bump-sh/cli. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
 ### License
 

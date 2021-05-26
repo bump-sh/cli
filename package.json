@@ -6,7 +6,7 @@
   "bin": {
     "bump": "./bin/run"
   },
-  "bugs": "https://github.com/bump-sh/bump-node-cli/issues",
+  "bugs": "https://github.com/bump-sh/cli/issues",
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
     "@oclif/test": "^1.2.8",
@@ -58,7 +58,7 @@
       "@oclif/plugin-help"
     ]
   },
-  "repository": "bump-sh/bump-node-cli",
+  "repository": "bump-sh/cli",
   "scripts": {
     "build": "tsc -b",
     "clean": "rm -rf lib oclif.manifest.json",
