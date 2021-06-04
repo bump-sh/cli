@@ -33,6 +33,15 @@ class BumpApi {
     return this.client.get<PingResponse>('/ping');
   };
 
+  public getVersion = (
+    versionId: string,
+    token: string,
+  ): Promise<AxiosResponse<VersionResponse>> => {
+    return this.client.get<VersionResponse>(`/versions/${versionId}`, {
+      headers: this.authorizationHeader(token),
+    });
+  };
+
   public postPreview = (
     body?: PreviewRequest,
   ): Promise<AxiosResponse<PreviewResponse>> => {
