@@ -1,4 +1,5 @@
 import * as os from 'os';
+import * as path from 'path';
 import * as sinon from 'sinon';
 import base, { expect } from '@oclif/test';
 import * as Config from '@oclif/config';
@@ -8,7 +9,8 @@ import { BumpApi } from '../../src/api';
 import { PreviewRequest } from '../../src/api/models';
 
 nock.disableNetConnect();
-const test = base.add('config', () => Config.load());
+const root = path.join(__dirname, '../../');
+const test = base.add('config', () => Config.load(root));
 
 describe('BumpApi HTTP client class', () => {
   describe('nominal authenticated API call', () => {
@@ -68,7 +70,7 @@ describe('BumpApi HTTP client class', () => {
       .it('sends User-Agent with custom content', async () => {
         expect(matchUserAgentHeader.firstCall.args[0]).to.match(
           new RegExp(
-            `^@oclif/test/([0-9\.]+) ${os.platform()}-${os.arch()} node-v[0-9\.]+ ua-extra-content$`,
+            `^bump-cli/([0-9\.]+) ${os.platform()}-${os.arch()} node-v[0-9\.]+ ua-extra-content$`,
           ),
         );
       });
