@@ -75,8 +75,11 @@ ARGUMENTS
   FILE  Path or URL to your API documentation file. OpenAPI (2.0 to 3.1.0) and AsyncAPI (2.0)
         specifications are currently supported.
 
+OPTIONS
+  -o, --open  Open the generated preview URL in your browser
+
 EXAMPLE
-  $ bump preview my-api-file.json
+  $ bump preview FILE
   * Your preview is visible at: https://bump.sh/preview/45807371-9a32-48a7-b6e4-1cb7088b5b9b
 ```
 

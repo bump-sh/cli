@@ -15,12 +15,17 @@ export default class Preview extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
+    open: flags.boolean({
+      char: 'o',
+      default: false,
+      description: 'Open the generated preview URL in your browser',
+    }),
   };
 
   static args = [fileArg];
 
   async run(): Promise<void> {
-    const { args } = this.parse(Preview);
+    const { args, flags } = this.parse(Preview);
     const [definition, references] = await this.prepareDefinition(args.FILE);
 
     cli.action.start("* Let's render a preview on Bump");
@@ -36,6 +41,10 @@ export default class Preview extends Command {
     cli.styledSuccess(
       `Your preview is visible at: ${response.data.public_url} (Expires at ${response.data.expires_at})`,
     );
+
+    if (flags.open && response.data.public_url) {
+      await cli.open(response.data.public_url);
+    }
 
     return;
   }
