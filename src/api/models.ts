@@ -37,6 +37,6 @@ export interface VersionRequest {
 }
 
 export interface VersionResponse {
-  id?: string;
+  id: string;
   doc_public_url?: string;
 }

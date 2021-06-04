@@ -78,7 +78,7 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
       case 201:
         const version: VersionResponse = response.data
           ? response.data
-          : { doc_public_url: 'https://bump.sh' };
+          : { id: '', doc_public_url: 'https://bump.sh' };
 
         cli.styledSuccess(
           `Your new documentation version will soon be ready at ${version.doc_public_url}`,
