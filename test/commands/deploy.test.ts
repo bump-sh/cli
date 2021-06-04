@@ -30,7 +30,7 @@ describe('deploy subcommand', () => {
       .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('sends unchanged version to Bump', ({ stderr }) => {
         expect(stderr).to.contain("Let's deploy a new documentation version");
-        expect(stderr).to.contain('Your documentation has not changed!');
+        expect(stderr).to.contain('Your documentation has not changed');
       });
 
     test

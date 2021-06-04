@@ -85,7 +85,7 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
         );
         break;
       case 204:
-        this.warn('Your documentation has not changed!');
+        this.warn('Your documentation has not changed');
         break;
     }
 

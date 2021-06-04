@@ -15,11 +15,7 @@ export default class Preview extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    open: flags.boolean({
-      char: 'o',
-      default: false,
-      description: 'Open the generated preview URL in your browser',
-    }),
+    open: flags.open({ description: 'Open the generated preview URL in your browser' }),
   };
 
   static args = [fileArg];

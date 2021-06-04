@@ -62,26 +62,22 @@ COMMANDS
 
 * [`bump preview [FILE]`](#bump-preview-file)
 * [`bump deploy [FILE]`](#bump-deploy-file)
+* [`bump diff [FILE]`](#bump-diff-file)
 
 ### `bump preview [FILE]`
 
-You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command.
+You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command. Here is an example usage:
 
+
+```sh-session
+$ bump preview https://bit.ly/asyncapi
+* Let's render a preview on Bump... done
+* Your preview is visible at: https://bump.sh/preview/c192dad0-79d7-44b3-b5e1-244b69f618e4 (Expires at 2021-06-28T18:06:56+02:00)
 ```
-USAGE
-  $ bump preview FILE
 
-ARGUMENTS
-  FILE  Path or URL to your API documentation file. OpenAPI (2.0 to 3.1.0) and AsyncAPI (2.0)
-        specifications are currently supported.
+_Note: you can use the `--open` flag to open the preview URL in your browser directly._
 
-OPTIONS
-  -o, --open  Open the generated preview URL in your browser
-
-EXAMPLE
-  $ bump preview FILE
-  * Your preview is visible at: https://bump.sh/preview/45807371-9a32-48a7-b6e4-1cb7088b5b9b
-```
+Please check `bump preview --help` for more usage details
 
 ### `bump deploy [FILE]`
 
@@ -104,6 +100,24 @@ $ bump deploy path/to/your/file.yml --dry-run --doc DOC_ID_OR_SLUG --token DOC_T
 ```
 
 Please check `bump deploy --help` for more usage details
+
+### `bump diff [FILE]`
+
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#diff) diff command._
+
+From a Bump documentation, the `diff` command will retrieve a comparaison changelog between your existing documentation and the given file or URL:
+
+```sh-session
+$ bump diff path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
+* Let's compare the given definition version... done
+
+Updated: POST /validations
+  Body attribute modified: documentation
+```
+
+_Note: you can use the `--open` flag to open the visual diff URL in your browser directly._
+
+Please check `bump diff --help` for full usage details.
 
 ## Development
 
