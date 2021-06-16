@@ -1,5 +1,9 @@
 name: Developer checks
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 jobs:
   checks:
     runs-on: ${{ matrix.os }}
