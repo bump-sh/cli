@@ -7,7 +7,7 @@ export interface PingResponse {
 }
 
 export interface PreviewResponse {
-  id?: string;
+  id: string;
   expires_at?: string;
   public_url?: string;
 }
@@ -37,6 +37,6 @@ export interface VersionRequest {
 }
 
 export interface VersionResponse {
-  id?: string;
+  id: string;
   doc_public_url?: string;
 }
