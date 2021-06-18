@@ -7,7 +7,7 @@ export interface PingResponse {
 }
 
 export interface PreviewResponse {
-  id?: string;
+  id: string;
   expires_at?: string;
   public_url?: string;
 }
