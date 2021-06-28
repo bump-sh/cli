@@ -10,6 +10,10 @@ export default abstract class Command extends Base {
   private base = `${pjson.name}@${pjson.version}`;
   _bump!: BumpApi;
 
+  get pollingPeriod(): number {
+    return 1000;
+  }
+
   get bump(): BumpApi {
     if (!this._bump) this._bump = new BumpApi(this.config);
     return this._bump;
@@ -23,8 +27,22 @@ export default abstract class Command extends Base {
     throw error;
   }
 
-  d(message: string): void {
-    return debug(`bump-cli:command:${this.constructor.name.toLowerCase()}`)(message);
+  // Function signature type taken from @types/debug
+  // Debugger(formatter: any, ...args: any[]): void;
+  /* eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
+  d(formatter: any, ...args: any[]): void {
+    return debug(`bump-cli:command:${this.constructor.name.toLowerCase()}`)(
+      formatter,
+      ...args,
+    );
+  }
+
+  async pollingDelay(): Promise<void> {
+    return await this.delay(this.pollingPeriod);
+  }
+
+  private async delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   async prepareDefinition(filepath: string): Promise<[string, Reference[]]> {

@@ -34,9 +34,12 @@ export interface VersionRequest {
   documentation_name?: string;
   auto_create_documentation?: boolean;
   references?: Reference[];
+  unpublished?: boolean;
 }
 
 export interface VersionResponse {
   id: string;
   doc_public_url?: string;
+  diff_public_url?: string;
+  diff_summary?: string;
 }
