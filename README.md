@@ -105,7 +105,7 @@ Please check `bump deploy --help` for more usage details
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#diff) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
 
 From a Bump documentation, the `diff` command will retrieve a comparaison changelog between your existing documentation and the given file or URL:
 
