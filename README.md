@@ -58,6 +58,8 @@ COMMANDS
   preview  create a documentation preview from the given file or URL
 ```
 
+Please check the [Bump CLI help page](https://help.bump.sh/bump-cli) for more CLI usage details.
+
 ## Commands
 
 * [`bump preview [FILE]`](#bump-preview-file)
