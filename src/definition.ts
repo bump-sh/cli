@@ -170,6 +170,7 @@ class API {
   static async loadAPI(path: string): Promise<API> {
     const JSONParser = defaults.parse.json;
     const YAMLParser = defaults.parse.yaml;
+    const TextParser = defaults.parse.text;
     // We override the default parsers from $RefParser to be able
     // to keep the raw content of the files parsed
     const withRawTextParser = (
@@ -179,7 +180,7 @@ class API {
         ...parser,
         parse: async (file: $RefParser.FileInfo): Promise<JSONSchemaWithRaw> => {
           const parsed = (await parser.parse(file)) as JSONSchema4 | JSONSchema6;
-          return { parsed, raw: defaults.parse.text.parse(file) };
+          return { parsed, raw: TextParser.parse(file) };
         },
       };
     };
@@ -189,6 +190,15 @@ class API {
         parse: {
           json: withRawTextParser(JSONParser),
           yaml: withRawTextParser(YAMLParser),
+          text: {
+            ...TextParser,
+            parse: async (file: $RefParser.FileInfo): Promise<JSONSchemaWithRaw> => {
+              const parsed = await TextParser.parse(file);
+              return { parsed, raw: parsed };
+            },
+            canParse: ['.md', '.markdown'],
+            encoding: 'utf8',
+          },
         },
         dereference: { circular: false },
       })
