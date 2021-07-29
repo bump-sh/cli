@@ -28,7 +28,7 @@ describe('API definition class', () => {
       .it('parses successfully', async () => {
         const api = await API.loadAPI('examples/valid/asyncapi.v2.yml');
         expect(api.version).to.equal('2.0.0');
-        expect(api.references.length).to.equal(4);
+        expect(api.references.length).to.equal(5);
         expect(api.references.map((ref) => ref.location)).to.include(
           'http://example.org/param-lights.json',
         );
@@ -39,6 +39,10 @@ describe('API definition class', () => {
 
         expect(api.references.map((ref) => ref.location)).to.not.include(
           './params/streetlightId.json',
+        );
+
+        expect(api.references.map((ref) => ref.location)).to.include(
+          'doc/introduction.md',
         );
       });
   });
