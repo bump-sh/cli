@@ -2,7 +2,7 @@ import { CLIError } from '@oclif/errors';
 
 import Command from '../command';
 import * as flags from '../flags';
-import { fileArg } from '../args';
+import { fileArg, otherFileArg } from '../args';
 import { cli } from '../cli';
 import { VersionRequest, VersionResponse } from '../api/models';
 
@@ -14,14 +14,14 @@ export default class Diff extends Command {
     `Compare a potential new version with the currently published one:
 
   $ bump diff FILE --doc <your_doc_id_or_slug> --token <your_doc_token>
-  * Let's compare the given definition version... done
+  * Let's compare the given definition file with the currently deployed one... done
   Removed: GET /compare
   Added: GET /versions/{versionId}
 `,
     `Store the diff in a dedicated file:
 
   $ bump diff FILE --doc <doc_slug> --token <doc_token> > /tmp/my-saved-diff
-  * Let's compare the given definition version... done
+  * Let's compare the given definition file with the currently deployed one... done
 
   $ cat /tmp/my-saved-diff
   Removed: GET /compare
@@ -30,8 +30,15 @@ export default class Diff extends Command {
     `In case of a non modified definition FILE compared to your existing documentation, no changes are output:
 
   $ bump diff FILE --doc <doc_slug> --token <your_doc_token>
-  * Let's compare the given definition version... done
+  * Let's compare the given definition file with the currently deployed one... done
    ›   Warning: Your documentation has not changed
+`,
+    `Compare two different input files or URL independently to the one published on bump.sh
+
+  $ bump diff FILE FILE2 --doc <doc_slug> --token <your_doc_token>
+  * Let's compare the two given definition files... done
+  Updated: POST /versions
+    Body attribute added: previous_version_id
 `,
   ];
 
@@ -43,7 +50,7 @@ export default class Diff extends Command {
     open: flags.open({ description: 'Open the visual diff in your browser' }),
   };
 
-  static args = [fileArg];
+  static args = [fileArg, otherFileArg];
 
   /*
     Oclif doesn't type parsed args & flags correctly and especially
@@ -51,48 +58,100 @@ export default class Diff extends Command {
     the non-null assertion '!' in this command.
     See https://github.com/oclif/oclif/issues/301 for details
   */
-  async run(): Promise<VersionResponse | void> {
+  async run(): Promise<void> {
     const { args, flags } = this.parse(Diff);
-    const [definition, references] = await this.prepareDefinition(args.FILE);
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    const [documentation, token] = [flags.doc!, flags.token!];
+    const [documentation, hub, token] = [flags.doc!, flags.hub, flags.token!];
 
-    cli.action.start("* Let's compare the given definition version");
+    if (args.FILE2) {
+      cli.action.start("* Let's compare the two given definition files");
+    } else {
+      cli.action.start(
+        "* Let's compare the given definition file with the currently deployed one",
+      );
+    }
 
+    const version: VersionResponse | void = await this.createVersion(
+      args.FILE,
+      documentation,
+      token,
+      hub,
+    );
+
+    if (version) {
+      this.d(`Unpublished version created with ID ${version.id}`);
+      let version2: VersionResponse | void = undefined;
+
+      if (args.FILE2) {
+        version2 = await this.createVersion(
+          args.FILE2,
+          documentation,
+          token,
+          hub,
+          version.id,
+        );
+
+        if (version2) {
+          this.d(`Unpublished version created with ID ${version2.id}`);
+        }
+      }
+
+      await this.displayCompareResult((version2 || version).id, token, flags.open);
+    }
+
+    cli.action.stop();
+
+    return;
+  }
+
+  async createVersion(
+    file: string,
+    documentation: string,
+    token: string,
+    hub: string | undefined,
+    previous_version_id: string | undefined = undefined,
+  ): Promise<VersionResponse | void> {
+    const [definition, references] = await this.prepareDefinition(file);
     const request: VersionRequest = {
       documentation,
-      hub: flags.hub,
+      hub,
       definition,
       references,
       unpublished: true,
+      previous_version_id,
     };
 
     const response = await this.bump.postVersion(request, token);
+
     switch (response.status) {
       case 201:
-        let version: VersionResponse = response.data;
-        this.d(`Unpublished version created with ID ${version.id}`);
-
-        version = await this.waitChangesResult(version.id, token, {
-          timeout: 30,
-        });
-        cli.action.stop();
-
-        if (version && version.diff_summary) {
-          await cli.log(version.diff_summary);
-          if (flags.open && version.diff_public_url) {
-            await cli.open(version.diff_public_url);
-          }
-        } else {
-          this.warn('There were no structural changes in your new definition');
-        }
-
-        return version;
+        return response.data;
         break;
       case 204:
-        cli.action.stop();
         this.warn('Your documentation has not changed');
         break;
+    }
+
+    return;
+  }
+
+  async displayCompareResult(
+    versionId: string,
+    token: string,
+    open: boolean,
+  ): Promise<void> {
+    const result: VersionResponse = await this.waitChangesResult(versionId, token, {
+      timeout: 30,
+    });
+    cli.action.stop();
+
+    if (result && result.diff_summary) {
+      await cli.log(result.diff_summary);
+      if (open && result.diff_public_url) {
+        await cli.open(result.diff_public_url);
+      }
+    } else {
+      this.warn('There were no structural changes in your new definition');
     }
 
     return;

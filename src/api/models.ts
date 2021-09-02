@@ -35,6 +35,7 @@ export interface VersionRequest {
   auto_create_documentation?: boolean;
   references?: Reference[];
   unpublished?: boolean;
+  previous_version_id?: string;
 }
 
 export interface VersionResponse {
