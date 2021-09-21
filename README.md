@@ -80,7 +80,7 @@ $ bump preview https://bit.ly/asyncapi
 
 _Note: you can use the `--open` flag to open the preview URL in your browser directly._
 
-_Note2: you can use the `--live` flag to watch changes of the input `FILE`. This is very helpful when writing your api definitionn as you will see a live preview being refreshed at each file save._
+_Note2: you can use the `--live` flag to watch changes of the input `FILE`. This is very helpful when writing your api definition as you will see a live preview being refreshed at each file save._
 
 Please check `bump preview --help` for more usage details
 
