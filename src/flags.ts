@@ -69,4 +69,12 @@ const open = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   });
 };
 
-export { doc, docName, hub, token, autoCreate, dryRun, open };
+const live = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
+  return flags.boolean({
+    char: 'l',
+    default: false,
+    ...options,
+  });
+};
+
+export { doc, docName, hub, token, autoCreate, dryRun, open, live };

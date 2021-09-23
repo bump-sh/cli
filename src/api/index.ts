@@ -48,6 +48,13 @@ class BumpApi {
     return this.client.post<PreviewResponse>('/previews', body);
   };
 
+  public putPreview = (
+    versionId: string,
+    body?: PreviewRequest,
+  ): Promise<AxiosResponse<PreviewResponse>> => {
+    return this.client.put<PreviewResponse>(`/previews/${versionId}`, body);
+  };
+
   public postVersion = (
     body: VersionRequest,
     token: string,
