@@ -42,4 +42,5 @@ export interface VersionResponse {
   doc_public_url?: string;
   diff_public_url?: string;
   diff_summary?: string;
+  diff_breaking?: boolean;
 }
