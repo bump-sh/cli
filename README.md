@@ -114,10 +114,20 @@ From a Bump documentation, the `diff` command will retrieve a comparaison change
 
 ```sh-session
 $ bump diff path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
-* Let's compare the given definition version... done
+* Let's compare the given definition file with the currently deployed one... done
 
 Updated: POST /validations
   Body attribute modified: documentation
+```
+
+If you want to compare two unpublished versions of your definition file, the `diff` command can retrieve a comparaison changelog between two given file or URL, “as simple as `git diff`”:
+
+```sh-session
+$ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc <doc_slug> --token <your_doc_token>
+* Let's compare the two given definition files... done
+
+Updated: POST /versions
+  Body attribute added: previous_version_id
 ```
 
 _Note: you can use the `--open` flag to open the visual diff URL in your browser directly._
