@@ -71,32 +71,28 @@ export default class Diff extends Command {
       );
     }
 
-    const version: VersionResponse | void = await this.createVersion(
+    const version: VersionResponse | undefined = await this.createVersion(
       args.FILE,
       documentation,
       token,
       hub,
     );
+    let diffVersion: VersionResponse | undefined = undefined;
 
-    if (version) {
-      this.d(`Unpublished version created with ID ${version.id}`);
-      let version2: VersionResponse | void = undefined;
+    if (args.FILE2) {
+      diffVersion = await this.createVersion(
+        args.FILE2,
+        documentation,
+        token,
+        hub,
+        version && version.id,
+      );
+    }
 
-      if (args.FILE2) {
-        version2 = await this.createVersion(
-          args.FILE2,
-          documentation,
-          token,
-          hub,
-          version.id,
-        );
+    diffVersion = diffVersion || version;
 
-        if (version2) {
-          this.d(`Unpublished version created with ID ${version2.id}`);
-        }
-      }
-
-      await this.displayCompareResult((version2 || version).id, token, flags.open);
+    if (diffVersion) {
+      await this.displayCompareResult(diffVersion.id, token, flags.open);
     }
 
     cli.action.stop();
@@ -110,7 +106,7 @@ export default class Diff extends Command {
     token: string,
     hub: string | undefined,
     previous_version_id: string | undefined = undefined,
-  ): Promise<VersionResponse | void> {
+  ): Promise<VersionResponse | undefined> {
     const [definition, references] = await this.prepareDefinition(file);
     const request: VersionRequest = {
       documentation,
@@ -125,6 +121,7 @@ export default class Diff extends Command {
 
     switch (response.status) {
       case 201:
+        this.d(`Unpublished version created with ID ${response.data.id}`);
         return response.data;
         break;
       case 204:
