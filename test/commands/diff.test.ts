@@ -1,7 +1,7 @@
 import base, { expect } from '@oclif/test';
 import nock from 'nock';
 import * as sinon from 'sinon';
-import Command from '../../src/command';
+import { Diff } from '../../src/core/diff';
 
 nock.disableNetConnect();
 
@@ -10,7 +10,7 @@ const test = base.env({ BUMP_TOKEN: 'BAR' });
 describe('diff subcommand', () => {
   let pollingStub: sinon.SinonStub;
   beforeEach(() => {
-    pollingStub = sinon.stub(Command.prototype, 'pollingPeriod');
+    pollingStub = sinon.stub(Diff.prototype, 'pollingPeriod');
     pollingStub.get(() => 0);
   });
 
@@ -35,10 +35,13 @@ describe('diff subcommand', () => {
       .stdout()
       .stderr()
       .command(['diff', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
-      .it('asks for a diff to Bump', async ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's compare the given definition file/);
-        expect(stdout).to.contain('Updated: POST /versions');
-      });
+      .it(
+        'asks for a diff to Bump and returns the newly created version',
+        async ({ stdout, stderr }) => {
+          expect(stderr).to.match(/Let's compare the given definition file/);
+          expect(stdout).to.contain('Updated: POST /versions');
+        },
+      );
 
     test
       .nock('https://bump.sh', (api) => {
@@ -145,8 +148,7 @@ describe('diff subcommand', () => {
       .command(['diff', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('asks for a diff with content change only', async ({ stdout, stderr }) => {
         expect(stderr).to.match(/Let's compare the given definition file/);
-        expect(stderr).to.contain('no structural changes in your new definition');
-        expect(stdout).to.eq('');
+        expect(stdout).to.contain('No structural changes detected.');
       });
 
     test
@@ -158,8 +160,7 @@ describe('diff subcommand', () => {
       .command(['diff', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('notifies an unchanged definition', async ({ stdout, stderr }) => {
         expect(stderr).to.match(/Let's compare the given definition file/);
-        expect(stderr).to.contain('Your documentation has not changed');
-        expect(stdout).to.eq('');
+        expect(stdout).to.contain('No changes detected.');
       });
   });
 

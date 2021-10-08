@@ -1,10 +1,9 @@
-import { CLIError } from '@oclif/errors';
-
 import Command from '../command';
 import * as flags from '../flags';
+import { Diff as CoreDiff } from '../core/diff';
 import { fileArg, otherFileArg } from '../args';
 import { cli } from '../cli';
-import { VersionRequest, VersionResponse } from '../api/models';
+import { VersionResponse } from '../api/models';
 
 export default class Diff extends Command {
   static description =
@@ -71,115 +70,33 @@ export default class Diff extends Command {
       );
     }
 
-    const version: VersionResponse | undefined = await this.createVersion(
+    const version: VersionResponse | undefined = await new CoreDiff(this.config).run(
       args.FILE,
+      args.FILE2,
       documentation,
-      token,
       hub,
+      token,
     );
-    let diffVersion: VersionResponse | undefined = undefined;
-
-    if (args.FILE2) {
-      diffVersion = await this.createVersion(
-        args.FILE2,
-        documentation,
-        token,
-        hub,
-        version && version.id,
-      );
-    } else {
-      diffVersion = version;
-    }
-
-    if (diffVersion) {
-      diffVersion = await this.waitChangesResult(diffVersion.id, token, {
-        timeout: 30,
-      });
-      await this.displayCompareResult(diffVersion, token, flags.open);
-    }
 
     cli.action.stop();
 
-    return diffVersion;
-  }
-
-  async createVersion(
-    file: string,
-    documentation: string,
-    token: string,
-    hub: string | undefined,
-    previous_version_id: string | undefined = undefined,
-  ): Promise<VersionResponse | undefined> {
-    const [definition, references] = await this.prepareDefinition(file);
-    const request: VersionRequest = {
-      documentation,
-      hub,
-      definition,
-      references,
-      unpublished: true,
-      previous_version_id,
-    };
-
-    const response = await this.bump.postVersion(request, token);
-
-    switch (response.status) {
-      case 201:
-        this.d(`Unpublished version created with ID ${response.data.id}`);
-        return response.data;
-        break;
-      case 204:
-        this.warn('Your documentation has not changed');
-        break;
+    if (version) {
+      await this.displayCompareResult(version, flags.open);
+    } else {
+      await cli.log('No changes detected.');
     }
 
     return;
   }
 
-  async displayCompareResult(
-    result: VersionResponse,
-    token: string,
-    open: boolean,
-  ): Promise<void> {
-    if (result && result.diff_summary) {
-      await cli.log(result.diff_summary);
-      if (open && result.diff_public_url) {
-        await cli.open(result.diff_public_url);
+  async displayCompareResult(version: VersionResponse, open: boolean): Promise<void> {
+    if (version && version.diff_summary) {
+      await cli.log(version.diff_summary);
+      if (open && version.diff_public_url) {
+        await cli.open(version.diff_public_url);
       }
     } else {
-      this.warn('There were no structural changes in your new definition');
+      await cli.log('No structural changes detected.');
     }
-  }
-
-  async waitChangesResult(
-    versionId: string,
-    token: string,
-    opts: { timeout: number },
-  ): Promise<VersionResponse> {
-    const diffResponse = await this.bump.getVersion(versionId, token);
-
-    if (opts.timeout <= 0) {
-      throw new CLIError(
-        'We were unable to compute your documentation diff. Sorry about that. Please try again later',
-      );
-    }
-
-    switch (diffResponse.status) {
-      case 200:
-        const version: VersionResponse = diffResponse.data;
-
-        this.d(`Received version:`);
-        this.d(version);
-        return version;
-        break;
-      case 202:
-        this.d('Waiting 1 sec before next pool');
-        await this.pollingDelay();
-        return await this.waitChangesResult(versionId, token, {
-          timeout: opts.timeout - 1,
-        });
-        break;
-    }
-
-    return {} as VersionResponse;
   }
 }

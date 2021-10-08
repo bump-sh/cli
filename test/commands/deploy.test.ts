@@ -16,8 +16,7 @@ describe('deploy subcommand', () => {
       .stdout()
       .stderr()
       .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
-      .it('sends new version to Bump', ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's deploy a new documentation version/);
+      .it('sends new version to Bump', ({ stdout }) => {
         expect(stdout).to.contain(
           'Your new documentation version will soon be ready at http://localhost/doc/1',
         );

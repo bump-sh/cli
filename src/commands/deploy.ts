@@ -1,3 +1,4 @@
+import { API } from '../definition';
 import Command from '../command';
 import * as flags from '../flags';
 import { fileArg } from '../args';
@@ -49,11 +50,13 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
   */
   async run(): Promise<void> {
     const { args, flags } = this.parse(Deploy);
-    const [definition, references] = await this.prepareDefinition(args.FILE);
+    const api = await API.load(args.FILE);
+    const [definition, references] = api.extractDefinition();
     const action = flags['dry-run'] ? 'validate' : 'deploy';
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
     const [documentation, token] = [flags.doc!, flags.token!];
 
+    this.d(`${args.FILE} looks like an ${api.specName} spec version ${api.version}`);
     cli.action.start(`* Let's ${action} a new documentation version on Bump`);
 
     const request: VersionRequest = {

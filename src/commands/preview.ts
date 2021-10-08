@@ -1,3 +1,4 @@
+import { API } from '../definition';
 import Command from '../command';
 import * as flags from '../flags';
 import { fileArg } from '../args';
@@ -43,7 +44,10 @@ export default class Preview extends Command {
     open = false,
     currentPreview: PreviewResponse | undefined = undefined,
   ): Promise<PreviewResponse> {
-    const [definition, references] = await this.prepareDefinition(file);
+    const api = await API.load(file);
+    const [definition, references] = api.extractDefinition();
+
+    this.d(`${file} looks like an ${api.specName} spec version ${api.version}`);
 
     if (!currentPreview) {
       cli.action.start("* Let's render a preview on Bump");
