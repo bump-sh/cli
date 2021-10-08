@@ -58,7 +58,7 @@ export default class Diff extends Command {
     the non-null assertion '!' in this command.
     See https://github.com/oclif/oclif/issues/301 for details
   */
-  async run(): Promise<void> {
+  async run(): Promise<VersionResponse | void> {
     const { args, flags } = this.parse(Diff);
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
     const [documentation, hub, token] = [flags.doc!, flags.hub, flags.token!];
@@ -92,12 +92,15 @@ export default class Diff extends Command {
     diffVersion = diffVersion || version;
 
     if (diffVersion) {
-      await this.displayCompareResult(diffVersion.id, token, flags.open);
+      diffVersion = await this.waitChangesResult(diffVersion.id, token, {
+        timeout: 30,
+      });
+      await this.displayCompareResult(diffVersion, token, flags.open);
     }
 
     cli.action.stop();
 
-    return;
+    return diffVersion;
   }
 
   async createVersion(
@@ -133,15 +136,10 @@ export default class Diff extends Command {
   }
 
   async displayCompareResult(
-    versionId: string,
+    result: VersionResponse,
     token: string,
     open: boolean,
   ): Promise<void> {
-    const result: VersionResponse = await this.waitChangesResult(versionId, token, {
-      timeout: 30,
-    });
-    cli.action.stop();
-
     if (result && result.diff_summary) {
       await cli.log(result.diff_summary);
       if (open && result.diff_public_url) {
@@ -150,8 +148,6 @@ export default class Diff extends Command {
     } else {
       this.warn('There were no structural changes in your new definition');
     }
-
-    return;
   }
 
   async waitChangesResult(
