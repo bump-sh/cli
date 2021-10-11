@@ -27,7 +27,7 @@ describe('API definition class', () => {
       .nock('http://example.org', (api) => api.get('/param-lights.json').reply(200, {}))
       .it('parses successfully', async () => {
         const api = await API.loadAPI('examples/valid/asyncapi.v2.yml');
-        expect(api.version).to.equal('2.0.0');
+        expect(api.version).to.equal('2.2.0');
         expect(api.references.length).to.equal(5);
         expect(api.references.map((ref) => ref.location)).to.include(
           'http://example.org/param-lights.json',
@@ -86,6 +86,7 @@ describe('API definition class', () => {
       './examples/invalid/openapi.yml': 'Unsupported API specification',
       './examples/invalid/array.yml': 'Unsupported API specification',
       './examples/invalid/string.yml': 'Unsupported API specification',
+      './examples/valid/asyncapi.v3.yml': 'Unsupported API specification',
     })) {
       test
         .do(async () => await API.loadAPI(example))

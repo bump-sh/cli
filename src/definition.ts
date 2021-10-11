@@ -18,6 +18,8 @@ class SupportedFormat {
   };
   static readonly asyncapi: Record<string, SpecSchema> = {
     '2.0.0': asyncapi['2.0.0'],
+    '2.1.0': asyncapi['2.1.0'],
+    '2.2.0': asyncapi['2.2.0'],
   };
 }
 
@@ -28,7 +30,7 @@ class UnsupportedFormat extends CLIError {
 
     const errorMsgs = [
       `Unsupported API specification (${message})`,
-      `Please try again with an OpenAPI ${compatOpenAPI} or AsyncAPI ${compatAsyncAPI} format.`,
+      `Please try again with an OpenAPI ${compatOpenAPI} or AsyncAPI ${compatAsyncAPI} file.`,
     ];
 
     super(errorMsgs.join('\n'));
