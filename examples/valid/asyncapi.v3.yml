@@ -1,9 +1,8 @@
-asyncapi: '2.2.0'
+asyncapi: '3.0.0'
 info:
   title: Streetlights API
   version: '1.0.0'
-  description:
-    $ref: "./doc/introduction.md"
+  description: "hello"
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
@@ -33,49 +32,21 @@ defaultContentType: application/json
 channels:
   smartylighting/streetlights/1/0/event/{streetlightId}/lighting/measured:
     description: The topic on which measured values may be produced and consumed.
-    parameters:
-      streetlightId:
-        $ref: 'http://example.org/param-lights.json'
     publish:
       summary: Inform about environmental lighting conditions of a particular streetlight.
       operationId: receiveLightMeasurement
-      traits:
-        - $ref: './traits/kafka.yml'
-      message:
-        $ref: '#/components/messages/lightMeasured'
 
   smartylighting/streetlights/1/0/action/{streetlightId}/turn/on:
-    parameters:
-      streetlightId:
-        $ref: './params/streetlightId.json'
     subscribe:
       operationId: turnOn
-      traits:
-        - $ref: './traits/kafka.yml'
-      message:
-        $ref: '#/components/messages/turnOnOff'
 
   smartylighting/streetlights/1/0/action/{streetlightId}/turn/off:
-    parameters:
-      streetlightId:
-        $ref: './params/streetlightId.json'
     subscribe:
       operationId: turnOff
-      traits:
-        - $ref: './traits/kafka.yml'
-      message:
-        $ref: '#/components/messages/turnOnOff'
 
   smartylighting/streetlights/1/0/action/{streetlightId}/dim:
-    parameters:
-      streetlightId:
-        $ref: 'params/streetlightId.json'
     subscribe:
       operationId: dimLight
-      traits:
-        - $ref: './traits/kafka.yml'
-      message:
-        $ref: '#/components/messages/dimLight'
 
 components:
   messages:
@@ -84,26 +55,14 @@ components:
       title: Light measured
       summary: Inform about environmental lighting conditions of a particular streetlight.
       contentType: application/json
-      traits:
-        - $ref: '#/components/messageTraits/commonHeaders'
-      payload:
-        $ref: "#/components/schemas/lightMeasuredPayload"
     turnOnOff:
       name: turnOnOff
       title: Turn on/off
       summary: Command a particular streetlight to turn the lights on or off.
-      traits:
-        - $ref: '#/components/messageTraits/commonHeaders'
-      payload:
-        $ref: "#/components/schemas/turnOnOffPayload"
     dimLight:
       name: dimLight
       title: Dim light
       summary: Command a particular streetlight to dim the lights.
-      traits:
-        - $ref: '#/components/messageTraits/commonHeaders'
-      payload:
-        $ref: "#/components/schemas/dimLightPayload"
 
   schemas:
     lightMeasuredPayload:
