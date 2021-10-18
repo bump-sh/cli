@@ -87,9 +87,9 @@ export default class Diff extends Command {
         hub,
         version && version.id,
       );
+    } else {
+      diffVersion = version;
     }
-
-    diffVersion = diffVersion || version;
 
     if (diffVersion) {
       diffVersion = await this.waitChangesResult(diffVersion.id, token, {

@@ -108,6 +108,33 @@ describe('diff subcommand', () => {
         api
           .post('/api/v1/versions')
           .once()
+          .reply(201, { id: '321', doc_public_url: 'http://localhost/doc/1' })
+          .post('/api/v1/versions')
+          .once()
+          .reply(204);
+      })
+      .stdout()
+      .stderr()
+      .command([
+        'diff',
+        'examples/valid/openapi.v3.json',
+        'examples/valid/openapi.v2.json',
+        '--doc',
+        'coucou',
+      ])
+      .it(
+        "doesn't display any diff when second file has no changes",
+        async ({ stdout, stderr }) => {
+          expect(stderr).to.match(/Let's compare the two given definition files/);
+          expect(stdout).to.not.contain('Updated: POST /versions');
+        },
+      );
+
+    test
+      .nock('https://bump.sh', (api) => {
+        api
+          .post('/api/v1/versions')
+          .once()
           .reply(201, { id: '123', doc_public_url: 'http://localhost/doc/1' })
           .get('/api/v1/versions/123')
           .once()
