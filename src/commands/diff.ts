@@ -1,9 +1,11 @@
+import { CLIError } from '@oclif/errors';
+
 import Command from '../command';
 import * as flags from '../flags';
 import { Diff as CoreDiff } from '../core/diff';
 import { fileArg, otherFileArg } from '../args';
 import { cli } from '../cli';
-import { WithDiff } from '../api/models';
+import { DiffResponse } from '../api/models';
 
 export default class Diff extends Command {
   static description =
@@ -43,9 +45,9 @@ export default class Diff extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    doc: flags.doc(),
+    doc: flags.doc({ required: false }),
     hub: flags.hub(),
-    token: flags.token(),
+    token: flags.token({ required: false }),
     open: flags.open({ description: 'Open the visual diff in your browser' }),
     format: flags.format(),
   };
@@ -60,8 +62,7 @@ export default class Diff extends Command {
   */
   async run(): Promise<void> {
     const { args, flags } = this.parse(Diff);
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    const [documentation, hub, token] = [flags.doc!, flags.hub, flags.token!];
+    const [documentation, hub, token] = [flags.doc, flags.hub, flags.token];
 
     if (flags.format == 'text') {
       if (args.FILE2) {
@@ -73,7 +74,13 @@ export default class Diff extends Command {
       }
     }
 
-    const diff: WithDiff | undefined = await new CoreDiff(this.config).run(
+    if (!args.FILE2 && (!documentation || !token)) {
+      throw new CLIError(
+        'Please provide a second file argument or login with an existing token',
+      );
+    }
+
+    const diff: DiffResponse | undefined = await new CoreDiff(this.config).run(
       args.FILE,
       args.FILE2,
       documentation,
@@ -96,22 +103,22 @@ export default class Diff extends Command {
   }
 
   async displayCompareResult(
-    result: WithDiff,
+    result: DiffResponse,
     format: string,
     open: boolean,
   ): Promise<void> {
-    if (format == 'text' && result.diff_summary) {
-      await cli.log(result.diff_summary);
-    } else if (format == 'markdown' && result.diff_markdown) {
-      await cli.log(result.diff_markdown);
-    } else if (format == 'json' && result.diff_details) {
-      await cli.log(JSON.stringify(result.diff_details, null, 2));
+    if (format == 'text' && result.text) {
+      await cli.log(result.text);
+    } else if (format == 'markdown' && result.markdown) {
+      await cli.log(result.markdown);
+    } else if (format == 'json' && result.details) {
+      await cli.log(JSON.stringify(result.details, null, 2));
     } else {
       await cli.log('No structural changes detected.');
     }
 
-    if (open && result.diff_public_url) {
-      await cli.open(result.diff_public_url);
+    if (open && result.public_url) {
+      await cli.open(result.public_url);
     }
   }
 }
