@@ -80,7 +80,7 @@
     "@asyncapi/specs": "^2.9.0",
     "@oclif/command": "^1.8.0",
     "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.2",
+    "@oclif/plugin-help": "^5.1.10",
     "async-mutex": "^0.3.2",
     "axios": "^0.24.0",
     "cli-ux": "^5.5.1",
