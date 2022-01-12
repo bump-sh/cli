@@ -108,12 +108,12 @@ export class Diff {
       case 200:
         const diff: WithDiff = diffResponse.data;
 
-        this.d(`Received diff:`);
+        this.d('Received diff:');
         this.d(diff);
         return diff;
         break;
       case 202:
-        this.d('Waiting 1 sec before next pool');
+        this.d('Waiting 1 sec before next poll');
         await this.pollingDelay();
         return await this.waitResult(result, token, {
           timeout: opts.timeout - 1,

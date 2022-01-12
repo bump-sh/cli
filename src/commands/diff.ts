@@ -13,14 +13,14 @@ export default class Diff extends Command {
     `Compare a potential new version with the currently published one:
 
   $ bump diff FILE --doc <your_doc_id_or_slug> --token <your_doc_token>
-  * Let's compare the given definition file with the currently deployed one... done
+  * Comparing the given definition file with the currently deployed one... done
   Removed: GET /compare
   Added: GET /versions/{versionId}
 `,
     `Store the diff in a dedicated file:
 
   $ bump diff FILE --doc <doc_slug> --token <doc_token> > /tmp/my-saved-diff
-  * Let's compare the given definition file with the currently deployed one... done
+  * Comparing the given definition file with the currently deployed one... done
 
   $ cat /tmp/my-saved-diff
   Removed: GET /compare
@@ -29,13 +29,13 @@ export default class Diff extends Command {
     `In case of a non modified definition FILE compared to your existing documentation, no changes are output:
 
   $ bump diff FILE --doc <doc_slug> --token <your_doc_token>
-  * Let's compare the given definition file with the currently deployed one... done
+  * Comparing the given definition file with the currently deployed one... done
    ›   Warning: Your documentation has not changed
 `,
     `Compare two different input files or URL independently to the one published on bump.sh
 
   $ bump diff FILE FILE2 --doc <doc_slug> --token <your_doc_token>
-  * Let's compare the two given definition files... done
+  * Comparing the two given definition files... done
   Updated: POST /versions
     Body attribute added: previous_version_id
 `,
@@ -65,10 +65,10 @@ export default class Diff extends Command {
 
     if (flags.format == 'text') {
       if (args.FILE2) {
-        cli.action.start("* Let's compare the two given definition files");
+        cli.action.start('* Comparing the two given definition files');
       } else {
         cli.action.start(
-          "* Let's compare the given definition file with the currently deployed one",
+          '* Comparing the given definition file with the currently deployed one',
         );
       }
     }

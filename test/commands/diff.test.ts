@@ -38,7 +38,7 @@ describe('diff subcommand', () => {
       .it(
         'asks for a diff to Bump and returns the newly created version',
         async ({ stdout, stderr }) => {
-          expect(stderr).to.match(/Let's compare the given definition file/);
+          expect(stderr).to.match(/Comparing the given definition file/);
           expect(stdout).to.contain('Updated: POST /versions');
         },
       );
@@ -69,7 +69,7 @@ describe('diff subcommand', () => {
         'coucou',
       ])
       .it('asks for a diff between the two files to Bump', async ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's compare the two given definition files/);
+        expect(stderr).to.match(/Comparing the two given definition files/);
         expect(stdout).to.contain('Updated: POST /versions');
       });
 
@@ -101,7 +101,7 @@ describe('diff subcommand', () => {
       .it(
         'asks for a diff between the two files to Bump even when first file has no changes compared to currently deployed version',
         async ({ stdout, stderr }) => {
-          expect(stderr).to.match(/Let's compare the two given definition files/);
+          expect(stderr).to.match(/Comparing the two given definition files/);
           expect(stdout).to.contain('Updated: POST /versions');
         },
       );
@@ -128,7 +128,7 @@ describe('diff subcommand', () => {
       .it(
         "doesn't display any diff when second file has no changes",
         async ({ stdout, stderr }) => {
-          expect(stderr).to.match(/Let's compare the two given definition files/);
+          expect(stderr).to.match(/Comparing the two given definition files/);
           expect(stdout).to.not.contain('Updated: POST /versions');
         },
       );
@@ -147,7 +147,7 @@ describe('diff subcommand', () => {
       .stderr()
       .command(['diff', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('asks for a diff with content change only', async ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's compare the given definition file/);
+        expect(stderr).to.match(/Comparing the given definition file/);
         expect(stdout).to.contain('No structural changes detected.');
       });
 
@@ -159,7 +159,7 @@ describe('diff subcommand', () => {
       .stderr()
       .command(['diff', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('notifies an unchanged definition', async ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's compare the given definition file/);
+        expect(stderr).to.match(/Comparing the given definition file/);
         expect(stdout).to.contain('No changes detected.');
       });
   });
@@ -217,7 +217,7 @@ describe('diff subcommand', () => {
         })
         .exit(2)
         .it('asks for a diff to Bump', async ({ stdout, stderr }) => {
-          expect(stderr).to.match(/Let's compare the given definition file/);
+          expect(stderr).to.match(/Comparing the given definition file/);
           expect(stdout).to.eq('');
         });
     });
