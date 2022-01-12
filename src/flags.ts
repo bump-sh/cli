@@ -77,4 +77,11 @@ const live = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   });
 };
 
-export { doc, docName, hub, token, autoCreate, dryRun, open, live };
+const format = flags.build({
+  char: 'f',
+  description: 'Format in which to provide the diff result',
+  default: 'text',
+  options: ['text', 'markdown', 'json'],
+});
+
+export { doc, docName, hub, token, autoCreate, dryRun, open, live, format };

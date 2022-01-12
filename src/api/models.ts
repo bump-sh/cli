@@ -43,5 +43,16 @@ export interface VersionResponse {
   doc_public_url?: string;
   diff_public_url?: string;
   diff_summary?: string;
+  diff_markdown?: string;
+  diff_details?: DiffItem[];
   diff_breaking?: boolean;
+}
+
+export interface DiffItem {
+  id: string;
+  name: string;
+  status: string;
+  type: string;
+  breaking: boolean;
+  children: DiffItem[];
 }
