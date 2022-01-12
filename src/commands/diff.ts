@@ -58,7 +58,7 @@ export default class Diff extends Command {
     the non-null assertion '!' in this command.
     See https://github.com/oclif/oclif/issues/301 for details
   */
-  async run(): Promise<WithDiff | void> {
+  async run(): Promise<void> {
     const { args, flags } = this.parse(Diff);
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
     const [documentation, hub, token] = [flags.doc!, flags.hub, flags.token!];
