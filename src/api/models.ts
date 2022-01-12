@@ -41,6 +41,9 @@ export interface VersionRequest {
 export interface VersionResponse {
   id: string;
   doc_public_url?: string;
+}
+
+export interface WithDiff {
   diff_public_url?: string;
   diff_summary?: string;
   diff_markdown?: string;

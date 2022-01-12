@@ -3,7 +3,7 @@ import * as flags from '../flags';
 import { Diff as CoreDiff } from '../core/diff';
 import { fileArg, otherFileArg } from '../args';
 import { cli } from '../cli';
-import { VersionResponse } from '../api/models';
+import { WithDiff } from '../api/models';
 
 export default class Diff extends Command {
   static description =
@@ -58,7 +58,7 @@ export default class Diff extends Command {
     the non-null assertion '!' in this command.
     See https://github.com/oclif/oclif/issues/301 for details
   */
-  async run(): Promise<VersionResponse | void> {
+  async run(): Promise<WithDiff | void> {
     const { args, flags } = this.parse(Diff);
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
     const [documentation, hub, token] = [flags.doc!, flags.hub, flags.token!];
@@ -73,7 +73,7 @@ export default class Diff extends Command {
       }
     }
 
-    const version: VersionResponse | undefined = await new CoreDiff(this.config).run(
+    const diff: WithDiff | undefined = await new CoreDiff(this.config).run(
       args.FILE,
       args.FILE2,
       documentation,
@@ -83,11 +83,11 @@ export default class Diff extends Command {
 
     cli.action.stop();
 
-    if (version) {
+    if (diff) {
       /* Flags format has a default value, so it's always defined. But
        * oclif types can"t detect it */
       /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-      await this.displayCompareResult(version, flags.format!, flags.open);
+      await this.displayCompareResult(diff, flags.format!, flags.open);
     } else {
       await cli.log('No changes detected.');
     }
@@ -96,22 +96,22 @@ export default class Diff extends Command {
   }
 
   async displayCompareResult(
-    version: VersionResponse,
+    result: WithDiff,
     format: string,
     open: boolean,
   ): Promise<void> {
-    if (format == 'text' && version && version.diff_summary) {
-      await cli.log(version.diff_summary);
-    } else if (format == 'markdown' && version && version.diff_markdown) {
-      await cli.log(version.diff_markdown);
-    } else if (format == 'json' && version && version.diff_details) {
-      await cli.log(JSON.stringify(version.diff_details, null, 2));
+    if (format == 'text' && result.diff_summary) {
+      await cli.log(result.diff_summary);
+    } else if (format == 'markdown' && result.diff_markdown) {
+      await cli.log(result.diff_markdown);
+    } else if (format == 'json' && result.diff_details) {
+      await cli.log(JSON.stringify(result.diff_details, null, 2));
     } else {
       await cli.log('No structural changes detected.');
     }
 
-    if (open && version && version.diff_public_url) {
-      await cli.open(version.diff_public_url);
+    if (open && result.diff_public_url) {
+      await cli.open(result.diff_public_url);
     }
   }
 }
