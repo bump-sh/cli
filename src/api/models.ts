@@ -41,7 +41,21 @@ export interface VersionRequest {
 export interface VersionResponse {
   id: string;
   doc_public_url?: string;
+}
+
+export interface WithDiff {
   diff_public_url?: string;
   diff_summary?: string;
+  diff_markdown?: string;
+  diff_details?: DiffItem[];
   diff_breaking?: boolean;
+}
+
+export interface DiffItem {
+  id: string;
+  name: string;
+  status: string;
+  type: string;
+  breaking: boolean;
+  children: DiffItem[];
 }

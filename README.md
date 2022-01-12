@@ -114,7 +114,7 @@ From a Bump documentation, the `diff` command will retrieve a comparaison change
 
 ```sh-session
 $ bump diff path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
-* Let's compare the given definition file with the currently deployed one... done
+* Comparing the given definition file with the currently deployed one... done
 
 Updated: POST /validations
   Body attribute modified: documentation
@@ -124,7 +124,7 @@ If you want to compare two unpublished versions of your definition file, the `di
 
 ```sh-session
 $ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc <doc_slug> --token <your_doc_token>
-* Let's compare the two given definition files... done
+* Comparing the two given definition files... done
 
 Updated: POST /versions
   Body attribute added: previous_version_id

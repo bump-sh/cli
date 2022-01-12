@@ -7,6 +7,7 @@ import {
   PreviewResponse,
   VersionRequest,
   VersionResponse,
+  WithDiff,
 } from './models';
 import { vars } from './vars';
 import APIError from './error';
@@ -36,8 +37,8 @@ class BumpApi {
   public getVersion = (
     versionId: string,
     token: string,
-  ): Promise<AxiosResponse<VersionResponse>> => {
-    return this.client.get<VersionResponse>(`/versions/${versionId}`, {
+  ): Promise<AxiosResponse<VersionResponse & WithDiff>> => {
+    return this.client.get<VersionResponse & WithDiff>(`/versions/${versionId}`, {
       headers: this.authorizationHeader(token),
     });
   };

@@ -4,7 +4,7 @@ import debug from 'debug';
 
 import { API } from '../definition';
 import { BumpApi } from '../api';
-import { VersionRequest, VersionResponse } from '../api/models';
+import { VersionRequest, VersionResponse, WithDiff } from '../api/models';
 
 export class Diff {
   _bump!: BumpApi;
@@ -20,7 +20,7 @@ export class Diff {
     documentation: string,
     hub: string | undefined,
     token: string,
-  ): Promise<VersionResponse | undefined> {
+  ): Promise<WithDiff | undefined> {
     const version: VersionResponse | undefined = await this.createVersion(
       file1,
       documentation,
@@ -42,12 +42,12 @@ export class Diff {
     }
 
     if (diffVersion) {
-      diffVersion = await this.waitResult(diffVersion.id, token, {
+      return await this.waitResult(diffVersion, token, {
         timeout: 30,
       });
+    } else {
+      return undefined;
     }
-
-    return diffVersion;
   }
 
   get bumpClient(): BumpApi {
@@ -92,11 +92,11 @@ export class Diff {
   }
 
   async waitResult(
-    versionId: string,
+    result: VersionResponse,
     token: string,
     opts: { timeout: number },
-  ): Promise<VersionResponse> {
-    const diffResponse = await this.bumpClient.getVersion(versionId, token);
+  ): Promise<WithDiff> {
+    const diffResponse = await this.bumpClient.getVersion(result.id, token);
 
     if (opts.timeout <= 0) {
       throw new CLIError(
@@ -106,22 +106,22 @@ export class Diff {
 
     switch (diffResponse.status) {
       case 200:
-        const version: VersionResponse = diffResponse.data;
+        const diff: WithDiff = diffResponse.data;
 
-        this.d(`Received version:`);
-        this.d(version);
-        return version;
+        this.d('Received diff:');
+        this.d(diff);
+        return diff;
         break;
       case 202:
-        this.d('Waiting 1 sec before next pool');
+        this.d('Waiting 1 sec before next poll');
         await this.pollingDelay();
-        return await this.waitResult(versionId, token, {
+        return await this.waitResult(result, token, {
           timeout: opts.timeout - 1,
         });
         break;
     }
 
-    return {} as VersionResponse;
+    return {} as WithDiff;
   }
 
   async pollingDelay(): Promise<void> {
