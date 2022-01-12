@@ -169,7 +169,21 @@ class API {
     return 'asyncapi' in definition;
   }
 
-  static async loadAPI(path: string): Promise<API> {
+  public extractDefinition(): [string, APIReference[]] {
+    const references = [];
+
+    for (let i = 0; i < this.references.length; i++) {
+      const reference = this.references[i];
+      references.push({
+        location: reference.location,
+        content: reference.content,
+      });
+    }
+
+    return [this.rawDefinition, references];
+  }
+
+  static async load(path: string): Promise<API> {
     const JSONParser = defaults.parse.json;
     const YAMLParser = defaults.parse.yaml;
     const TextParser = defaults.parse.text;

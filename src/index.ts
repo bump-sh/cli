@@ -1,5 +1,5 @@
 import { run } from '@oclif/command';
-import Diff from './commands/diff';
+import { Diff } from './core/diff';
 import Deploy from './commands/deploy';
 import Preview from './commands/preview';
 import { VersionResponse } from './api/models';
