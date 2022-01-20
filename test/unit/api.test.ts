@@ -70,7 +70,7 @@ describe('BumpApi HTTP client class', () => {
       .it('sends User-Agent with custom content', async () => {
         expect(matchUserAgentHeader.firstCall.args[0]).to.match(
           new RegExp(
-            `^bump-cli/([0-9\.]+) ${os.platform()}-${os.arch()} node-v[0-9\.]+ ua-extra-content$`,
+            `^bump-cli/([0-9\.]+)(-[a-z]+)? ${os.platform()}-${os.arch()} node-v[0-9\.]+ ua-extra-content$`,
           ),
         );
       });
