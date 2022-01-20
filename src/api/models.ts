@@ -51,6 +51,22 @@ export interface WithDiff {
   diff_breaking?: boolean;
 }
 
+export interface DiffRequest {
+  definition: string;
+  references?: Reference[];
+  previous_definition: string;
+  previous_references?: Reference[];
+}
+
+export interface DiffResponse {
+  id: string;
+  public_url?: string;
+  text?: string;
+  markdown?: string;
+  details?: DiffItem[];
+  breaking?: boolean;
+}
+
 export interface DiffItem {
   id: string;
   name: string;

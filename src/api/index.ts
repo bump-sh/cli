@@ -7,6 +7,8 @@ import {
   PreviewResponse,
   VersionRequest,
   VersionResponse,
+  DiffRequest,
+  DiffResponse,
   WithDiff,
 } from './models';
 import { vars } from './vars';
@@ -63,6 +65,14 @@ class BumpApi {
     return this.client.post<VersionResponse>('/versions', body, {
       headers: this.authorizationHeader(token),
     });
+  };
+
+  public postDiff = (body: DiffRequest): Promise<AxiosResponse<DiffResponse>> => {
+    return this.client.post<PreviewResponse>('/diffs', body);
+  };
+
+  public getDiff = (diffId: string): Promise<AxiosResponse<DiffResponse>> => {
+    return this.client.get<DiffResponse>(`/diffs/${diffId}`);
   };
 
   public postValidation = (
