@@ -61,10 +61,11 @@ export interface DiffRequest {
 export interface DiffResponse {
   id: string;
   public_url?: string;
+  breaking?: boolean;
   text?: string;
   markdown?: string;
   details?: DiffItem[];
-  breaking?: boolean;
+  html?: string;
 }
 
 export interface DiffItem {

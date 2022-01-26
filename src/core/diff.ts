@@ -26,6 +26,7 @@ export class Diff {
     documentation: string | undefined,
     hub: string | undefined,
     token: string | undefined,
+    format: string,
   ): Promise<DiffResponse | undefined> {
     let diffVersion: VersionResponse | DiffResponse | undefined = undefined;
 
@@ -54,6 +55,7 @@ export class Diff {
     if (diffVersion) {
       return await this.waitResult(diffVersion, token, {
         timeout: 30,
+        format,
       });
     } else {
       return undefined;
@@ -131,14 +133,14 @@ export class Diff {
   async waitResult(
     result: VersionResponse | DiffResponse,
     token: string | undefined,
-    opts: { timeout: number },
+    opts: { timeout: number; format: string },
   ): Promise<DiffResponse> {
     let pollingResponse = undefined;
 
     if (this.isVersion(result) && token) {
       pollingResponse = await this.bumpClient.getVersion(result.id, token);
     } else {
-      pollingResponse = await this.bumpClient.getDiff(result.id);
+      pollingResponse = await this.bumpClient.getDiff(result.id, opts.format);
     }
 
     if (opts.timeout <= 0) {
@@ -164,6 +166,7 @@ export class Diff {
         await this.pollingDelay();
         return await this.waitResult(result, token, {
           timeout: opts.timeout - 1,
+          format: opts.format,
         });
         break;
     }

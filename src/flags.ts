@@ -81,7 +81,7 @@ const format = flags.build({
   char: 'f',
   description: 'Format in which to provide the diff result',
   default: 'text',
-  options: ['text', 'markdown', 'json'],
+  options: ['text', 'markdown', 'json', 'html'],
 });
 
 export { doc, docName, hub, token, autoCreate, dryRun, open, live, format };

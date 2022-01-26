@@ -71,8 +71,13 @@ class BumpApi {
     return this.client.post<PreviewResponse>('/diffs', body);
   };
 
-  public getDiff = (diffId: string): Promise<AxiosResponse<DiffResponse>> => {
-    return this.client.get<DiffResponse>(`/diffs/${diffId}`);
+  public getDiff = (
+    diffId: string,
+    format: string,
+  ): Promise<AxiosResponse<DiffResponse>> => {
+    return this.client.get<DiffResponse>(`/diffs/${diffId}`, {
+      params: { formats: [format] },
+    });
   };
 
   public postValidation = (
