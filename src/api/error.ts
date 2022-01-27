@@ -33,7 +33,7 @@ export default class APIError extends CLIError {
     if (info.length) {
       super(info.join('\n'));
     } else {
-      super(`Unhandled API error (status: ${status})`);
+      super(`Unhandled API error (status: ${status}) (error: ${httpError})`);
     }
 
     this.exitCode = exit;
