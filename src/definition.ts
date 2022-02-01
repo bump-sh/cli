@@ -12,14 +12,15 @@ import path from 'path';
 
 class SupportedFormat {
   static readonly openapi: Record<string, SpecSchema> = {
-    '2.0.x': require('oas-schemas/schemas/v2.0/schema.json'),
-    '3.0.x': require('oas-schemas/schemas/v3.0/schema.json'),
-    '3.1.x': require('oas-schemas/schemas/v3.1/schema.json'),
+    '2.0': require('oas-schemas/schemas/v2.0/schema.json'),
+    '3.0': require('oas-schemas/schemas/v3.0/schema.json'),
+    '3.1': require('oas-schemas/schemas/v3.1/schema.json'),
   };
   static readonly asyncapi: Record<string, SpecSchema> = {
-    '2.0.0': asyncapi['2.0.0'],
-    '2.1.0': asyncapi['2.1.0'],
-    '2.2.0': asyncapi['2.2.0'],
+    '2.0': asyncapi['2.0.0'],
+    '2.1': asyncapi['2.1.0'],
+    '2.2': asyncapi['2.2.0'],
+    '2.3': asyncapi['2.3.0'],
   };
 }
 
@@ -65,7 +66,7 @@ class API {
 
   getSpec(definition: APIDefinition): Record<string, unknown> {
     if (API.isAsyncAPI(definition)) {
-      return SupportedFormat.asyncapi[this.version];
+      return SupportedFormat.asyncapi[this.versionWithoutPatch()];
     } else {
       return SupportedFormat.openapi[this.versionWithoutPatch()];
     }
@@ -90,7 +91,7 @@ class API {
   versionWithoutPatch(): string {
     const [major, minor] = this.version.split('.', 3);
 
-    return `${major}.${minor}.x`;
+    return `${major}.${minor}`;
   }
 
   /* Resolve reference absolute paths to the main api location when possible */

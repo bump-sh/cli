@@ -15,10 +15,15 @@ describe('API definition class', () => {
   });
 
   describe('with no references', () => {
-    test.it('parses successfully', async () => {
+    test.it('parses successfully an OpenAPI contract', async () => {
       const api = await API.load('examples/valid/openapi.v2.json');
       expect(api.version).to.equal('2.0');
       expect(api.references).to.be.an('array').that.is.empty;
+    });
+
+    test.it('parses successfully an AsyncAPI contract', async () => {
+      const api = await API.load('examples/valid/asyncapi.v2.3.yml');
+      expect(api.version).to.equal('2.3.0');
     });
   });
 
