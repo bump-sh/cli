@@ -1,4 +1,4 @@
-import { run } from '@oclif/command';
+import { run } from '@oclif/core';
 import { Diff } from './core/diff';
 import Deploy from './commands/deploy';
 import Preview from './commands/preview';

@@ -1,5 +1,5 @@
 import { CLIError } from '@oclif/errors';
-import * as Config from '@oclif/config';
+import { Config } from '@oclif/core';
 import debug from 'debug';
 
 import { API } from '../definition';
@@ -14,9 +14,9 @@ import {
 
 export class Diff {
   _bump!: BumpApi;
-  _config: Config.IConfig;
+  _config: Config;
 
-  public constructor(config: Config.IConfig) {
+  public constructor(config: Config) {
     this._config = config;
   }
 

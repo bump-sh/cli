@@ -1,11 +1,11 @@
-import { flags } from '@oclif/command';
-import * as Parser from '@oclif/parser';
+import { Flags } from '@oclif/core';
+// import * as Parser from '@oclif/parser';
 
 // Re-export oclif flags https://oclif.io/docs/flags
-export * from '@oclif/command/lib/flags';
+// export * from '@oclif/command/lib/flags';
 
-// Custom flags for bum-cli
-const doc = flags.build({
+// Custom flags for bump-cli
+const doc = Flags.build({
   char: 'd',
   required: true,
   description:
@@ -17,13 +17,13 @@ const doc = flags.build({
   },
 });
 
-const docName = flags.build({
+const docName = Flags.build({
   char: 'n',
   description: 'Documentation name. Used with --auto-create flag.',
   dependsOn: ['auto-create'],
 });
 
-const hub = flags.build({
+const hub = Flags.build({
   char: 'b',
   description: 'Hub id or slug. Can be provided via BUMP_HUB_ID environment variable',
   default: () => {
@@ -33,7 +33,7 @@ const hub = flags.build({
   },
 });
 
-const token = flags.build({
+const token = Flags.build({
   char: 't',
   required: true,
   description:
@@ -45,7 +45,7 @@ const token = flags.build({
 });
 
 const autoCreate = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
-  return flags.boolean({
+  return Flags.boolean({
     description:
       'Automatically create the documentation if needed (only available with a --hub flag). Documentation name can be provided with --doc-name flag. Default: false',
     dependsOn: ['hub'],
@@ -54,7 +54,7 @@ const autoCreate = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
 };
 
 const dryRun = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
-  return flags.boolean({
+  return Flags.boolean({
     description:
       'Validate a new documentation version. Does everything a normal deploy would do except publishing the new version. Useful in automated environments such as test platforms or continuous integration. Default: false',
     ...options,
@@ -62,7 +62,7 @@ const dryRun = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
 };
 
 const open = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
-  return flags.boolean({
+  return Flags.boolean({
     char: 'o',
     default: false,
     ...options,
@@ -70,14 +70,14 @@ const open = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
 };
 
 const live = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
-  return flags.boolean({
+  return Flags.boolean({
     char: 'l',
     default: false,
     ...options,
   });
 };
 
-const format = flags.build({
+const format = Flags.build({
   char: 'f',
   description: 'Format in which to provide the diff result',
   default: 'text',
