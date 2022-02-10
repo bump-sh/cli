@@ -62,9 +62,17 @@ export default class Diff extends Command {
   */
   async run(): Promise<void> {
     const { args, flags } = this.parse(Diff);
-    const [documentation, hub, token] = [flags.doc, flags.hub, flags.token];
+    /* Flags.format has a default value, so it's always defined. But
+     * oclif types doesn't detect it */
+    const [documentation, hub, token, format] = [
+      flags.doc,
+      flags.hub,
+      flags.token,
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+      flags.format!,
+    ];
 
-    if (flags.format == 'text') {
+    if (format === 'text') {
       if (args.FILE2) {
         cli.action.start('* Comparing the two given definition files');
       } else {
@@ -86,15 +94,13 @@ export default class Diff extends Command {
       documentation,
       hub,
       token,
+      format,
     );
 
     cli.action.stop();
 
     if (diff) {
-      /* Flags format has a default value, so it's always defined. But
-       * oclif types can"t detect it */
-      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-      await this.displayCompareResult(diff, flags.format!, flags.open);
+      await this.displayCompareResult(diff, format, flags.open);
     } else {
       await cli.log('No changes detected.');
     }
@@ -113,6 +119,8 @@ export default class Diff extends Command {
       await cli.log(result.markdown);
     } else if (format == 'json' && result.details) {
       await cli.log(JSON.stringify(result.details, null, 2));
+    } else if (format == 'html' && result.html) {
+      await cli.log(result.html);
     } else {
       await cli.log('No structural changes detected.');
     }

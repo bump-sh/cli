@@ -142,10 +142,10 @@ describe('diff subcommand', () => {
             id: '321abc',
             public_url: 'http://localhost/preview/321abc',
           })
-          .get('/api/v1/diffs/321abc')
+          .get('/api/v1/diffs/321abc?formats[]=text')
           .once()
           .reply(202)
-          .get('/api/v1/diffs/321abc')
+          .get('/api/v1/diffs/321abc?formats[]=text')
           .once()
           .reply(200, { diff_summary: 'Updated: POST /versions' });
       })
