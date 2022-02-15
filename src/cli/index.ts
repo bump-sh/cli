@@ -1,4 +1,4 @@
-import cliUx from 'cli-ux';
+import { CliUx } from '@oclif/core';
 
 import success from './styled/success';
 
@@ -6,10 +6,10 @@ type Levels = 'info' | 'debug';
 
 if (process.env.BUMP_LOG_LEVEL) {
   const logLevel: string = process.env.BUMP_LOG_LEVEL;
-  cliUx.config['outputLevel'] = logLevel as Levels;
+  CliUx.config['outputLevel'] = logLevel as Levels;
 }
 const cli = {
-  ...cliUx,
+  ...CliUx.ux,
   get styledSuccess(): typeof success {
     return success;
   },
