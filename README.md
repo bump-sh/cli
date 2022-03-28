@@ -112,7 +112,7 @@ _If you want to receive automatic `bump diff` results on your Github Pull Reques
 
 #### Public API diffs
 
-From any two API definition files or URLs you can retrieve a comprehensive changelog of what has changed between the two given definitions.
+From any two definition files or URLs, you can retrieve a comprehensive changelog of what has changed between them.
 
 ```sh-session
 $ bump diff path/to/your/file.yml path/to/your/second_file.yml
