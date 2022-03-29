@@ -110,6 +110,32 @@ Please check `bump deploy --help` for more usage details
 
 _If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
 
+#### Public API diffs
+
+From any two definition files or URLs, you can retrieve a comprehensive changelog of what has changed between them.
+
+```sh-session
+$ bump diff path/to/your/file.yml path/to/your/second_file.yml
+* Comparing the two given definition files... done
+Modified: GET /consommations
+  Response modified: 200
+    [Breaking] Body attribute modified: energie
+```
+
+Or from two URLs:
+
+```sh-session
+$ bump diff https://demo.bump.sh/doc/trips-books/changes/bfec0a43-b870-44da-9e07-60c8955e15d5.json https://demo.bump.sh/doc/trips-books.json
+* Comparing the two given definition files... done
+Modified: POST /books
+  Response modified: 200
+    [Breaking] Body attribute removed: cent
+```
+
+_Note: You can also test this feature in our dedicated web application at <https://api-diff.io/>._
+
+#### Authenticated diffs attached to your Bump documentation
+
 From a Bump documentation, the `diff` command will retrieve a comparaison changelog between your existing documentation and the given file or URL:
 
 ```sh-session
