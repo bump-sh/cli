@@ -1,5 +1,8 @@
 import { expect, test } from '@oclif/test';
 import { API } from '../../src/definition';
+import nock from 'nock';
+
+nock.disableNetConnect();
 
 describe('API definition class', () => {
   describe('with inexistent file', () => {
@@ -24,6 +27,15 @@ describe('API definition class', () => {
     test.it('parses successfully an AsyncAPI contract', async () => {
       const api = await API.load('examples/valid/asyncapi.v2.3.yml');
       expect(api.version).to.equal('2.3.0');
+    });
+
+    test.it('parses successfully an AsyncAPI 2.4 contract', async () => {
+      nock.enableNetConnect('raw.githubusercontent.com');
+      const api = await API.load(
+        'https://raw.githubusercontent.com/asyncapi/spec/v2.4.0/examples/streetlights-kafka.yml',
+      );
+      nock.disableNetConnect();
+      expect(api.version).to.equal('2.4.0');
     });
   });
 

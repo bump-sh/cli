@@ -21,6 +21,7 @@ class SupportedFormat {
     '2.1': asyncapi['2.1.0'],
     '2.2': asyncapi['2.2.0'],
     '2.3': asyncapi['2.3.0'],
+    '2.4': asyncapi['2.4.0'],
   };
 }
 
