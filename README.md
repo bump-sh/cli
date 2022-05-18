@@ -162,7 +162,7 @@ Please check `bump diff --help` for full usage details.
 
 ## Development
 
-Make sure to have Node.js (At least v12) installed on your machine.
+Make sure to have Node.js (At least v14) installed on your machine.
 
 - Install node dependencies with
   
