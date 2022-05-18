@@ -33,6 +33,15 @@ const hub = flags.build({
   },
 });
 
+const branch = flags.build({
+  char: 'B',
+  description: 'Branch name. Can be provided via BUMP_BRANCH_NAME environment variable',
+  default: () => {
+    const envBranch = process.env.BUMP_BRANCH_NAME;
+    if (envBranch) return envBranch;
+  },
+});
+
 const token = flags.build({
   char: 't',
   required: true,
@@ -84,4 +93,4 @@ const format = flags.build({
   options: ['text', 'markdown', 'json', 'html'],
 });
 
-export { doc, docName, hub, token, autoCreate, dryRun, open, live, format };
+export { doc, docName, hub, branch, token, autoCreate, dryRun, open, live, format };

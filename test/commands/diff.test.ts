@@ -22,7 +22,10 @@ describe('diff subcommand', () => {
     test
       .nock('https://bump.sh', (api) => {
         api
-          .post('/api/v1/versions')
+          .post(
+            '/api/v1/versions',
+            (body) => body.documentation === 'coucou' && !body.branch_name,
+          )
           .once()
           .reply(201, { id: '123', doc_public_url: 'http://localhost/doc/1' })
           .get('/api/v1/versions/123')
@@ -37,6 +40,40 @@ describe('diff subcommand', () => {
       .command(['diff', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it(
         'asks for a diff to Bump and returns the newly created version',
+        async ({ stdout, stderr }) => {
+          expect(stderr).to.match(/Comparing the given definition file/);
+          expect(stdout).to.contain('Updated: POST /versions');
+        },
+      );
+
+    test
+      .nock('https://bump.sh', (api) => {
+        api
+          .post(
+            '/api/v1/versions',
+            (body) => body.documentation === 'coucou' && body.branch_name === 'next',
+          )
+          .once()
+          .reply(201, { id: '123', doc_public_url: 'http://localhost/doc/1' })
+          .get('/api/v1/versions/123')
+          .once()
+          .reply(202)
+          .get('/api/v1/versions/123')
+          .once()
+          .reply(200, { diff_summary: 'Updated: POST /versions' });
+      })
+      .stdout()
+      .stderr()
+      .command([
+        'diff',
+        'examples/valid/openapi.v3.json',
+        '--doc',
+        'coucou',
+        '--branch',
+        'next',
+      ])
+      .it(
+        'asks for a diff to Bump on given branch and returns the newly created version',
         async ({ stdout, stderr }) => {
           expect(stderr).to.match(/Comparing the given definition file/);
           expect(stdout).to.contain('Updated: POST /versions');

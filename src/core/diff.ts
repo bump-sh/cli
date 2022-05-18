@@ -25,6 +25,7 @@ export class Diff {
     file2: string | undefined,
     documentation: string | undefined,
     hub: string | undefined,
+    branch: string | undefined,
     token: string | undefined,
     format: string,
   ): Promise<DiffResponse | undefined> {
@@ -39,7 +40,7 @@ export class Diff {
         );
       }
 
-      diffVersion = await this.createVersion(file1, documentation, token, hub);
+      diffVersion = await this.createVersion(file1, documentation, token, hub, branch);
 
       if (file2) {
         diffVersion = await this.createVersion(
@@ -47,6 +48,7 @@ export class Diff {
           documentation,
           token,
           hub,
+          branch,
           diffVersion && diffVersion.id,
         );
       }
@@ -103,6 +105,7 @@ export class Diff {
     documentation: string,
     token: string,
     hub: string | undefined,
+    branch_name: string | undefined,
     previous_version_id: string | undefined = undefined,
   ): Promise<VersionResponse | undefined> {
     const api = await API.load(file);
@@ -114,6 +117,7 @@ export class Diff {
       references,
       unpublished: true,
       previous_version_id,
+      branch_name,
     };
 
     const response = await this.bumpClient.postVersion(request, token);

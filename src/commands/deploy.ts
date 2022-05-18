@@ -35,6 +35,7 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
     doc: flags.doc(),
     'doc-name': flags.docName(),
     hub: flags.hub(),
+    branch: flags.branch(),
     token: flags.token(),
     'auto-create': flags.autoCreate(),
     'dry-run': flags.dryRun(),
@@ -66,6 +67,7 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
       auto_create_documentation: flags['auto-create'] && !flags['dry-run'],
       definition,
       references,
+      branch_name: flags.branch,
     };
 
     const response = flags['dry-run']

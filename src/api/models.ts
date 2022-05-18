@@ -36,6 +36,7 @@ export interface VersionRequest {
   references?: Reference[];
   unpublished?: boolean;
   previous_version_id?: string;
+  branch_name?: string;
 }
 
 export interface VersionResponse {
