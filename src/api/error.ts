@@ -19,14 +19,16 @@ export default class APIError extends CLIError {
 
     switch (httpError?.response?.status) {
       case 422:
-        [info, exit] = APIError.invalidDefinition(httpError.response.data);
+        [info, exit] = APIError.invalidDefinition(
+          httpError.response.data as InvalidDefinitionError,
+        );
         break;
       case 401:
         [info, exit] = APIError.unauthenticated();
         break;
       case 404:
       case 400:
-        [info, exit] = APIError.notFound(httpError.response.data);
+        [info, exit] = APIError.notFound(httpError.response.data as Error);
         break;
     }
 
