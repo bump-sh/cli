@@ -10,7 +10,10 @@ describe('deploy subcommand', () => {
     test
       .nock('https://bump.sh', (api) =>
         api
-          .post('/api/v1/versions')
+          .post(
+            '/api/v1/versions',
+            (body) => body.documentation === 'coucou' && !body.branch_name,
+          )
           .reply(201, { doc_public_url: 'http://localhost/doc/1' }),
       )
       .stdout()
@@ -19,6 +22,31 @@ describe('deploy subcommand', () => {
       .it('sends new version to Bump', ({ stdout }) => {
         expect(stdout).to.contain(
           'Your new documentation version will soon be ready at http://localhost/doc/1',
+        );
+      });
+
+    test
+      .nock('https://bump.sh', (api) =>
+        api
+          .post(
+            '/api/v1/versions',
+            (body) => body.documentation === 'coucou' && body.branch_name === 'next',
+          )
+          .reply(201, { doc_public_url: 'http://localhost/doc/1/next' }),
+      )
+      .stdout()
+      .stderr()
+      .command([
+        'deploy',
+        'examples/valid/openapi.v3.json',
+        '--doc',
+        'coucou',
+        '--branch',
+        'next',
+      ])
+      .it('sends new version to Bump on given branch', ({ stdout }) => {
+        expect(stdout).to.contain(
+          'Your new documentation version will soon be ready at http://localhost/doc/1/next',
         );
       });
 
