@@ -28,6 +28,7 @@ export class Diff {
     branch: string | undefined,
     token: string | undefined,
     format: string,
+    waitUntil: number,
   ): Promise<DiffResponse | undefined> {
     let diffVersion: VersionResponse | DiffResponse | undefined = undefined;
 
@@ -56,7 +57,7 @@ export class Diff {
 
     if (diffVersion) {
       return await this.waitResult(diffVersion, token, {
-        timeout: 30,
+        timeout: waitUntil,
         format,
       });
     } else {
