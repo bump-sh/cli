@@ -93,4 +93,12 @@ const format = flags.build({
   options: ['text', 'markdown', 'json', 'html'],
 });
 
-export { doc, docName, hub, branch, token, autoCreate, dryRun, open, live, format };
+const wait = flags.build({
+  char: 'w',
+  description: 'Wait up to X seconds for diff result. Defaults to 60 seconds.',
+  default: (): string => {
+    return process.env.BUMP_DIFF_WAIT || '60';
+  },
+});
+
+export { doc, docName, hub, branch, token, autoCreate, dryRun, open, live, format, wait };
