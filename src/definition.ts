@@ -108,8 +108,9 @@ class API {
     const refUrl = url(absPath);
 
     if (
-      absPath.match(/^\//) ||
-      (absPath.match(/^https?:\/\//) && definitionUrl.hostname === refUrl.hostname)
+      absPath.match(/^\//) || // Unix style filesystem path
+      absPath.match(/^[a-zA-Z]+\:\\/) || // Windows style filesystem path
+      (absPath.match(/^https?:\/\//) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
     ) {
       return path.relative(path.dirname(this.location), absPath);
     } else {

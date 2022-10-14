@@ -1,6 +1,7 @@
 import { expect, test } from '@oclif/test';
 import { API } from '../../src/definition';
 import nock from 'nock';
+import path from 'path';
 
 nock.disableNetConnect();
 
@@ -46,21 +47,16 @@ describe('API definition class', () => {
         const api = await API.load('examples/valid/asyncapi.v2.yml');
         expect(api.version).to.equal('2.2.0');
         expect(api.references.length).to.equal(5);
-        expect(api.references.map((ref) => ref.location)).to.include(
-          'http://example.org/param-lights.json',
+        const locations = api.references.map((ref) => ref.location);
+        expect(locations).to.include('http://example.org/param-lights.json');
+
+        expect(locations).to.include(['params', 'streetlightId.json'].join(path.sep));
+
+        expect(locations).to.not.include(
+          ['.', 'params', 'streetlightId.json'].join(path.sep),
         );
 
-        expect(api.references.map((ref) => ref.location)).to.include(
-          'params/streetlightId.json',
-        );
-
-        expect(api.references.map((ref) => ref.location)).to.not.include(
-          './params/streetlightId.json',
-        );
-
-        expect(api.references.map((ref) => ref.location)).to.include(
-          'doc/introduction.md',
-        );
+        expect(locations).to.include(['doc', 'introduction.md'].join(path.sep));
       });
   });
 
@@ -94,7 +90,9 @@ describe('API definition class', () => {
       .it('parses external file successfully', async () => {
         const api = await API.load('http://example.org/openapi');
         expect(api.version).to.equal('3.0.2');
-        expect(api.references.map((ref) => ref.location)).to.contain('schemas/all.yml');
+        expect(api.references.map((ref) => ref.location)).to.contain(
+          ['schemas', 'all.yml'].join(path.sep),
+        );
       });
   });
 
