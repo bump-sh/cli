@@ -15,7 +15,7 @@ jobs:
         os:
           - ubuntu-latest
           - macos-latest
-          # - windows-latest
+          - windows-latest
         node_version: [ '14', '16', '18' ]
         architecture: [ 'x64' ]
         # an extra windows-x86 run:
@@ -25,9 +25,9 @@ jobs:
         #     architecture: x86
     name: Node ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache node modules
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         env:
           cache-name: cache-node-modules
         with:
@@ -36,7 +36,7 @@ jobs:
           key: ${{ matrix.os }}-node-${{ matrix.node_version }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ matrix.os }}-node-${{ matrix.node_version }}-build-${{ env.cache-name }}-
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node_version }}
           architecture: ${{ matrix.architecture }}
