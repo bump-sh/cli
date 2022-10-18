@@ -9,6 +9,8 @@ import {
   JSONSchema6Object,
 } from 'json-schema';
 import path from 'path';
+import d from 'debug';
+const debug = d('bump-cli:definition');
 
 class SupportedFormat {
   static readonly openapi: Record<string, SpecSchema> = {
@@ -112,7 +114,10 @@ class API {
       absPath.match(/^[a-zA-Z]+\:\\/) || // Windows style filesystem path
       (absPath.match(/^https?:\/\//) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
     ) {
-      return path.relative(path.dirname(this.location), absPath);
+      const relativePath = path.relative(path.dirname(this.location), absPath);
+      const posixPath = relativePath.replace(new RegExp('\\' + path.sep, 'g'), '/');
+
+      return posixPath;
     } else {
       return absPath;
     }
