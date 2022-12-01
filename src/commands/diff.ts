@@ -51,6 +51,7 @@ export default class Diff extends Command {
     token: flags.token({ required: false }),
     open: flags.open({ description: 'Open the visual diff in your browser' }),
     format: flags.format(),
+    expires: flags.expires(),
   };
 
   static args = [fileArg, otherFileArg];
@@ -65,13 +66,14 @@ export default class Diff extends Command {
     const { args, flags } = this.parse(Diff);
     /* Flags.format has a default value, so it's always defined. But
      * oclif types doesn't detect it */
-    const [documentation, hub, branch, token, format] = [
+    const [documentation, hub, branch, token, format, expires] = [
       flags.doc,
       flags.hub,
       flags.branch,
       flags.token,
       /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
       flags.format!,
+      flags.expires,
     ];
 
     if (format === 'text') {
@@ -98,6 +100,7 @@ export default class Diff extends Command {
       branch,
       token,
       format,
+      expires,
     );
 
     cli.action.stop();

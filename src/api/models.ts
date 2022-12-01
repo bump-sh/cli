@@ -57,6 +57,7 @@ export interface DiffRequest {
   references?: Reference[];
   previous_definition: string;
   previous_references?: Reference[];
+  expires_at?: string;
 }
 
 export interface DiffResponse {

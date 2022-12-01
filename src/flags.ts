@@ -93,4 +93,22 @@ const format = flags.build({
   options: ['text', 'markdown', 'json', 'html'],
 });
 
-export { doc, docName, hub, branch, token, autoCreate, dryRun, open, live, format };
+const expires = flags.build({
+  char: 'e',
+  description:
+    "Specify a longer expiration date for public diffs (defaults to 1 day). Use iso8601 format to provide a date, or you can use `--expires 'never'` to keep the result live indefinitely.",
+});
+
+export {
+  doc,
+  docName,
+  hub,
+  branch,
+  token,
+  autoCreate,
+  dryRun,
+  open,
+  live,
+  format,
+  expires,
+};
