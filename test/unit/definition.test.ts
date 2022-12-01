@@ -38,6 +38,11 @@ describe('API definition class', () => {
       nock.disableNetConnect();
       expect(api.version).to.equal('2.4.0');
     });
+
+    test.it('parses successfully an AsyncAPI 2.5 contract', async () => {
+      const api = await API.load('examples/valid/asyncapi.v2.5.yml');
+      expect(api.version).to.equal('2.5.0');
+    });
   });
 
   describe('with file & http references', () => {
