@@ -28,11 +28,12 @@ export class Diff {
     branch: string | undefined,
     token: string | undefined,
     format: string,
+    expires: string | undefined,
   ): Promise<DiffResponse | undefined> {
     let diffVersion: VersionResponse | DiffResponse | undefined = undefined;
 
     if (file2 && (!documentation || !token)) {
-      diffVersion = await this.createDiff(file1, file2);
+      diffVersion = await this.createDiff(file1, file2, expires);
     } else {
       if (!documentation || !token) {
         throw new Error(
@@ -73,7 +74,11 @@ export class Diff {
     return 1000;
   }
 
-  async createDiff(file1: string, file2: string): Promise<DiffResponse | undefined> {
+  async createDiff(
+    file1: string,
+    file2: string,
+    expires: string | undefined,
+  ): Promise<DiffResponse | undefined> {
     const api = await API.load(file1);
     const [previous_definition, previous_references] = api.extractDefinition();
     const api2 = await API.load(file2);
@@ -83,6 +88,7 @@ export class Diff {
       previous_references,
       definition,
       references,
+      expires_at: expires,
     };
 
     const response = await this.bumpClient.postDiff(request);
