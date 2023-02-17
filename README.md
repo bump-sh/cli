@@ -53,10 +53,10 @@ USAGE
   $ bump [COMMAND]
 
 COMMANDS
-  deploy   create a new version of your documentation from the given file or URL
-  diff     Get a comparaison diff with your documentation from the given file or URL
+  deploy   Create a new version of your documentation from the given file or URL.
+  diff     Get a comparison diff with your documentation from the given file or URL.
   help     Display help for bump.
-  preview  create a documentation preview from the given file or URL
+  preview  Create a documentation preview from the given file or URL.
 ```
 
 Please check the [Bump CLI help page](https://help.bump.sh/bump-cli) for more CLI usage details.
