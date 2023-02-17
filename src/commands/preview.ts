@@ -9,7 +9,7 @@ import { watch } from 'fs';
 import { Mutex } from 'async-mutex';
 
 export default class Preview extends Command {
-  static description = 'create a documentation preview from the given file or URL';
+  static description = 'Create a documentation preview from the given file or URL.';
 
   static examples = [
     `$ bump preview FILE
