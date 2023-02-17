@@ -47,14 +47,15 @@ $ bump --help
 The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh
 
 VERSION
-  bump-cli/2.0.0 linux-x64 node-v15.12.0
+  bump-cli/2.5.0 linux-x64 node-v16.14.0
 
 USAGE
   $ bump [COMMAND]
 
 COMMANDS
   deploy   create a new version of your documentation from the given file or URL
-  help     display help for bump
+  diff     Get a comparaison diff with your documentation from the given file or URL
+  help     Display help for bump.
   preview  create a documentation preview from the given file or URL
 ```
 
@@ -78,6 +79,8 @@ $ bump preview https://bit.ly/asyncapi
 ```
 
 _Note: you can use the `--open` flag to open the preview URL in your browser directly._
+
+_Note2: you can use the `--live` flag to watch changes of the input `FILE`. This is very helpful when writing your api definition as you will see a live preview being refreshed at each file save._
 
 Please check `bump preview --help` for more usage details
 
@@ -105,16 +108,52 @@ Please check `bump deploy --help` for more usage details
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#diff) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
+
+#### Public API diffs
+
+From any two definition files or URLs, you can retrieve a comprehensive changelog of what has changed between them.
+
+```sh-session
+$ bump diff path/to/your/file.yml path/to/your/second_file.yml
+* Comparing the two given definition files... done
+Modified: GET /consommations
+  Response modified: 200
+    [Breaking] Body attribute modified: energie
+```
+
+Or from two URLs:
+
+```sh-session
+$ bump diff https://demo.bump.sh/doc/trips-books/changes/bfec0a43-b870-44da-9e07-60c8955e15d5.json https://demo.bump.sh/doc/trips-books.json
+* Comparing the two given definition files... done
+Modified: POST /books
+  Response modified: 200
+    [Breaking] Body attribute removed: cent
+```
+
+_Note: You can also test this feature in our dedicated web application at <https://api-diff.io/>._
+
+#### Authenticated diffs attached to your Bump documentation
 
 From a Bump documentation, the `diff` command will retrieve a comparaison changelog between your existing documentation and the given file or URL:
 
 ```sh-session
 $ bump diff path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
-* Let's compare the given definition version... done
+* Comparing the given definition file with the currently deployed one... done
 
 Updated: POST /validations
   Body attribute modified: documentation
+```
+
+If you want to compare two unpublished versions of your definition file, the `diff` command can retrieve a comparaison changelog between two given file or URL, “as simple as `git diff`”:
+
+```sh-session
+$ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc <doc_slug> --token <your_doc_token>
+* Comparing the two given definition files... done
+
+Updated: POST /versions
+  Body attribute added: previous_version_id
 ```
 
 _Note: you can use the `--open` flag to open the visual diff URL in your browser directly._
@@ -123,7 +162,7 @@ Please check `bump diff --help` for full usage details.
 
 ## Development
 
-Make sure to have Node.js (At least v10) installed on your machine.
+Make sure to have Node.js (At least v14) installed on your machine.
 
 - Install node dependencies with
   
