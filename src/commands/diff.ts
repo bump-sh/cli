@@ -9,7 +9,7 @@ import { DiffResponse } from '../api/models';
 
 export default class Diff extends Command {
   static description =
-    'Get a comparaison diff with your documentation from the given file or URL';
+    'Get a comparison diff with your documentation from the given file or URL.';
 
   static examples = [
     `Compare a potential new version with the currently published one:

@@ -7,7 +7,7 @@ import { VersionRequest, VersionResponse } from '../api/models';
 
 export default class Deploy extends Command {
   static description =
-    'create a new version of your documentation from the given file or URL';
+    'Create a new version of your documentation from the given file or URL.';
 
   static examples = [
     `Deploy a new version of an existing documentation
