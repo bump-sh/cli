@@ -92,6 +92,12 @@ Deploy the definition file as the current version of the documentation with the 
 $ bump deploy path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
 ```
 
+Deploy the definition file to the `staging` branch of the documentation:
+
+```sh-session
+$ bump deploy path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN --branch staging
+```
+
 If you already have a hub in your [Bump.sh](https://bump.sh) account, you can automatically create a documentation inside it and deploy to it with:
 
 ```sh-session
