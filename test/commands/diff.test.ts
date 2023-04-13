@@ -201,6 +201,39 @@ describe('diff subcommand', () => {
         },
       );
 
+    base
+      .env({ CI: '1' })
+      .nock('https://bump.sh', (api) => {
+        api
+          .post('/api/v1/diffs')
+          .once()
+          .reply(201, {
+            id: '321abc',
+            public_url: 'http://localhost/preview/321abc',
+          })
+          .get('/api/v1/diffs/321abc?formats[]=text')
+          .once()
+          .reply(202)
+          .get('/api/v1/diffs/321abc?formats[]=text')
+          .once()
+          .reply(200, { diff_summary: 'Updated: POST /versions', diff_breaking: true });
+      })
+      .stdout()
+      .stderr()
+      .command([
+        'diff',
+        'examples/valid/openapi.v3.json',
+        'examples/valid/openapi.v2.json',
+      ])
+      .exit(1)
+      .it(
+        'asks for a public diff between the two files to Bump and exit 1 due to breaking change',
+        async ({ stdout, stderr }) => {
+          expect(stderr).to.match(/Comparing the two given definition files/);
+          expect(stdout).to.contain('Updated: POST /versions');
+        },
+      );
+
     test
       .nock('https://bump.sh', (api) => {
         api

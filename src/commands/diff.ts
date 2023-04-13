@@ -50,6 +50,7 @@ export default class Diff extends Command {
     branch: flags.branch(),
     token: flags.token({ required: false }),
     open: flags.open({ description: 'Open the visual diff in your browser' }),
+    'fail-on-breaking': flags.failOnBreaking(),
     format: flags.format(),
     expires: flags.expires(),
   };
@@ -106,7 +107,12 @@ export default class Diff extends Command {
     cli.action.stop();
 
     if (diff) {
-      await this.displayCompareResult(diff, format, flags.open);
+      await this.displayCompareResult(
+        diff,
+        format,
+        flags.open,
+        flags['fail-on-breaking'],
+      );
     } else {
       await cli.log('No changes detected.');
     }
@@ -118,6 +124,7 @@ export default class Diff extends Command {
     result: DiffResponse,
     format: string,
     open: boolean,
+    failOnBreaking: boolean,
   ): Promise<void> {
     if (format == 'text' && result.text) {
       await cli.log(result.text);
@@ -133,6 +140,10 @@ export default class Diff extends Command {
 
     if (open && result.public_url) {
       await cli.open(result.public_url);
+    }
+
+    if (failOnBreaking && result.breaking) {
+      this.exit(1);
     }
   }
 }
