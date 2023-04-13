@@ -78,6 +78,22 @@ const open = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   });
 };
 
+const failOnBreaking = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
+  return flags.boolean({
+    char: 'F',
+    description: 'Fail when diff contains a breaking change',
+    default: () => {
+      const envCi = process.env.CI;
+      if (envCi) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    ...options,
+  });
+};
+
 const live = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   return flags.boolean({
     char: 'l',
@@ -108,6 +124,7 @@ export {
   autoCreate,
   dryRun,
   open,
+  failOnBreaking,
   live,
   format,
   expires,
