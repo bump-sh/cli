@@ -142,7 +142,7 @@ _Note: You can also test this feature in our dedicated web application at <https
 
 #### Authenticated diffs attached to your Bump documentation
 
-From a Bump documentation, the `diff` command will retrieve a comparaison changelog between your existing documentation and the given file or URL:
+From a Bump documentation, the `diff` command will retrieve a comparison changelog between your existing documentation and the given file or URL:
 
 ```sh-session
 $ bump diff path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
@@ -152,7 +152,7 @@ Updated: POST /validations
   Body attribute modified: documentation
 ```
 
-If you want to compare two unpublished versions of your definition file, the `diff` command can retrieve a comparaison changelog between two given file or URL, “as simple as `git diff`”:
+If you want to compare two unpublished versions of your definition file, the `diff` command can retrieve a comparison changelog between two given file or URL, “as simple as `git diff`”:
 
 ```sh-session
 $ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc <doc_slug> --token <your_doc_token>
@@ -161,8 +161,6 @@ $ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc <doc_slug> --
 Updated: POST /versions
   Body attribute added: previous_version_id
 ```
-
-_Note: you can use the `--open` flag to open the visual diff URL in your browser directly._
 
 Please check `bump diff --help` for full usage details.
 
