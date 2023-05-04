@@ -30,10 +30,9 @@ export default class Preview extends Command {
   async run(): Promise<void> {
     const { args, flags } = this.parse(Preview);
 
+    await this.preview(args.FILE, flags.open);
     if (flags.live) {
       await this.waitForChanges(args.FILE, flags.open);
-    } else {
-      await this.preview(args.FILE, flags.open);
     }
 
     return;
