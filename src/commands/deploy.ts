@@ -1,9 +1,11 @@
-import { API } from '../definition';
 import Command from '../command';
 import * as flags from '../flags';
+import { Deploy as CoreDeploy } from '../core/deploy';
 import { fileArg } from '../args';
 import { cli } from '../cli';
-import { VersionRequest, VersionResponse } from '../api/models';
+import { VersionResponse } from '../api/models';
+
+import { statSync } from 'fs';
 
 export default class Deploy extends Command {
   static description =
@@ -51,47 +53,76 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
   */
   async run(): Promise<void> {
     const { args, flags } = this.parse(Deploy);
-    const api = await API.load(args.FILE);
-    const [definition, references] = api.extractDefinition();
-    const action = flags['dry-run'] ? 'validate' : 'deploy';
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    const [documentation, token] = [flags.doc!, flags.token!];
 
-    this.d(`${args.FILE} looks like an ${api.specName} spec version ${api.version}`);
+    const [dryRun, documentation, token, hub, autoCreate, documentationName, branch] = [
+      flags['dry-run'],
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+      flags.doc!,
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+      flags.token!,
+      flags.hub,
+      flags['auto-create'],
+      flags['doc-name'],
+      flags.branch,
+    ];
+    const file = await statSync(args.FILE);
+
+    if (file.isDirectory()) {
+      throw new Error(
+        'Deploy with a directory is not yet implemented. Please wait while we are working on it!',
+      );
+    } else {
+      await this.deploySingleFile(
+        args.FILE,
+        dryRun,
+        documentation,
+        token,
+        hub,
+        autoCreate,
+        documentationName,
+        branch,
+      );
+    }
+
+    return;
+  }
+
+  private async deploySingleFile(
+    file: string,
+    dryRun: boolean,
+    documentation: string,
+    token: string,
+    hub: string | undefined,
+    autoCreate: boolean,
+    documentationName: string | undefined,
+    branch: string | undefined,
+  ): Promise<void> {
+    const action = dryRun ? 'validate' : 'deploy';
     cli.action.start(`* Let's ${action} a new documentation version on Bump`);
 
-    const request: VersionRequest = {
+    const response: VersionResponse | undefined = await new CoreDeploy(this.config).run(
+      file,
+      dryRun,
       documentation,
-      hub: flags.hub,
-      documentation_name: flags['doc-name'],
-      auto_create_documentation: flags['auto-create'] && !flags['dry-run'],
-      definition,
-      references,
-      branch_name: flags.branch,
-    };
-
-    const response = flags['dry-run']
-      ? await this.bump.postValidation(request, token)
-      : await this.bump.postVersion(request, token);
+      token,
+      hub,
+      autoCreate,
+      documentationName,
+      branch,
+    );
 
     cli.action.stop();
 
-    switch (response.status) {
-      case 200:
-        cli.styledSuccess('Definition is valid');
-        break;
-      case 201:
-        const version: VersionResponse = response.data
-          ? response.data
-          : { id: '', doc_public_url: 'https://bump.sh' };
-
+    if (dryRun) {
+      cli.styledSuccess('Definition is valid');
+    } else {
+      if (response) {
         cli.styledSuccess(
-          `Your new documentation version will soon be ready at ${version.doc_public_url}`,
+          `Your new documentation version will soon be ready at ${response.doc_public_url}`,
         );
-        break;
-      case 204:
+      } else {
         this.warn('Your documentation has not changed');
-        break;
+      }
     }
 
     return;
