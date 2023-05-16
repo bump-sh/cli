@@ -257,4 +257,4 @@ type AsyncAPI = JSONSchema4Object & {
   readonly info: string;
 };
 
-export { API };
+export { API, SupportedFormat };

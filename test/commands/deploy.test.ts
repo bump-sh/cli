@@ -56,7 +56,7 @@ describe('deploy subcommand', () => {
       .stderr()
       .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
       .it('sends unchanged version to Bump', ({ stderr }) => {
-        expect(stderr).to.contain("Let's deploy a new documentation version");
+        expect(stderr).to.contain("Let's deploy a new version");
         expect(stderr).to.contain('Your documentation has not changed');
       });
 
@@ -106,6 +106,29 @@ describe('deploy subcommand', () => {
         ])
         .it("doesn't try to auto create a documentation");
     });
+  });
+
+  describe('Successful runs on a directory', () => {
+    test
+      .nock('https://bump.sh', (api) =>
+        api
+          .post(
+            '/api/v1/versions',
+            (body) =>
+              // The “bump” slug is taken from the filename convention
+              // in “bump-api.json”
+              body.documentation === 'bump' && body.hub === 'my-hub' && !body.branch_name,
+          )
+          .reply(201, { doc_public_url: 'http://localhost/doc/1' }),
+      )
+      .stdout()
+      .stderr()
+      .command(['deploy', 'examples/valid/', '--hub', 'my-hub'])
+      .it('sends new version to Bump', ({ stdout }) => {
+        expect(stdout).to.contain(
+          'Your new documentation version will soon be ready at http://localhost/doc/1',
+        );
+      });
   });
 
   describe('Server errors', () => {

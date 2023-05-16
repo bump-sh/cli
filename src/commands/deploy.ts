@@ -1,11 +1,17 @@
+import chalk from 'chalk';
+import { statSync } from 'fs';
+import { RequiredFlagError } from '@oclif/parser/lib/errors';
+import { CLIError } from '@oclif/errors';
+
 import Command from '../command';
 import * as flags from '../flags';
+import { DefinitionDirectory } from '../core/definition_directory';
 import { Deploy as CoreDeploy } from '../core/deploy';
+import { confirm as promptConfirm } from '../core/utils/prompts';
 import { fileArg } from '../args';
 import { cli } from '../cli';
 import { VersionResponse } from '../api/models';
-
-import { statSync } from 'fs';
+import { API } from '../definition';
 
 export default class Deploy extends Command {
   static description =
@@ -40,6 +46,8 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
     branch: flags.branch(),
     token: flags.token(),
     'auto-create': flags.autoCreate(),
+    interactive: flags.interactive(),
+    'filename-pattern': flags.filenamePattern(),
     'dry-run': flags.dryRun(),
   };
 
@@ -54,33 +62,133 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
   async run(): Promise<void> {
     const { args, flags } = this.parse(Deploy);
 
-    const [dryRun, documentation, token, hub, autoCreate, documentationName, branch] = [
+    const [
+      dryRun,
+      documentation,
+      token,
+      hub,
+      autoCreate,
+      interactive,
+      filenamePattern,
+      documentationName,
+      branch,
+    ] = [
       flags['dry-run'],
-      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-      flags.doc!,
+      flags.doc,
       /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
       flags.token!,
       flags.hub,
       flags['auto-create'],
+      flags.interactive,
+      /* Flags.filenamePattern has a default value, so it's always defined. But
+       * oclif types doesn't detect it */
+      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+      flags['filename-pattern']!,
       flags['doc-name'],
       flags.branch,
     ];
     const file = await statSync(args.FILE);
 
     if (file.isDirectory()) {
-      throw new Error(
-        'Deploy with a directory is not yet implemented. Please wait while we are working on it!',
-      );
+      if (hub) {
+        await this.deployDirectory(
+          args.FILE,
+          dryRun,
+          token,
+          hub,
+          autoCreate,
+          interactive,
+          filenamePattern,
+          documentationName,
+          branch,
+        );
+      } else {
+        throw new RequiredFlagError({ flag: Deploy.flags.hub, parse: {} });
+      }
     } else {
-      await this.deploySingleFile(
-        args.FILE,
-        dryRun,
-        documentation,
-        token,
-        hub,
-        autoCreate,
-        documentationName,
-        branch,
+      if (documentation) {
+        const api = await API.load(args.FILE);
+        this.d(`${args.FILE} looks like an ${api.specName} spec version ${api.version}`);
+
+        await this.deploySingleFile(
+          api,
+          dryRun,
+          documentation,
+          token,
+          hub,
+          autoCreate,
+          documentationName,
+          branch,
+        );
+      } else {
+        throw new RequiredFlagError({ flag: Deploy.flags.doc, parse: {} });
+      }
+    }
+
+    return;
+  }
+
+  private async deployDirectory(
+    dir: string,
+    dryRun: boolean,
+    token: string,
+    hub: string,
+    autoCreate: boolean,
+    interactive: boolean,
+    filenamePattern: string,
+    documentationName: string | undefined,
+    branch: string | undefined,
+  ): Promise<void> {
+    const definitionDirectory = new DefinitionDirectory(dir, filenamePattern);
+    const action = dryRun ? 'validate' : 'deploy';
+
+    await definitionDirectory.readDefinitions();
+
+    // In “interactive” mode we ask the user if he wants to add more
+    // definitions to deploy. He is thus presented a form to select
+    // some files from the target directory.
+    if (interactive) {
+      let confirm = true;
+      if (definitionDirectory.definitionsExists()) {
+        await promptConfirm('Do you want to add more files to deploy?').catch(() => {
+          confirm = false;
+        });
+      }
+      if (confirm) {
+        await definitionDirectory.interactiveSelection();
+      }
+    }
+
+    if (definitionDirectory.definitionsExists()) {
+      cli.info(
+        chalk.underline(
+          `Let's ${action} those documentations to your ${hub} hub on Bump.sh`,
+        ),
+      );
+
+      await definitionDirectory.sequentialMap(async (definition) => {
+        if (interactive) {
+          await definitionDirectory.renameToConvention(definition);
+        }
+
+        await this.deploySingleFile(
+          definition.definition,
+          dryRun,
+          definition.slug,
+          token,
+          hub,
+          autoCreate,
+          definition.slug || documentationName,
+          branch,
+        );
+
+        return definition;
+      });
+    } else {
+      throw new CLIError(
+        `No documentations found in ${dir}.\nDo you need some help to name your API definition files?\nTry the ${chalk.dim(
+          '--interactive',
+        )} flag.`,
       );
     }
 
@@ -88,7 +196,7 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
   }
 
   private async deploySingleFile(
-    file: string,
+    api: API,
     dryRun: boolean,
     documentation: string,
     token: string,
@@ -98,10 +206,12 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
     branch: string | undefined,
   ): Promise<void> {
     const action = dryRun ? 'validate' : 'deploy';
-    cli.action.start(`* Let's ${action} a new documentation version on Bump`);
+    cli.action.start(
+      `Let's ${action} a new version to your ${documentation} documentation on Bump.sh`,
+    );
 
     const response: VersionResponse | undefined = await new CoreDeploy(this.config).run(
-      file,
+      api,
       dryRun,
       documentation,
       token,
@@ -111,19 +221,19 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
       branch,
     );
 
-    cli.action.stop();
-
     if (dryRun) {
-      cli.styledSuccess('Definition is valid');
+      await cli.styledSuccess('Definition is valid');
     } else {
       if (response) {
-        cli.styledSuccess(
+        await cli.styledSuccess(
           `Your new documentation version will soon be ready at ${response.doc_public_url}`,
         );
       } else {
-        this.warn('Your documentation has not changed');
+        await cli.warn('Your documentation has not changed');
       }
     }
+
+    cli.action.stop();
 
     return;
   }

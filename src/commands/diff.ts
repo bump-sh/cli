@@ -45,7 +45,7 @@ export default class Diff extends Command {
 
   static flags = {
     help: flags.help({ char: 'h' }),
-    doc: flags.doc({ required: false }),
+    doc: flags.doc(),
     hub: flags.hub(),
     branch: flags.branch(),
     token: flags.token({ required: false }),
