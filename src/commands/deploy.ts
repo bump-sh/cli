@@ -4,7 +4,7 @@ import { RequiredFlagError } from '@oclif/parser/lib/errors';
 import { CLIError } from '@oclif/errors';
 
 import Command from '../command';
-import * as flags from '../flags';
+import * as flagsBuilder from '../flags';
 import { DefinitionDirectory } from '../core/definition_directory';
 import { Deploy as CoreDeploy } from '../core/deploy';
 import { confirm as promptConfirm } from '../core/utils/prompts';
@@ -39,16 +39,16 @@ $ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
   ];
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    doc: flags.doc(),
-    'doc-name': flags.docName(),
-    hub: flags.hub(),
-    branch: flags.branch(),
-    token: flags.token(),
-    'auto-create': flags.autoCreate(),
-    interactive: flags.interactive(),
-    'filename-pattern': flags.filenamePattern(),
-    'dry-run': flags.dryRun(),
+    help: flagsBuilder.help({ char: 'h' }),
+    doc: flagsBuilder.doc(),
+    'doc-name': flagsBuilder.docName(),
+    hub: flagsBuilder.hub(),
+    branch: flagsBuilder.branch(),
+    token: flagsBuilder.token(),
+    'auto-create': flagsBuilder.autoCreate(),
+    interactive: flagsBuilder.interactive(),
+    'filename-pattern': flagsBuilder.filenamePattern(),
+    'dry-run': flagsBuilder.dryRun(),
   };
 
   static args = [fileArg];

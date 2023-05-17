@@ -1,7 +1,7 @@
 import { CLIError } from '@oclif/errors';
 
 import Command from '../command';
-import * as flags from '../flags';
+import * as flagsBuilder from '../flags';
 import { Diff as CoreDiff } from '../core/diff';
 import { fileArg, otherFileArg } from '../args';
 import { cli } from '../cli';
@@ -44,15 +44,15 @@ export default class Diff extends Command {
   ];
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    doc: flags.doc(),
-    hub: flags.hub(),
-    branch: flags.branch(),
-    token: flags.token({ required: false }),
-    open: flags.open({ description: 'Open the visual diff in your browser' }),
-    'fail-on-breaking': flags.failOnBreaking(),
-    format: flags.format(),
-    expires: flags.expires(),
+    help: flagsBuilder.help({ char: 'h' }),
+    doc: flagsBuilder.doc(),
+    hub: flagsBuilder.hub(),
+    branch: flagsBuilder.branch(),
+    token: flagsBuilder.token({ required: false }),
+    open: flagsBuilder.open({ description: 'Open the visual diff in your browser' }),
+    'fail-on-breaking': flagsBuilder.failOnBreaking(),
+    format: flagsBuilder.format(),
+    expires: flagsBuilder.expires(),
   };
 
   static args = [fileArg, otherFileArg];
