@@ -147,6 +147,31 @@ describe('deploy subcommand', () => {
         });
     });
 
+    describe('Payment required', () => {
+      test
+        .nock('https://bump.sh', (api) => {
+          api.post('/api/v1/versions').reply(402, {
+            message:
+              'You need to upgrade to a paid plan to perform this request. Please go to https://bump.sh/account/billing',
+          });
+        })
+        .stdout()
+        .stderr()
+        .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
+        .catch((err) => {
+          expect(err.message).to.contain(
+            'You need to upgrade to a paid plan to perform this request. Please go to https://bump.sh/account/billing',
+          );
+          throw err;
+        })
+        .exit(102)
+        .it("Doesn't create a deployed version", ({ stdout }) => {
+          expect(stdout).to.not.contain(
+            'Your new documentation version will soon be ready',
+          );
+        });
+    });
+
     describe('Invalid dry-run deploy', () => {
       test
         .nock('https://bump.sh', (api) => api.post('/api/v1/validations').reply(422))
