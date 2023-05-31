@@ -4,6 +4,7 @@ import * as sinon from 'sinon';
 import base, { expect } from '@oclif/test';
 import * as Config from '@oclif/config';
 import nock from 'nock';
+import chalk from 'chalk';
 
 import { BumpApi } from '../../src/api';
 import { PreviewRequest } from '../../src/api/models';
@@ -11,6 +12,8 @@ import { PreviewRequest } from '../../src/api/models';
 nock.disableNetConnect();
 const root = path.join(__dirname, '../../');
 const test = base.add('config', () => Config.load(root));
+// Force no colors in output messages
+chalk.level = 0;
 
 describe('BumpApi HTTP client class', () => {
   describe('nominal authenticated API call', () => {
