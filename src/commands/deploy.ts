@@ -18,21 +18,25 @@ export default class Deploy extends Command {
     'Create a new version of your documentation from the given file or URL.';
 
   static examples = [
-    `Deploy a new version of an existing documentation
+    `Deploy a new version of ${chalk.underline('an existing documentation')}
 
-$ bump deploy FILE --doc <your_doc_id_or_slug> --token <your_doc_token>
+${chalk.dim('$ bump deploy FILE --doc <your_doc_id_or_slug> --token <your_doc_token>')}
 * Let's deploy a new documentation version on Bump... done
 * Your new documentation version will soon be ready
 `,
-    `Deploy a new version of an existing documentation attached to a hub
+    `Deploy a new version of ${chalk.underline(
+      'an existing documentation attached to a hub',
+    )}
 
-$ bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --token <your_doc_token>
+${chalk.dim(
+  '$ bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --token <your_doc_token>',
+)}
 * Let's deploy a new documentation version on Bump... done
 * Your new documentation version will soon be ready
 `,
-    `Validate a new documentation version before deploying it
+    `${chalk.underline('Validate a new documentation version')} before deploying it
 
-$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>
+${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>')}
 * Let's validate a new documentation version on Bump... done
 * Definition is valid
 `,
