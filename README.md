@@ -29,7 +29,7 @@ The Bump CLI is used to interact with your API documentation hosted on Bump by u
 Bump is installed via npm. Run this command to install it for local use:
 
 ```sh-session
-npm install -g bump-cli
+npm install --location=global bump-cli
 ```
 
 _If you are looking to use Bump in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
