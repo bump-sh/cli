@@ -45,7 +45,7 @@ _If you are looking to use Bump.sh in a continuous integration environment you m
 To install it globally, run the following command with NPM
 
 ```sh-session
-npm install -g bump-cli
+npm install --location=global bump-cli
 ```
 
 Or, with Yarn via
