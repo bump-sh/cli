@@ -33,8 +33,7 @@ const hub = flags.build({
 });
 
 const filenamePattern = flags.build({
-  char: 'p',
-  description: `Pattern to extract the documentation slug from filenames when deploying a DIRECTORY. Pattern uses only '*' and '{slug}' as special characters to extract the slug from a filename without extension. Used with --hub flag only. Defaults to '{slug}-api'`,
+  description: `Pattern to extract the documentation slug from filenames when deploying a DIRECTORY. Pattern uses only '*' and '{slug}' as special characters to extract the slug from a filename without extension. Used with --hub flag only.`,
   default: '{slug}-api',
 });
 

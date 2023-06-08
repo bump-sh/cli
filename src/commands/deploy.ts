@@ -34,6 +34,24 @@ ${chalk.dim(
 * Let's deploy a new documentation version on Bump... done
 * Your new documentation version will soon be ready
 `,
+    `Deploy a whole directory of ${chalk.underline('API definitions files to a hub')}
+
+${chalk.dim(
+  '$ bump deploy DIR --filename-pattern *-{slug}-api --hub <hub_slug> --token <hub_token>',
+)}
+We've found 2 valid API definitions to deploy
+└─ DIR
+   └─ source-my-service-api.yml (OpenAPI spec version 3.1.0)
+   └─ source-my-jobs-service-api.yml (AsyncAPI spec version 2.6.0)
+
+Let's deploy those documentations to your <hub_slug> hub on Bump.sh
+
+* Your new documentation version will soon be ready
+Let's deploy a new version to your my-service documentation on Bump.sh... done
+
+* Your new documentation version will soon be ready
+Let's deploy a new version to your my-jobs-service documentation on Bump.sh... done
+`,
     `${chalk.underline('Validate a new documentation version')} before deploying it
 
 ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>')}
@@ -190,9 +208,11 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       });
     } else {
       throw new CLIError(
-        `No documentations found in ${dir}.\nDo you need some help to name your API definition files?\nTry the ${chalk.dim(
+        `No documentations found in ${dir}.\nYou should check the ${chalk.dim(
+          '--filename-pattern',
+        )} flag to select your files from your naming convention.\nIf you don't have a naming convention we can help naming your API definition files:\nTry the ${chalk.dim(
           '--interactive',
-        )} flag.`,
+        )} flag for that.`,
       );
     }
 
