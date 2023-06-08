@@ -4,10 +4,9 @@ import * as Parser from '@oclif/parser';
 // Re-export oclif flags https://oclif.io/docs/flags
 export * from '@oclif/command/lib/flags';
 
-// Custom flags for bum-cli
+// Custom flags for bump-cli
 const doc = flags.build({
   char: 'd',
-  required: true,
   description:
     'Documentation public id or slug. Can be provided via BUMP_ID environment variable',
   default: () => {
@@ -31,6 +30,11 @@ const hub = flags.build({
     if (envHub) return envHub;
     // Search hub id in .bump/config.json file?
   },
+});
+
+const filenamePattern = flags.build({
+  description: `Pattern to extract the documentation slug from filenames when deploying a DIRECTORY. Pattern uses only '*' and '{slug}' as special characters to extract the slug from a filename without extension. Used with --hub flag only.`,
+  default: '{slug}-api',
 });
 
 const branch = flags.build({
@@ -57,6 +61,15 @@ const autoCreate = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
   return flags.boolean({
     description:
       'Automatically create the documentation if needed (only available with a --hub flag). Documentation name can be provided with --doc-name flag. Default: false',
+    dependsOn: ['hub'],
+    ...options,
+  });
+};
+
+const interactive = (options = {}): Parser.flags.IBooleanFlag<boolean> => {
+  return flags.boolean({
+    description:
+      "Interactively create a configuration file to deploy a Hub (only available with a --hub flag). This will start an interactive process if you don't have a CLI configuration file. Default: false",
     dependsOn: ['hub'],
     ...options,
   });
@@ -122,6 +135,8 @@ export {
   branch,
   token,
   autoCreate,
+  interactive,
+  filenamePattern,
   dryRun,
   open,
   failOnBreaking,

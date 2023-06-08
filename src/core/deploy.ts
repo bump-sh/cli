@@ -14,7 +14,7 @@ export class Deploy {
   }
 
   public async run(
-    file: string,
+    api: API,
     dryRun: boolean,
     documentation: string,
     token: string,
@@ -24,11 +24,7 @@ export class Deploy {
     branch: string | undefined,
   ): Promise<VersionResponse | undefined> {
     let version: VersionResponse | undefined = undefined;
-
-    const api = await API.load(file);
     const [definition, references] = api.extractDefinition();
-
-    this.d(`${file} looks like an ${api.specName} spec version ${api.version}`);
 
     const request: VersionRequest = {
       documentation,
@@ -99,6 +95,6 @@ export class Deploy {
   // Debugger(formatter: any, ...args: any[]): void;
   /* eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
   d(formatter: any, ...args: any[]): void {
-    return debug(`bump-cli:core:diff`)(formatter, ...args);
+    return debug(`bump-cli:core:deploy`)(formatter, ...args);
   }
 }

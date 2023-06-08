@@ -104,6 +104,12 @@ If you already have a hub in your [Bump.sh](https://bump.sh) account, you can au
 $ bump deploy path/to/your/file.yml --auto-create --doc DOC_SLUG --hub HUB_ID_OR_SLUG --token HUB_TOKEN
 ```
 
+Within a Hub, you can also deploy a whole directory containing multiple API definitions in a single command:
+
+```sh-session
+$ bump deploy path/to/your/apis/ --auto-create --hub HUB_ID_OR_SLUG --token HUB_TOKEN
+```
+
 Simulate a deployment of your definition file to make sure it is valid with the `--dry-run` flag, it is particularly useful in a Continuous Integration environment running a test deployment outside your main branch:
 
 ```sh-session

@@ -1,6 +1,6 @@
 import { API } from '../definition';
 import Command from '../command';
-import * as flags from '../flags';
+import * as flagsBuilder from '../flags';
 import { fileArg } from '../args';
 import { cli } from '../cli';
 import { PreviewResponse, PreviewRequest } from '../api/models';
@@ -18,11 +18,13 @@ export default class Preview extends Command {
   ];
 
   static flags = {
-    help: flags.help({ char: 'h' }),
-    live: flags.live({
+    help: flagsBuilder.help({ char: 'h' }),
+    live: flagsBuilder.live({
       description: 'Generate a preview each time you save the given file',
     }),
-    open: flags.open({ description: 'Open the generated preview URL in your browser' }),
+    open: flagsBuilder.open({
+      description: 'Open the generated preview URL in your browser',
+    }),
   };
 
   static args = [fileArg];

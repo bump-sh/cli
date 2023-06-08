@@ -53,9 +53,11 @@ export default class APIError extends CLIError {
     return [
       [
         genericMessage,
-        `Please check the given ${chalk.underline('--documentation')}, ${chalk.underline(
-          '--token',
-        )} or ${chalk.underline('--hub')} flags`,
+        `In a hub context you might want to try the ${chalk.dim(
+          '--auto-create',
+        )} flag.\nOtherwise, please check the given ${chalk.dim(
+          '--documentation',
+        )}, ${chalk.dim('--token')} or ${chalk.dim('--hub')} flags`,
       ],
       104,
     ];
