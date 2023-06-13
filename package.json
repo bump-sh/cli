@@ -1,7 +1,7 @@
 {
   "name": "bump-cli",
   "description": "The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "author": "Paul Bonaud <paulr@bump.sh>",
   "bin": {
     "bump": "./bin/run"
@@ -83,11 +83,11 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.7",
     "@asyncapi/specs": "^4.0.1",
+    "@clack/prompts": "^0.6.3",
     "@oclif/command": "^1.8.16",
     "@oclif/config": "^1.17.0",
     "@oclif/core": "1.20.4",
     "@oclif/plugin-help": "^5.1.10",
-    "@clack/prompts": "^0.6.3",
     "@oclif/plugin-warn-if-update-available": "^2.0.36",
     "async-mutex": "^0.4.0",
     "axios": "^0.27.2",
