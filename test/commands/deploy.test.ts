@@ -131,6 +131,33 @@ describe('deploy subcommand', () => {
       });
   });
 
+  describe('Successful runs with a URL', () => {
+    test
+      .nock('https://bump.sh', (api) =>
+        api
+          .post(
+            '/api/v1/versions',
+            (body) => body.documentation === 'coucou' && !body.branch_name,
+          )
+          .reply(201, { doc_public_url: 'http://localhost/doc/1' }),
+      )
+      .nock('https://developers.bump.sh', (api) =>
+        api
+          .get('/source.json')
+          .replyWithFile(200, 'examples/valid/asyncapi.no-refs.v2.yml', {
+            'Content-Type': 'application/json',
+          }),
+      )
+      .stdout()
+      .stderr()
+      .command(['deploy', 'https://developers.bump.sh/source.json', '--doc', 'coucou'])
+      .it('sends new version to Bump', ({ stdout }) => {
+        expect(stdout).to.contain(
+          'Your new documentation version will soon be ready at http://localhost/doc/1',
+        );
+      });
+  });
+
   describe('Server errors', () => {
     describe('Authentication error', () => {
       test

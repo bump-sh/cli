@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { statSync } from 'fs';
 import { RequiredFlagError } from '@oclif/parser/lib/errors';
 import { CLIError } from '@oclif/errors';
 
@@ -8,6 +7,7 @@ import * as flagsBuilder from '../flags';
 import { DefinitionDirectory } from '../core/definition_directory';
 import { Deploy as CoreDeploy } from '../core/deploy';
 import { confirm as promptConfirm } from '../core/utils/prompts';
+import { isDir } from '../core/utils/file';
 import { fileArg } from '../args';
 import { cli } from '../cli';
 import { VersionResponse } from '../api/models';
@@ -109,9 +109,8 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       flags['doc-name'],
       flags.branch,
     ];
-    const file = await statSync(args.FILE);
 
-    if (file.isDirectory()) {
+    if (isDir(args.FILE)) {
       if (hub) {
         await this.deployDirectory(
           args.FILE,

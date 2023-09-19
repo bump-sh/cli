@@ -1,7 +1,16 @@
-import { readdirSync } from 'fs';
+import { readdirSync, statSync } from 'fs';
 import { extname, basename } from 'path';
 
 type FileDescription = { value: string; label: string; filename: string };
+
+export const isDir = (path: string): boolean => {
+  try {
+    return statSync(path).isDirectory();
+  } catch (e) {
+    return false;
+  }
+};
+
 export class File {
   protected static readonly supportedFormats = ['.yml', '.yaml', '.json'];
 
