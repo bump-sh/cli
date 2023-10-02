@@ -55,9 +55,9 @@ export default class APIError extends CLIError {
         genericMessage,
         `In a hub context you might want to try the ${chalk.dim(
           '--auto-create',
-        )} flag.\nOtherwise, please check the given ${chalk.dim(
-          '--documentation',
-        )}, ${chalk.dim('--token')} or ${chalk.dim('--hub')} flags`,
+        )} flag.\nOtherwise, please check the given ${chalk.dim('--doc')}, ${chalk.dim(
+          '--token',
+        )} or ${chalk.dim('--hub')} flags`,
       ],
       104,
     ];
