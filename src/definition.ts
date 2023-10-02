@@ -7,8 +7,11 @@ import {
   JSONSchema4Object,
   JSONSchema6,
   JSONSchema6Object,
+  JSONSchema7,
 } from 'json-schema';
 import path from 'path';
+
+type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7;
 
 class SupportedFormat {
   static readonly openapi: Record<string, SpecSchema> = {
@@ -17,13 +20,13 @@ class SupportedFormat {
     '3.1': require('oas-schemas/schemas/v3.1/schema.json'),
   };
   static readonly asyncapi: Record<string, SpecSchema> = {
-    '2.0': asyncapi['2.0.0'],
-    '2.1': asyncapi['2.1.0'],
-    '2.2': asyncapi['2.2.0'],
-    '2.3': asyncapi['2.3.0'],
-    '2.4': asyncapi['2.4.0'],
-    '2.5': asyncapi['2.5.0'],
-    '2.6': asyncapi['2.6.0'],
+    '2.0': asyncapi.schemas['2.0.0'],
+    '2.1': asyncapi.schemas['2.1.0'],
+    '2.2': asyncapi.schemas['2.2.0'],
+    '2.3': asyncapi.schemas['2.3.0'],
+    '2.4': asyncapi.schemas['2.4.0'],
+    '2.5': asyncapi.schemas['2.5.0'],
+    '2.6': asyncapi.schemas['2.6.0'],
   };
 }
 
@@ -67,7 +70,7 @@ class API {
     }
   }
 
-  getSpec(definition: APIDefinition): Record<string, unknown> {
+  getSpec(definition: APIDefinition): SpecSchema {
     if (API.isAsyncAPI(definition)) {
       return SupportedFormat.asyncapi[this.versionWithoutPatch()];
     } else {
