@@ -24,6 +24,25 @@ describe('preview subcommand', () => {
       });
 
     test
+      .nock('https://bump.sh', (api) =>
+        api.post('/api/v1/previews').reply(201, {
+          id: '123abc-cba321',
+          expires_at: new Date(),
+          public_url: 'https://bump.sh/preview/123abc-cba321',
+        }),
+      )
+      .stdout()
+      .stderr()
+      .command(['preview', '--live', 'examples/valid/openapi.v3.json'])
+      .it('Creates a live preview and waits for file update', ({ stdout, stderr }) => {
+        expect(stderr).to.match(/Let's render a preview on Bump... done/);
+
+        expect(stdout).to.match(/preview is visible at/);
+        expect(stdout).to.match(/https:\/\/bump.sh\/preview\/123abc-cba321/);
+        expect(stderr).to.match(/Waiting for changes on file/);
+      });
+
+    test
       .nock('http://example.org', (api) => {
         api
           .get('/param-lights.json')

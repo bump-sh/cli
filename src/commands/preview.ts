@@ -31,10 +31,10 @@ export default class Preview extends Command {
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(Preview);
+    const currentPreview: PreviewResponse = await this.preview(args.FILE, flags.open);
 
-    await this.preview(args.FILE, flags.open);
     if (flags.live) {
-      await this.waitForChanges(args.FILE, flags.open);
+      await this.waitForChanges(args.FILE, currentPreview);
     }
 
     return;
@@ -76,20 +76,19 @@ export default class Preview extends Command {
     return response.data;
   }
 
-  async waitForChanges(file: string, open: boolean): Promise<void> {
+  async waitForChanges(file: string, preview: PreviewResponse): Promise<void> {
     const mutex = new Mutex();
-    let currentPreview: PreviewResponse | undefined = undefined;
+    let currentPreview: PreviewResponse = preview;
 
     cli.action.start(`Waiting for changes on file ${file}...`);
 
     watch(file, async () => {
       if (!mutex.isLocked()) {
         const release = await mutex.acquire();
-        const firstOpen = !currentPreview && open;
 
-        this.preview(file, firstOpen, currentPreview)
+        this.preview(file, false, currentPreview)
           .then((preview) => {
-            currentPreview = currentPreview || preview;
+            currentPreview = preview;
             cli.action.start(`Waiting for changes on file ${file}`);
           })
           .catch((err) => {
