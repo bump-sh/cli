@@ -1,4 +1,4 @@
-# Bump cli
+# Bump CLI
 
 <p align="center">
   <img width="20%" src="https://bump.sh/icon-default-large.png" />
@@ -9,7 +9,13 @@
   <a href="https://bump.sh/users/sign_up">Sign up</a>
 </p>
 
-The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of [developers.bump.sh](https://developers.bump.sh). It is built with [`oclif`](https://oclif.io) in Typescript.
+The Bump CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API contract of you choice (from Swagger, OpenAPI v3 or AsyncAPI v2), it can help you to:
+
+- Validate an API document before publishing to your documentation
+- Publish an API document to your Bump.sh documentation or hubs
+- Compare two API documents to generate a human readable diff from your API contracts
+
+Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.sh). And is built with the [`oclif`](https://oclif.io) framework in Typescript.
 
 [![Version](https://img.shields.io/npm/v/bump-cli.svg)](https://npmjs.org/package/bump-cli)
 [![Tests](https://github.com/bump-sh/cli/actions/workflows/checks.yml/badge.svg)](https://github.com/bump-sh/cli/actions/workflows/checks.yml)
@@ -26,28 +32,64 @@ The Bump CLI is used to interact with your API documentation hosted on Bump by u
 
 ## Installation
 
-Bump is installed via npm. Run this command to install it for local use:
+Bump CLI is a node package, currently distributed via NPM which means you need to have Node v14+ interpreter installed on your computer or CI servers.
+
+_If you are looking to use Bump in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
+
+> You can download a standalone package directly from the latest
+> Github release assets if you don’t use Node. We plan to distribute
+> universal binaries to common package managers soon. Please check our
+> installation methods for updates.
+{: .info}
+
+### Global installation
+
+To install it globally, run the following command with NPM
 
 ```sh-session
 npm install -g bump-cli
 ```
 
-_If you are looking to use Bump in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
+Or, with Yarn via
+
+```sh-session
+yarn global add bump-cli
+```
+
+### Add Bump.sh to your node project
+
+As our CLI is a node package, you can easily embed it to your project by adding the package to your `package.json` file, either with NPM
+
+```sh-session
+npm install --save-dev bump-cli
+```
+
+Or with Yarn via
+
+```sh-session
+yarn add --dev bump-cli
+```
+
+You can then use any Bump commands with `npx` (same as `npm exec`)
+
+```sh-session
+npx bump --help
+```
 
 ### How should I do if I'm not using npm ?
 
-Unfortunately, at the moment we only publish a npm package. However we plan to distribute universal binaries in the most common package managers soon.
+Unfortunately, at the moment we only support the Node environment. However we plan to distribute universal binaries in the most common package managers very soon. In the meantime, you can download a standalone package directly from the [latest Github release](https://github.com/bump-sh/cli/releases) assets or you can push your documentation using [our API](https://developers.bump.sh/) (advanced usage only).
 
 ## Usage
 
-```sh-session
-$ npm install -g bump-cli
+To list all the available commands, just type `bump` in your command line environment.
 
+```sh-session
 $ bump --help
 The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh
 
 VERSION
-  bump-cli/2.5.0 linux-x64 node-v16.14.0
+  bump-cli/2.7.2 linux-x64 node-v16.17.0
 
 USAGE
   $ bump [COMMAND]
@@ -59,64 +101,78 @@ COMMANDS
   preview  Create a documentation preview from the given file or URL.
 ```
 
-Please check the [Bump CLI help page](https://help.bump.sh/bump-cli) for more CLI usage details.
+ You can also get some help anytime by adding `--help` to any command. Example: `bump deploy --help`.
+
+## Prepare your Bump.sh account
+
+While some commands don't need any API token (`preview` or `diff`) you will need an access key if you want to interact with your Bump.sh documentation.
+
+Head to your Documentation Settings in the “CI deployment” section, or your Account or Organization Settings in the “API keys” section to fetch a personnal token for later usage.
 
 ## Commands
 
-* [`bump preview [FILE]`](#bump-preview-file)
 * [`bump deploy [FILE]`](#bump-deploy-file)
 * [`bump diff [FILE]`](#bump-diff-file)
-
-### `bump preview [FILE]`
-
-You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command. Here is an example usage:
-
-
-```sh-session
-$ bump preview https://bit.ly/asyncapi
-* Let's render a preview on Bump... done
-* Your preview is visible at: https://bump.sh/preview/c192dad0-79d7-44b3-b5e1-244b69f618e4 (Expires at 2021-06-28T18:06:56+02:00)
-```
-
-_Note: you can use the `--open` flag to open the preview URL in your browser directly._
-
-_Note2: you can use the `--live` flag to watch changes of the input `FILE`. This is very helpful when writing your api definition as you will see a live preview being refreshed at each file save._
-
-Please check `bump preview --help` for more usage details
+* [`bump preview [FILE]`](#bump-preview-file)
 
 ### `bump deploy [FILE]`
 
-Deploy the definition file as the current version of the documentation with the following command:
+When you update your API, you want its documentation to be live for your API users. This is what the deploy command is for. Publish a new API document with this command, and Bump.sh will analyse your API structure and generate a changelog item if the API structure has changed. It will also update your latest published document with the deployed file.
 
 ```sh-session
-$ bump deploy path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
+bump deploy path/to/api-document.yml --doc my-documentation --token $DOC_TOKEN
 ```
 
-Deploy the definition file to the `staging` branch of the documentation:
+> You can find your own `my-documentation` slug and `$DOC_TOKEN` api key from your [documentation settings](https://bump.sh/docs).
+{: .info}
+
+You can also deploy a given file to a different branch of your documentation with the `--branch <branch-name>` parameter. Please note the branch will be created if it doesn’t exist. More details about the branching feature is available on [this dedicated help page](https://docs.bump.sh/help/branching). E.g. deploy the API document to the `staging` branch of the documentation:
 
 ```sh-session
-$ bump deploy path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN --branch staging
+bump deploy path/to/api-document.yml --doc my-documentation --token $DOC_TOKEN --branch staging
 ```
 
-If you already have a hub in your [Bump.sh](https://bump.sh) account, you can automatically create a documentation inside it and deploy to it with:
+#### Deploy a folder all at once
+
+If you already have a hub in your [Bump.sh](https://bump.sh) account, you can automatically create documentation inside it and deploy to it by publishing a whole directory containing multiple API documents in a single command
 
 ```sh-session
-$ bump deploy path/to/your/file.yml --auto-create --doc DOC_SLUG --hub HUB_ID_OR_SLUG --token HUB_TOKEN
+bump deploy dir/path/to/apis/ --auto-create --hub my-hub --token $HUB_TOKEN
 ```
 
-Within a Hub, you can also deploy a whole directory containing multiple API definitions in a single command:
+> You can find your own `my-hub` slug and `$HUB_TOKEN` api key from your [hub settings](https://bump.sh/hubs).
+{: .info}
+
+Please note, by default, only files named `{slug}-api.[format]` are published. Where `{slug}` is a name for your API and `[format]` is either `yaml` or `json`. Take into account your own file naming convention by using the `--filename-pattern <pattern>` option.
+
+Note that it _can_ include `*` wildcard special character, but **must** include the `{slug}` filter to extract your documentation’s slug from the filename. The pattern can also have any other optional fixed characters.
+
+Here’s a practical example. Suppose you have the following files in your `path/to/apis/` directory:
+
+```
+path/to/apis
+└─ private-api-users-service.json
+└─ partner-api-payments-service.yml
+└─ public-api-contracts-service.yml
+└─ data.json
+└─ README.md
+```
+
+In order to deploy the 3 services api definition files from this folder (`private-api-users-service.json`, `partner-api-payments-service.yml` and `public-api-contracts-service.yml`). You can execute the following command:
+
+```
+bump deploy path/to/apis/ --hub my-hub --filename-pattern '*-api-{slug}-service'
+```
+
+#### Validate an API document
+
+Simulate a deployment of your API document to make sure it is valid by adding the `--dry-run` flag to the `deploy` command, it is particularly useful in a Continuous Integration environment running a test deployment outside your main branch:
 
 ```sh-session
-$ bump deploy path/to/your/apis/ --auto-create --hub HUB_ID_OR_SLUG --token HUB_TOKEN
+bump deploy path/to/api-document.yml --dry-run --doc my-documentation --token $DOC_TOKEN
 ```
 
-Simulate a deployment of your definition file to make sure it is valid with the `--dry-run` flag, it is particularly useful in a Continuous Integration environment running a test deployment outside your main branch:
-
-```sh-session
-$ bump deploy path/to/your/file.yml --dry-run --doc DOC_ID_OR_SLUG --token DOC_TOKEN
-```
-
-Please check `bump deploy --help` for more usage details
+Please check `bump deploy --help` for more usage details.
 
 ### `bump diff [FILE]`
 
@@ -124,7 +180,7 @@ _If you want to receive automatic `bump diff` results on your Github Pull Reques
 
 #### Public API diffs
 
-From any two definition files or URLs, you can retrieve a comprehensive changelog of what has changed between them.
+From any two API documents or URLs, you can retrieve a comprehensive changelog of what has changed between them.
 
 ```sh-session
 $ bump diff path/to/your/file.yml path/to/your/second_file.yml
@@ -133,42 +189,63 @@ Modified: GET /consommations
   Response modified: 200
     [Breaking] Body attribute modified: energie
 ```
-
-Or from two URLs:
-
-```sh-session
-$ bump diff https://demo.bump.sh/doc/trips-books/changes/bfec0a43-b870-44da-9e07-60c8955e15d5.json https://demo.bump.sh/doc/trips-books.json
-* Comparing the two given definition files... done
-Modified: POST /books
-  Response modified: 200
-    [Breaking] Body attribute removed: cent
-```
+> You can create as many diffs as you like without being authenticated. This is a **free and unlimited service** provided you have a fair use of the service.
+{: .info}
 
 _Note: You can also test this feature in our dedicated web application at <https://api-diff.io/>._
 
-#### Authenticated diffs attached to your Bump documentation
+#### Authenticated diffs related to your Bump.sh documentation
 
-From a Bump documentation, the `diff` command will retrieve a comparison changelog between your existing documentation and the given file or URL:
+From an existing Bump.sh documentation, the `diff` command will retrieve a comparison changelog between your latest published documentation and the given file or URL:
 
 ```sh-session
-$ bump diff path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
-* Comparing the given definition file with the currently deployed one... done
-
-Updated: POST /validations
-  Body attribute modified: documentation
+bump diff path/to/your/file.yml --doc my-documentation --token $DOC_TOKEN
 ```
 
-If you want to compare two unpublished versions of your definition file, the `diff` command can retrieve a comparison changelog between two given file or URL, “as simple as `git diff`”:
+If you want to compare two unpublished versions of your API document, the `diff` command can retrieve a comparison changelog between two given file or URL, “as simple as `git diff`”:
 
 ```sh-session
-$ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc <doc_slug> --token <your_doc_token>
-* Comparing the two given definition files... done
-
-Updated: POST /versions
-  Body attribute added: previous_version_id
+bump diff path/to/your/file.yml path/to/your/next-file.yml --doc my-documentation --token $DOC_TOKEN
 ```
 
 Please check `bump diff --help` for full usage details.
+
+### `bump preview [FILE]`
+
+
+When writing a documentation, you might want to preview how it renders on Bump.sh. This is exactly the goal of the `preview` command: it will create a temporary documentation with a unique URL, which will be available for a short period of time.
+
+Usage from a local OpenAPI or AsyncAPI file
+
+```shell
+bump preview path/to/file.json
+```
+
+You can also preview a file available from a URL
+
+```shell
+bump preview https://developers.bump.sh/source.yaml
+```
+
+#### Live preview
+
+By using the `--live` flag you can stay focused on API design (OpenAPI or AsyncAPI file) while seeing a continuously updated preview each time you save your API document.
+
+- Launch the live preview command in your terminal
+
+```shell
+bump preview --live --open openapi-definition.json
+```
+
+- Edit your `openapi-definition.json` file in your favorite text editor
+- Watch the live preview being updated each time your save your file!
+
+> You can create as many previews as you like without being authenticated. This is a **free and unlimited service**.
+{: .info}
+
+_Note: the additional `--open` flag helps to automatically open the preview URL in your browser._
+
+Please check `bump preview --help` for more usage details
 
 ## Development
 
@@ -177,38 +254,42 @@ Make sure to have Node.js (At least v14) installed on your machine.
 - Install node dependencies with
   
   ```sh-session
-  $ npm install
+  npm install
   ```
   
 - Compile the Typescript code
   
   ```sh-session
-  $ npm run build
-  $ npm run clean # to remove build artifacts
+  npm run build
+  npm run clean # to remove build artifacts
   ```
   
 - Format the codebase to comply with the linter rules
   
   ```sh-session
-  $ npm run fmt
+  npm run fmt
   ```
   
 - Run the test suites
   
   ```sh-session
-  $ npm run test
-  $ npm run test-coverage # Run tests with coverage
+  npm run test
+  npm run test-coverage # Run tests with coverage
   ```
+
+## Compatible specification types
+
+We currently support [OpenAPI](https://github.com/OAI/OpenAPI-Specification) from 2.0 (called Swagger) to 3.1 and [AsyncAPI 2.x](https://www.asyncapi.com/docs/reference/specification/latest) specification file types. Both YAML or JSON file formats are accepted file inputs to the CLI.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/bump-sh/cli. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
+Bug reports and pull requests are welcome on GitHub at <https://github.com/bump-sh/cli>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-### License
+## License
 
-The node package is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
+The Bump CLI project is released under the [MIT License](http://opensource.org/licenses/MIT).
 
-### Code of Conduct
+## Code of Conduct
 
 Everyone interacting in the Bump-CLI project codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/bump-sh/.github/blob/main/CODE_OF_CONDUCT.md).
 
