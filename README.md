@@ -9,7 +9,7 @@
   <a href="https://bump.sh/users/sign_up">Sign up</a>
 </p>
 
-The Bump CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of you choice (from Swagger, OpenAPI or AsyncAPI), it can help you to:
+The Bump.sh CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from Swagger, OpenAPI or AsyncAPI), it can help you to:
 
 - Validate an API document before publishing to your documentation
 - Publish an API document to your Bump.sh documentation or hubs
@@ -32,9 +32,9 @@ Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.
 
 ## Installation
 
-Bump CLI is a node package, currently distributed via NPM which means you need to have Node v14+ interpreter installed on your computer or CI servers.
+Bump.sh CLI is a node package currently distributed via NPM which means you need to have Node v14+ interpreter installed on your computer or CI servers.
 
-_If you are looking to use Bump in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
+_If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
 
 > You can download a standalone package directly from the latest
 > Github release assets if you don’t use Node.
@@ -68,7 +68,7 @@ Or with Yarn via
 yarn add --dev bump-cli
 ```
 
-You can then use any Bump commands with `npx` (same as `npm exec`)
+You can then use any Bump.sh commands with `npx` (same as `npm exec`)
 
 ```sh-session
 npx bump --help
