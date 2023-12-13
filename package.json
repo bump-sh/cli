@@ -93,6 +93,7 @@
     "axios": "^0.27.2",
     "debug": "^4.3.1",
     "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#0f9d3ec7c033fef184ec54e1ffc201b2d61ce023",
+    "preparse": "git+https://git@github.com/paulrbr/openapi-overlays-js.git#eda4590",
     "tslib": "^2.3.0"
   }
 }
