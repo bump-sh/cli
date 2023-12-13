@@ -1,0 +1,32 @@
+overlay: 1.0.0
+info:
+  title: Overlay to customise API for Protect Earth
+  version: 0.0.1
+actions:
+  - target: '$.info.description'
+    description: Provide a better introduction for our end users than this techno babble.
+    update: |
+        Protect Earth's Tree Tracker API will let you see what we've been planting and restoring all
+        around the UK, and help support our work by directly funding the trees we plant or the sites
+        we restore.
+
+        To get involved [contact us and ask for an access token](https://protect.earth/contact) then
+        [check out the API documentation](https://protect.earth/api).
+
+  - target: '$.info'
+    description: Let's have the public contact general support instead of whoever happened to release this API.
+    update:
+      contact:
+        name: Protect Earth Support
+        url: https://protect.earth/contact
+        email: help@protect.earth
+
+  - target: '$.servers.*'
+    description: Remove all other servers so we can add our own.
+    remove: true
+
+  - target: '$.servers'
+    description: Pop our server into the empty server array.
+    update:
+      - description: Production
+        url: https://api.protect.earth/

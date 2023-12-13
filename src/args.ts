@@ -10,4 +10,10 @@ const otherFileArg = {
   description: 'Path or URL to a second API documentation file to compute its diff',
 };
 
-export { fileArg, otherFileArg };
+const overlayFileArg = {
+  name: 'OVERLAY_FILE',
+  required: true,
+  description: 'Path or URL to an overlay file',
+};
+
+export { fileArg, otherFileArg, overlayFileArg };
