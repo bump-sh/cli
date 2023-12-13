@@ -5,6 +5,7 @@ import asyncapi from '@asyncapi/specs';
 import {
   JSONSchema4,
   JSONSchema4Object,
+  JSONSchema4Array,
   JSONSchema6,
   JSONSchema6Object,
   JSONSchema7,
@@ -73,6 +74,8 @@ class API {
   getSpec(definition: APIDefinition): SpecSchema {
     if (API.isAsyncAPI(definition)) {
       return SupportedFormat.asyncapi[this.versionWithoutPatch()];
+    } else if (API.isOpenAPIOverlay(definition)) {
+      return { overlay: { type: 'string' } };
     } else {
       return SupportedFormat.openapi[this.versionWithoutPatch()];
     }
@@ -156,7 +159,11 @@ class API {
       );
     }
 
-    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed)) {
+    if (
+      !API.isOpenAPI(parsed) &&
+      !API.isAsyncAPI(parsed) &&
+      !API.isOpenAPIOverlay(parsed)
+    ) {
       throw new UnsupportedFormat();
     }
 
@@ -175,6 +182,12 @@ class API {
     definition: JSONSchema4Object | JSONSchema6Object,
   ): definition is AsyncAPI {
     return 'asyncapi' in definition;
+  }
+
+  static isOpenAPIOverlay(
+    definition: JSONSchema4Object | JSONSchema6Object,
+  ): definition is OpenAPIOverlay {
+    return 'overlay' in definition;
   }
 
   public extractDefinition(): [string, APIReference[]] {
@@ -245,7 +258,7 @@ type APIReference = {
   content: string;
 };
 
-type APIDefinition = OpenAPI | AsyncAPI;
+type APIDefinition = OpenAPI | AsyncAPI | OpenAPIOverlay;
 
 // http://spec.openapis.org/oas/v3.1.0#oasObject
 type OpenAPI = JSONSchema4Object & {
@@ -254,10 +267,16 @@ type OpenAPI = JSONSchema4Object & {
   readonly info: string;
 };
 
+type OpenAPIOverlay = JSONSchema4Object & {
+  readonly overlay: string;
+  readonly info: string;
+  readonly actions: JSONSchema4Array;
+};
+
 // https://www.asyncapi.com/docs/specifications/2.0.0#A2SObject
 type AsyncAPI = JSONSchema4Object & {
   readonly asyncapi: string;
   readonly info: string;
 };
 
-export { API, SupportedFormat };
+export { API, APIDefinition, OpenAPIOverlay, SupportedFormat };
