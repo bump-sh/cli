@@ -1,7 +1,7 @@
 import { Command as Base } from '@oclif/command';
 import debug from 'debug';
 
-import { BumpApi, APIError } from './api';
+import { BumpApi, APIError } from './api/index.js';
 import pjson from '../package.json';
 
 export default abstract class Command extends Base {

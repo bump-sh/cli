@@ -1,8 +1,8 @@
-import { API } from '../definition';
-import Command from '../command';
-import * as flagsBuilder from '../flags';
-import { fileArg, overlayFileArg } from '../args';
-import { cli } from '../cli';
+import { API } from '../definition.js';
+import Command from '../command.js';
+import * as flagsBuilder from '../flags.js';
+import { fileArg, overlayFileArg } from '../args.js';
+import { cli } from '../cli/index.js';
 
 export default class Overlay extends Command {
   static description = 'Apply an OpenAPI specified overlay to your API definition.';

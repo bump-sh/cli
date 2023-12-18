@@ -10,9 +10,9 @@ import {
   DiffRequest,
   DiffResponse,
   WithDiff,
-} from './models';
-import { vars } from './vars';
-import APIError from './error';
+} from './models.js';
+import { vars } from './vars.js';
+import APIError from './error.js';
 
 class BumpApi {
   protected readonly client: AxiosInstance;
@@ -24,7 +24,7 @@ class BumpApi {
       'User-Agent': vars.apiUserAgent(config.userAgent),
     };
 
-    this.client = axios.create({
+    this.client = axios.default.create({
       baseURL,
       headers,
     });
@@ -100,5 +100,5 @@ class BumpApi {
   };
 }
 
-export * from './models';
+export * from './models.js';
 export { BumpApi, APIError };

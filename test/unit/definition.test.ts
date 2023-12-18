@@ -1,5 +1,5 @@
 import { expect, test } from '@oclif/test';
-import { API } from '../../src/definition';
+import { API } from '../../src/definition.js';
 import nock from 'nock';
 import path from 'path';
 
