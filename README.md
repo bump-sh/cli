@@ -34,7 +34,7 @@ Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.
 
 The Bump.sh CLI is a node package currently distributed via NPM. This means you must have the Node v14+ interpreter installed on your computer or CI servers.
 
-_If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
+_If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh)._
 
 > You can download a standalone package directly from the latest
 > Github release assets if you don’t use Node.
@@ -174,7 +174,7 @@ Please check `bump deploy --help` for more usage details.
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
 
 #### Public API diffs
 
