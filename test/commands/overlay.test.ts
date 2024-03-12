@@ -28,6 +28,10 @@ describe('overlay subcommand', () => {
         // Target on all servers
         expect(overlayedDefinition.servers.length).to.equal(1);
         expect(overlayedDefinition.servers[0].description).to.equal('Production');
+        // Target on nodes which have "x-beta":true field
+        expect(overlayedDefinition.components.schemas.Pong.properties).to.have.all.keys(
+          'pong',
+        );
       });
 
     test

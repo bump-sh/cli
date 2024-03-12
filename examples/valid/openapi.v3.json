@@ -124,6 +124,10 @@
             "description": "Sentence about ping and pong",
             "example": "And that's how ping-pong ball is bumped",
             "type": "string"
+          },
+          "ping": {
+            "type": "string",
+            "x-beta": true
           }
         }
       },
