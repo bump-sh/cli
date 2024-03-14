@@ -133,6 +133,11 @@ const out = flags.build({
   description: 'Output file path',
 });
 
+const overlay = flags.build({
+  char: 'o',
+  description: 'Path or URL of an overlay file to apply before deploying',
+});
+
 export {
   doc,
   docName,
@@ -149,4 +154,5 @@ export {
   format,
   expires,
   out,
+  overlay,
 };

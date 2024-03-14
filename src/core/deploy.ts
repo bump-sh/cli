@@ -22,8 +22,12 @@ export class Deploy {
     autoCreate: boolean,
     documentationName: string | undefined,
     branch: string | undefined,
+    overlay?: string | undefined,
   ): Promise<VersionResponse | undefined> {
     let version: VersionResponse | undefined = undefined;
+    if (overlay) {
+      await api.applyOverlay(overlay);
+    }
     const [definition, references] = api.extractDefinition();
 
     const request: VersionRequest = {
