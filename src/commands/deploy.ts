@@ -71,6 +71,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     interactive: flagsBuilder.interactive(),
     'filename-pattern': flagsBuilder.filenamePattern(),
     'dry-run': flagsBuilder.dryRun(),
+    overlay: flagsBuilder.overlay(),
   };
 
   static args = [fileArg];
@@ -94,6 +95,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       filenamePattern,
       documentationName,
       branch,
+      overlay,
     ] = [
       flags['dry-run'],
       flags.doc,
@@ -108,6 +110,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       flags['filename-pattern']!,
       flags['doc-name'],
       flags.branch,
+      flags.overlay,
     ];
 
     if (isDir(args.FILE)) {
@@ -140,6 +143,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
           autoCreate,
           documentationName,
           branch,
+          overlay,
         );
       } else {
         throw new RequiredFlagError({ flag: Deploy.flags.doc, parse: {} });
@@ -227,6 +231,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     autoCreate: boolean,
     documentationName: string | undefined,
     branch: string | undefined,
+    overlay?: string | undefined,
   ): Promise<void> {
     const action = dryRun ? 'validate' : 'deploy';
     cli.action.start(
@@ -242,6 +247,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       autoCreate,
       documentationName,
       branch,
+      overlay,
     );
 
     if (dryRun) {

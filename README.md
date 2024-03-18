@@ -283,6 +283,10 @@ We currently support [OpenAPI](https://github.com/OAI/OpenAPI-Specification) fro
 
 Bug reports and pull requests are welcome on GitHub at <https://github.com/bump-sh/cli>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
+## Thanks
+
+- [Lorna Mitchel](https://github.com/lornajane/) for [openapi-overlay-js](https://github.com/lornajane/openapi-overlays-js)
+
 ## License
 
 The Bump CLI project is released under the [MIT License](http://opensource.org/licenses/MIT).

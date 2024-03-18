@@ -128,6 +128,16 @@ const expires = flags.build({
     "Specify a longer expiration date for public diffs (defaults to 1 day). Use iso8601 format to provide a date, or you can use `--expires 'never'` to keep the result live indefinitely.",
 });
 
+const out = flags.build({
+  char: 'o',
+  description: 'Output file path',
+});
+
+const overlay = flags.build({
+  char: 'o',
+  description: 'Path or URL of an overlay file to apply before deploying',
+});
+
 export {
   doc,
   docName,
@@ -143,4 +153,6 @@ export {
   live,
   format,
   expires,
+  out,
+  overlay,
 };
