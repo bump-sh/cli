@@ -112,7 +112,7 @@ Head over to your Documentation settings in the “CI deployment” section or y
 * [`bump deploy [FILE]`](#bump-deploy-file)
 * [`bump diff [FILE]`](#bump-diff-file)
 * [`bump preview [FILE]`](#bump-preview-file)
-* [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]](#bump-overlay)
+* [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]](#bump-overlay-definition_file-overlay_file)
 
 ### `bump deploy [FILE]`
 
@@ -248,7 +248,7 @@ Please check `bump preview --help` for more usage details
 
 ### `bump overlay [DEFINITION_FILE] [OVERLAY_FILE]`
 
-> This feature supports the [OpenAPI Overlay specification](https://github.com/OAI/Overlay-Specification). It is also possible to apply an OAS Overlay to an AsyncAPI definition file.
+> This feature implements the [OpenAPI Overlay specification](https://github.com/OAI/Overlay-Specification). It is possible to apply an Overlay to any kind of document, be it an OpenAPI or AsyncAPI definition file.
 {: .info}
 
 The Overlay specification of OpenAPI makes it possible to modify the content of an API definition file by adding a layer on top of it. That layer helps adding, removing or changing some or all of the content of the original definition. 
