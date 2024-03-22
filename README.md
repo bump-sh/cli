@@ -87,7 +87,7 @@ $ bump --help
 The Bump.sh CLI is used to interact with your API documentation hosted on Bump.sh by using the API of developers.bump.sh
 
 VERSION
-  bump-cli/2.7.2 linux-x64 node-v16.17.0
+  bump-cli/2.8.0 linux-x64 node-v16.19.0
 
 USAGE
   $ bump [COMMAND]
@@ -96,6 +96,7 @@ COMMANDS
   deploy   Create a new version of your documentation from the given file or URL.
   diff     Get a comparison diff with your documentation from the given file or URL.
   help     Display help for bump.
+  overlay  Apply an OpenAPI specified overlay to your API definition.
   preview  Create a documentation preview from the given file or URL.
 ```
 
@@ -112,7 +113,7 @@ Head over to your Documentation settings in the “CI deployment” section or y
 * [`bump deploy [FILE]`](#bump-deploy-file)
 * [`bump diff [FILE]`](#bump-diff-file)
 * [`bump preview [FILE]`](#bump-preview-file)
-* [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]](#bump-overlay-definition_file-overlay_file)
+* [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]`](#bump-overlay-definition_file-overlay_file)
 
 ### `bump deploy [FILE]`
 
