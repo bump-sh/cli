@@ -211,7 +211,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       });
     } else {
       throw new CLIError(
-        `No documentations found in ${dir} with pattern '${filenamePattern}'.\nYou should check with the ${chalk.dim(
+        `No documentation found in ${dir} with the pattern '${filenamePattern}'.\nYou should check with the ${chalk.dim(
           '--filename-pattern',
         )} flag to select your files from your naming convention.\nIf you don't have a naming convention we can help naming your API definition files:\nTry the ${chalk.dim(
           '--interactive',
