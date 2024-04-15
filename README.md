@@ -11,7 +11,7 @@
 
 The Bump.sh CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from Swagger, OpenAPI or AsyncAPI), it can help you to:
 
-- Validate an API document before publishing to your documentation
+- Validate an API document before publishing it to your documentation
 - Publish an API document to your Bump.sh documentation or hubs
 - Compare two API documents to generate a human-readable diff from your API definitions
 
@@ -37,7 +37,7 @@ The Bump.sh CLI is a node package currently distributed via NPM. This means you 
 _If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
 
 > You can download a standalone package directly from the latest
-> Github release assets if you don’t use Node.
+> GitHub release assets if you don’t use Node.
 {: .info}
 
 ### Global installation
@@ -56,7 +56,7 @@ yarn global add bump-cli
 
 ### Add Bump.sh to your node project
 
-As our CLI is a node package, you can easily embed it to your project by adding the package to your `package.json` file, either with NPM
+As our CLI is a node package, you can easily embed it into your project by adding the package to your `package.json` file, either with NPM
 
 ```sh-session
 npm install --save-dev bump-cli
@@ -238,7 +238,7 @@ bump preview --live --open openapi-definition.json
 ```
 
 - Edit your `openapi-definition.json` file in your favorite text editor
-- Watch the live preview being updated each time you save your file.
+- Watch the live preview is updated each time you save your file.
 
 > You can create as many previews as you like without being authenticated. This is a **free and unlimited service**.
 {: .info}
@@ -251,11 +251,11 @@ Please check `bump preview --help` for more usage details
 
 > This feature implements the [OpenAPI Overlay specification](https://github.com/OAI/Overlay-Specification). It is possible to apply an Overlay to any kind of document, be it an OpenAPI or AsyncAPI definition file.
 
-The Overlay specification of OpenAPI makes it possible to modify the content of an API definition file by adding a layer on top of it. That layer helps adding, removing or changing some or all of the content of the original definition. 
+The Overlay specification of OpenAPI makes it possible to modify the content of an API definition file by adding a layer on top of it. That layer helps add, remove, or change some or all of the content of the original definition. 
 
 Technically, the `bump overlay` command will output a modified version of the `[DEFINITION_FILE]` (an OpenAPI or AsyncAPI document) by applying the operations described in the `[OVERLAY_FILE]` Overlay file to the original API document.
 
-To redirect the output of the command to a new file you can run:
+To redirect the output of the command to a new file you can run the following:
 
 ```shell
 bump overlay api-document.yaml overlay-file.yaml > api-overlayed-document.yaml
@@ -299,7 +299,7 @@ Make sure to have Node.js (At least v14) installed on your machine.
 
 ## Compatible specification types
 
-We currently support [OpenAPI](https://github.com/OAI/OpenAPI-Specification) from 2.0 (called Swagger) to 3.1 and [AsyncAPI 2.x](https://www.asyncapi.com/docs/reference/specification/latest) specification file types. Both YAML or JSON file formats are accepted file inputs to the CLI.
+We currently support [OpenAPI](https://github.com/OAI/OpenAPI-Specification) from 2.0 (called Swagger) to 3.1 and [AsyncAPI 2.x](https://www.asyncapi.com/docs/reference/specification/latest) specification file types. Both YAML and JSON file formats are accepted file inputs to the CLI.
 
 ## Contributing
 
@@ -315,12 +315,12 @@ The Bump CLI project is released under the [MIT License](http://opensource.org/l
 
 ## Code of Conduct
 
-Everyone interacting in the Bump-CLI project codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/bump-sh/.github/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the Bump-CLI project codebases, issue trackers, chat rooms, and mailing lists is expected to follow the [code of conduct](https://github.com/bump-sh/.github/blob/main/CODE_OF_CONDUCT.md).
 
 ## Versioning
 
 This npm package starts at v2.0.0 for two main reasons:
 
-- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0 makes it clear we are working on our second version of the Bump CLI
+- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0, which makes it clear we are working on our second version of the Bump CLI
 
-- The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transfering the ownership of the `bump-cli` package name!_
+- The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transferring the ownership of the `bump-cli` package name!_
