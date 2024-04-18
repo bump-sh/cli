@@ -304,7 +304,7 @@ describe('diff subcommand', () => {
             .once()
             .reply(201, { id: '123', doc_public_url: 'http://localhost/doc/1' })
             .get('/api/v1/versions/123')
-            .times(31)
+            .times(121)
             .reply(202);
         })
         .stdout()
