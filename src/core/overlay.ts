@@ -42,19 +42,26 @@ export class Overlay {
         } else {
           try {
             // It must be an update
-            jsonpath.apply(spec, target, (chunk) => {
-              if (typeof chunk === 'object' && typeof action.update === 'object') {
-                if (Array.isArray(chunk) && Array.isArray(action.update)) {
-                  return chunk.concat(action.update);
+            // Deep merge objects using a module (built-in spread operator is only shallow)
+            const merger = mergician({ appendArrays: true });
+            if (target === '$') {
+              // You can't actually merge an update on a root object
+              // target with the jsonpath lib, this is just us merging
+              // the given update with the whole spec.
+              spec = merger(spec, action.update);
+            } else {
+              jsonpath.apply(spec, target, (chunk) => {
+                if (typeof chunk === 'object' && typeof action.update === 'object') {
+                  if (Array.isArray(chunk) && Array.isArray(action.update)) {
+                    return chunk.concat(action.update);
+                  } else {
+                    return merger(chunk, action.update);
+                  }
                 } else {
-                  // Deep merge objects using a module (built-in spread operator is only shallow)
-                  const merger = mergician({ appendArrays: true });
-                  return merger(chunk, action.update);
+                  return action.update;
                 }
-              } else {
-                return action.update;
-              }
-            });
+              });
+            }
           } catch (ex) {
             process.stderr.write(`Error applying overlay: ${(ex as Error).message}\n`);
             //return chunk
