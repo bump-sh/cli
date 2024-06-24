@@ -13,6 +13,9 @@ import {
 } from '../api/models';
 
 export class Diff {
+  // 120 seconds = 2 minutes
+  static readonly TIMEOUT = 120;
+
   _bump!: BumpApi;
   _config: Config.IConfig;
 
@@ -57,7 +60,7 @@ export class Diff {
 
     if (diffVersion) {
       return await this.waitResult(diffVersion, token, {
-        timeout: 30,
+        timeout: Diff.TIMEOUT,
         format,
       });
     } else {
@@ -155,7 +158,7 @@ export class Diff {
 
     if (opts.timeout <= 0) {
       throw new CLIError(
-        'We were unable to compute your documentation diff. Sorry about that. Please try again later',
+        'We were unable to compute your documentation diff. Sorry about that. Please try again later. If the error persists, please contact support at https://bump.sh.',
       );
     }
 
