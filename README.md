@@ -238,7 +238,7 @@ bump preview --live --open openapi-definition.json
 ```
 
 - Edit your `openapi-definition.json` file in your favorite text editor
-- Watch the live preview is updated each time you save your file.
+- Watch the live preview being updated each time you save your file.
 
 > You can create as many previews as you like without being authenticated. This is a **free and unlimited service**.
 {: .info}
