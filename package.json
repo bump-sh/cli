@@ -92,7 +92,7 @@
     "@oclif/plugin-warn-if-update-available": "^2.0.36",
     "@stoplight/yaml": "^4.2.3",
     "async-mutex": "^0.4.0",
-    "axios": "^1.6.3",
+    "axios": "^1.6.4",
     "debug": "^4.3.1",
     "jsonpath": "^1.1.1",
     "mergician": "^1.0.3",
