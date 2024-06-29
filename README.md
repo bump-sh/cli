@@ -9,13 +9,13 @@
   <a href="https://bump.sh/users/sign_up">Sign up</a>
 </p>
 
-The Bump.sh CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from Swagger, OpenAPI or AsyncAPI), it can help you to:
+The Bump.sh CLI interacts with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from Swagger, OpenAPI, or AsyncAPI), it can help you to:
 
 - Validate an API document before publishing it to your documentation
 - Publish an API document to your Bump.sh documentation or hubs
 - Compare two API documents to generate a human-readable diff from your API definitions
 
-Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.sh). And is built with the [`oclif`](https://oclif.io) framework in Typescript.
+Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.sh). It is built with the [`oclif`](https://oclif.io) framework in Typescript.
 
 [![Version](https://img.shields.io/npm/v/bump-cli.svg)](https://npmjs.org/package/bump-cli)
 [![Tests](https://github.com/bump-sh/cli/actions/workflows/checks.yml/badge.svg)](https://github.com/bump-sh/cli/actions/workflows/checks.yml)
@@ -32,9 +32,9 @@ Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.
 
 ## Installation
 
-The Bump.sh CLI is a node package currently distributed via NPM. This means you must have the Node v14+ interpreter installed on your computer or CI servers.
+The Bump.sh CLI is a node package currently distributed via NPM. You must have the Node v14+ interpreter installed on your computer or CI servers.
 
-_If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
+_If you are looking to use Bump.sh in a continuous integration environment you might be interested in [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
 
 > You can download a standalone package directly from the latest
 > GitHub release assets if you don’t use Node.
@@ -74,7 +74,7 @@ You can then use any Bump.sh commands with `npx` (same as `npm exec`)
 npx bump --help
 ```
 
-### How should I do if I'm not using npm ?
+### How should I do if I'm not using npm?
 
 Unfortunately, at the moment we only support the Node environment. However, you can download a standalone package directly from the [latest Github release](https://github.com/bump-sh/cli/releases) assets which you can run as a standalone binary. Or you can push your documentation using [our API](https://developers.bump.sh/) (advanced usage only).
 
