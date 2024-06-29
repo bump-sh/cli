@@ -93,7 +93,7 @@
     "@stoplight/yaml": "^4.2.3",
     "async-mutex": "^0.5.0",
     "axios": "^1.7.2",
-    "debug": "^4.3.1",
+    "debug": "^4.3.5",
     "jsonpath": "^1.1.1",
     "mergician": "^1.0.3",
     "oas-schemas": "2.1.3",
