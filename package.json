@@ -84,7 +84,7 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.1.2",
     "@asyncapi/specs": "^5.1.0",
-    "@clack/prompts": "^0.6.3",
+    "@clack/prompts": "^0.7.0",
     "@oclif/command": "^1.8.36",
     "@oclif/config": "^1.18.17",
     "@oclif/core": "1.20.4",
