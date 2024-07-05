@@ -17,7 +17,7 @@ describe('preview subcommand', () => {
       .stderr()
       .command(['preview', 'examples/valid/openapi.v3.json'])
       .it('Creates a preview from an openapi file', ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's render a preview on Bump... done/);
+        expect(stderr).to.match(/Let's render a preview on Bump.sh... done/);
 
         expect(stdout).to.match(/preview is visible at/);
         expect(stdout).to.match(/https:\/\/bump.sh\/preview\/123abc-cba321/);
@@ -35,7 +35,7 @@ describe('preview subcommand', () => {
       .stderr()
       .command(['preview', '--live', 'examples/valid/openapi.v3.json'])
       .it('Creates a live preview and waits for file update', ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's render a preview on Bump... done/);
+        expect(stderr).to.match(/Let's render a preview on Bump.sh... done/);
 
         expect(stdout).to.match(/preview is visible at/);
         expect(stdout).to.match(/https:\/\/bump.sh\/preview\/123abc-cba321/);
@@ -61,7 +61,7 @@ describe('preview subcommand', () => {
       .stderr()
       .command(['preview', 'examples/valid/asyncapi.v2.yml'])
       .it('Creates a preview from an asyncapi file with $refs', ({ stdout, stderr }) => {
-        expect(stderr).to.match(/Let's render a preview on Bump... done/);
+        expect(stderr).to.match(/Let's render a preview on Bump.sh... done/);
 
         expect(stdout).to.match(/preview is visible at/);
         expect(stdout).to.match(/https:\/\/bump.sh\/preview\/123abc-cba321/);

@@ -51,7 +51,7 @@ export default class Preview extends Command {
     this.d(`${file} looks like an ${api.specName} spec version ${api.version}`);
 
     if (!currentPreview) {
-      cli.action.start("* Let's render a preview on Bump");
+      cli.action.start("* Let's render a preview on Bump.sh");
     }
 
     const request: PreviewRequest = {
