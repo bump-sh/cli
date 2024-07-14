@@ -89,7 +89,7 @@
     "@oclif/core": "3.27.0",
     "@oclif/plugin-help": "^5.1.10",
     "@oclif/plugin-warn-if-update-available": "^2.0.36",
-    "async-mutex": "^0.4.0",
+    "async-mutex": "^0.5.0",
     "axios": "^1.7.2",
     "debug": "^4.3.1",
     "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#0f9d3ec7c033fef184ec54e1ffc201b2d61ce023",
