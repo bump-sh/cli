@@ -34,9 +34,9 @@ npm install -g bump-cli
 
 _If you are looking to use Bump in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
 
-### How should I do if I'm not using npm ?
+### How should I do if I'm not using npm?
 
-Unfortunately, at the moment we only publish a npm package. However we plan to distribute universal binaries in the most common package managers soon.
+Unfortunately, at the moment we only publish a npm package. However, we plan to distribute universal binaries in the most common package managers soon.
 
 ## Usage
 
@@ -69,7 +69,7 @@ Please check the [Bump CLI help page](https://help.bump.sh/bump-cli) for more CL
 
 ### `bump preview [FILE]`
 
-You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command. Here is an example usage:
+You can preview your documentation by calling the `preview` command. A temporary preview will be created with a unique URL. This preview will be available for 30 minutes. You don't need any credentials to use this command. Here is an example of usage:
 
 
 ```sh-session
@@ -108,7 +108,7 @@ Please check `bump deploy --help` for more usage details
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested in [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
 
 #### Public API diffs
 
@@ -136,7 +136,7 @@ _Note: You can also test this feature in our dedicated web application at <https
 
 #### Authenticated diffs attached to your Bump documentation
 
-From a Bump documentation, the `diff` command will retrieve a comparaison changelog between your existing documentation and the given file or URL:
+From a Bump documentation, the `diff` command will retrieve a comparison changelog between your existing documentation and the given file or URL:
 
 ```sh-session
 $ bump diff path/to/your/file.yml --doc DOC_ID_OR_SLUG --token DOC_TOKEN
@@ -146,7 +146,7 @@ Updated: POST /validations
   Body attribute modified: documentation
 ```
 
-If you want to compare two unpublished versions of your definition file, the `diff` command can retrieve a comparaison changelog between two given file or URL, “as simple as `git diff`”:
+If you want to compare two unpublished versions of your definition file, the `diff` command can retrieve a comparison changelog between two given files or URLs, “as simple as `git diff`”:
 
 ```sh-session
 $ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc <doc_slug> --token <your_doc_token>
@@ -200,7 +200,7 @@ The node package is available as open source under the terms of the [MIT License
 
 ### Code of Conduct
 
-Everyone interacting in the Bump-CLI project codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/bump-sh/.github/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the Bump-CLI project codebases, issue trackers, chat rooms, and mailing lists is expected to follow the [code of conduct](https://github.com/bump-sh/.github/blob/main/CODE_OF_CONDUCT.md).
 
 ## Versioning
 
@@ -208,4 +208,4 @@ This npm package starts at v2.0.0 for two main reasons:
 
 - Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0 makes it clear we are working on our second version of the Bump CLI
 
-- The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transfering the ownership of the `bump-cli` package name!_
+- The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transferring the ownership of the `bump-cli` package name!_
