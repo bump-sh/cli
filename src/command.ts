@@ -1,4 +1,4 @@
-import { Command as Base } from '@oclif/command';
+import { Command as Base } from '@oclif/core';
 import debug from 'debug';
 
 import { BumpApi, APIError } from './api/index.js';
@@ -13,7 +13,7 @@ export default abstract class Command extends Base {
     return this._bump;
   }
 
-  async catch(error?: Error): Promise<void> {
+  async catch(error: Record<string, any>): Promise<void> {
     if (error && APIError.is(error)) {
       this.error(error.message, { exit: error.exitCode });
     }
