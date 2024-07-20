@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { AxiosError } from 'axios';
 import d from 'debug';
 
-import { InvalidDefinitionError } from './models';
+import { InvalidDefinitionError } from './models.js';
 
 type MessagesAndExitCode = [string[], number];
 const debug = d('bump-cli:api-client');

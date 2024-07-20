@@ -2,7 +2,7 @@ import { flags } from '@oclif/command';
 import * as Parser from '@oclif/parser';
 
 // Re-export oclif flags https://oclif.io/docs/flags
-export * from '@oclif/command/lib/flags';
+export { help } from '@oclif/command/lib/flags.js';
 
 // Custom flags for bump-cli
 const doc = flags.build({

@@ -6,8 +6,8 @@ import * as Config from '@oclif/config';
 import nock from 'nock';
 import chalk from 'chalk';
 
-import { BumpApi } from '../../src/api';
-import { PreviewRequest } from '../../src/api/models';
+import { BumpApi } from '../../src/api/index.js';
+import { PreviewRequest } from '../../src/api/models.js';
 
 nock.disableNetConnect();
 const root = path.join(__dirname, '../../');
