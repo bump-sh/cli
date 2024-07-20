@@ -5,13 +5,12 @@ import asyncapi from '@asyncapi/specs';
 import {
   JSONSchema4,
   JSONSchema4Object,
+  JSONSchema4Array,
   JSONSchema6,
   JSONSchema6Object,
   JSONSchema7,
 } from 'json-schema';
 import path from 'path';
-import d from 'debug';
-const debug = d('bump-cli:definition');
 
 type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7;
 
@@ -76,7 +75,7 @@ class API {
     if (API.isAsyncAPI(definition)) {
       return SupportedFormat.asyncapi[this.versionWithoutPatch()];
     } else if (API.isOpenAPIOverlay(definition)) {
-      return {"overlay": {"type": "string"}};
+      return { overlay: { type: 'string' } };
     } else {
       return SupportedFormat.openapi[this.versionWithoutPatch()];
     }
@@ -121,10 +120,7 @@ class API {
       absPath.match(/^[a-zA-Z]+\:\\/) || // Windows style filesystem path
       (absPath.match(/^https?:\/\//) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
     ) {
-      const relativePath = path.relative(path.dirname(this.location), absPath);
-      const posixPath = relativePath.replace(new RegExp('\\' + path.sep, 'g'), '/');
-
-      return posixPath;
+      return path.relative(path.dirname(this.location), absPath);
     } else {
       return absPath;
     }
@@ -163,7 +159,11 @@ class API {
       );
     }
 
-    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed) && !API.isOpenAPIOverlay(parsed)) {
+    if (
+      !API.isOpenAPI(parsed) &&
+      !API.isAsyncAPI(parsed) &&
+      !API.isOpenAPIOverlay(parsed)
+    ) {
       throw new UnsupportedFormat();
     }
 
@@ -270,6 +270,7 @@ type OpenAPI = JSONSchema4Object & {
 type OpenAPIOverlay = JSONSchema4Object & {
   readonly overlay: string;
   readonly info: string;
+  readonly actions: JSONSchema4Array;
 };
 
 // https://www.asyncapi.com/docs/specifications/2.0.0#A2SObject
@@ -278,5 +279,4 @@ type AsyncAPI = JSONSchema4Object & {
   readonly info: string;
 };
 
-
-export { API, SupportedFormat };
+export { API, APIDefinition, OpenAPIOverlay, SupportedFormat };

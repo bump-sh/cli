@@ -1,7 +1,7 @@
 {
   "name": "bump-cli",
   "description": "The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh",
-  "version": "2.1.0",
+  "version": "2.7.3-beta.1",
   "author": "Paul Bonaud <paulr@bump.sh>",
   "bin": {
     "bump": "./bin/run"
@@ -9,30 +9,31 @@
   "bugs": "https://github.com/bump-sh/cli/issues",
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^2.3.9",
+    "@oclif/test": "^2.0.3",
     "@types/debug": "^4.1.5",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^15.9.0",
-    "@typescript-eslint/eslint-plugin": "^4.21.0",
-    "@typescript-eslint/parser": "^4.21.0",
+    "@types/jsonpath": "^0.2.4",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.7.0",
+    "@typescript-eslint/eslint-plugin": "^5.21.0",
+    "@typescript-eslint/parser": "^5.21.0",
     "chai": "^4.3.4",
     "cross-spawn": "^7.0.3",
-    "eslint": "^7.24.0",
+    "eslint": "^8.45.0",
     "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-prettier": "^3.3.1",
+    "eslint-plugin-prettier": "^4.0.0",
     "globby": "^11.0.3",
-    "mocha": "^8.3.2",
+    "mocha": "^10.0.0",
     "nock": "^13.0.11",
-    "np": "^7.5.0",
+    "np": "^7.6.2",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
-    "sinon": "^15.0.1",
+    "sinon": "^14.0.0",
     "stdout-stderr": "^0.1.13",
     "ts-node": "^10.0.0",
-    "typescript": "^4.3.3"
+    "typescript": "4.5.5"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/bin",
@@ -55,8 +56,13 @@
     "commands": "./lib/commands",
     "bin": "bump",
     "plugins": [
-      "@oclif/plugin-help"
-    ]
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available"
+    ],
+    "warn-if-update-available": {
+      "timeoutInDays": 30,
+      "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest) %>. Please upgrade with <%= chalk.underline.dim(`npm update ${config.name}`) %>."
+    }
   },
   "repository": "bump-sh/cli",
   "scripts": {
@@ -68,7 +74,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf lib && npm run build && oclif-dev manifest && oclif-dev readme",
     "pretest": "npm run clean && npm run build && npm run lint",
-    "publish": "np --no-release-draft",
+    "release": "np --no-release-draft",
     "test": "mocha \"test/**/*.test.ts\"",
     "test-coverage": "nyc npm run test",
     "test-integration": "node ./test/integration.js",
@@ -77,13 +83,19 @@
   "types": "lib/index.d.ts",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.7",
-    "@asyncapi/specs": "^2.7.7",
-    "@oclif/command": "^1.8.36",
-    "@oclif/config": "^1.18.17",
-    "@oclif/plugin-help": "^3.2.4",
-    "axios": "^0.21.3",
-    "cli-ux": "^6.0.9",
+    "@asyncapi/specs": "^5.1.0",
+    "@clack/prompts": "^0.6.3",
+    "@oclif/command": "^1.8.16",
+    "@oclif/config": "^1.17.0",
+    "@oclif/core": "1.20.4",
+    "@oclif/plugin-help": "^5.1.10",
+    "@oclif/plugin-warn-if-update-available": "^2.0.36",
+    "@stoplight/yaml": "^4.2.3",
+    "async-mutex": "^0.4.0",
+    "axios": "^0.27.2",
     "debug": "^4.3.1",
+    "jsonpath": "^1.1.1",
+    "mergician": "^1.0.3",
     "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#0f9d3ec7c033fef184ec54e1ffc201b2d61ce023",
     "tslib": "^2.3.0"
   }
