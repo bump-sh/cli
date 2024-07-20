@@ -9,7 +9,7 @@
   "bugs": "https://github.com/bump-sh/cli/issues",
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^2.0.3",
+    "@oclif/test": "^3.1.8",
     "@types/debug": "^4.1.5",
     "@types/jsonpath": "^0.2.4",
     "@types/mocha": "^10.0.0",
