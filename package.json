@@ -78,11 +78,11 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.7",
     "@asyncapi/specs": "^2.7.7",
-    "@oclif/command": "^1.8.0",
-    "@oclif/config": "^1.17.0",
-    "@oclif/plugin-help": "^3.2.2",
-    "axios": "^0.21.1",
-    "cli-ux": "^5.5.1",
+    "@oclif/command": "^1.8.36",
+    "@oclif/config": "^1.18.17",
+    "@oclif/plugin-help": "^3.2.4",
+    "axios": "^0.21.3",
+    "cli-ux": "^6.0.9",
     "debug": "^4.3.1",
     "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#0f9d3ec7c033fef184ec54e1ffc201b2d61ce023",
     "tslib": "^2.3.0"
