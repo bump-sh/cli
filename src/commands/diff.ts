@@ -1,4 +1,7 @@
 import { CLIError } from '@oclif/errors';
+import {marked} from 'marked';
+import TerminalRenderer from 'marked-terminal';
+import chalk from 'chalk';
 
 import Command from '../command.js';
 import * as flagsBuilder from '../flags.js';
@@ -129,7 +132,15 @@ export default class Diff extends Command {
     if (format == 'text' && result.text) {
       await cli.log(result.text);
     } else if (format == 'markdown' && result.markdown) {
-      await cli.log(result.markdown);
+      marked.setOptions({
+        // Define custom renderer
+        renderer: new TerminalRenderer({
+          tab: 2,
+          heading: chalk.blue.bold,
+        }),
+      });
+
+      await cli.log(marked(result.markdown));
     } else if (format == 'json' && result.details) {
       await cli.log(JSON.stringify(result.details, null, 2));
     } else if (format == 'html' && result.html) {
