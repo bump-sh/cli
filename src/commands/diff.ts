@@ -1,11 +1,14 @@
 import { CLIError } from '@oclif/errors';
+import {marked} from 'marked';
+import TerminalRenderer from 'marked-terminal';
+import chalk from 'chalk';
 
-import Command from '../command';
-import * as flagsBuilder from '../flags';
-import { Diff as CoreDiff } from '../core/diff';
-import { fileArg, otherFileArg } from '../args';
-import { cli } from '../cli';
-import { DiffResponse } from '../api/models';
+import Command from '../command.js';
+import * as flagsBuilder from '../flags.js';
+import { Diff as CoreDiff } from '../core/diff.js';
+import { fileArg, otherFileArg } from '../args.js';
+import { cli } from '../cli/index.js';
+import { DiffResponse } from '../api/models.js';
 
 export default class Diff extends Command {
   static description =
@@ -129,7 +132,15 @@ export default class Diff extends Command {
     if (format == 'text' && result.text) {
       await cli.log(result.text);
     } else if (format == 'markdown' && result.markdown) {
-      await cli.log(result.markdown);
+      marked.setOptions({
+        // Define custom renderer
+        renderer: new TerminalRenderer({
+          tab: 2,
+          heading: chalk.blue.bold,
+        }),
+      });
+
+      await cli.log(marked(result.markdown));
     } else if (format == 'json' && result.details) {
       await cli.log(JSON.stringify(result.details, null, 2));
     } else if (format == 'html' && result.html) {

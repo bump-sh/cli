@@ -1,9 +1,9 @@
-import { API } from '../definition';
-import Command from '../command';
-import * as flagsBuilder from '../flags';
-import { fileArg } from '../args';
-import { cli } from '../cli';
-import { PreviewResponse, PreviewRequest } from '../api/models';
+import { API } from '../definition.js';
+import Command from '../command.js';
+import * as flagsBuilder from '../flags.js';
+import { fileArg } from '../args.js';
+import { cli } from '../cli/index.js';
+import { PreviewResponse, PreviewRequest } from '../api/models.js';
 
 import { watch } from 'fs';
 import { Mutex } from 'async-mutex';

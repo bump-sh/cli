@@ -1,4 +1,4 @@
-import * as Config from '@oclif/config';
+import { Config } from '@oclif/core';
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from 'axios';
 
 import {
@@ -10,21 +10,21 @@ import {
   DiffRequest,
   DiffResponse,
   WithDiff,
-} from './models';
-import { vars } from './vars';
-import APIError from './error';
+} from './models.js';
+import { vars } from './vars.js';
+import APIError from './error.js';
 
 class BumpApi {
   protected readonly client: AxiosInstance;
 
-  // Check https://oclif.io/docs/config for details about Config.IConfig
-  public constructor(protected config: Config.IConfig) {
+  // Check https://oclif.io/docs/config for details about Config
+  public constructor(protected config: Config) {
     const baseURL = `${vars.apiUrl}${vars.apiBasePath}`;
     const headers: { 'User-Agent': string; Authorization?: string } = {
       'User-Agent': vars.apiUserAgent(config.userAgent),
     };
 
-    this.client = axios.create({
+    this.client = axios.default.create({
       baseURL,
       headers,
     });
@@ -100,5 +100,5 @@ class BumpApi {
   };
 }
 
-export * from './models';
+export * from './models.js';
 export { BumpApi, APIError };

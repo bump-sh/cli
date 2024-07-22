@@ -12,7 +12,6 @@ const otherFileArg = {
 
 const overlayFileArg = {
   name: 'OVERLAY_FILE',
-  required: true,
   description: 'Path or URL to an overlay file',
 };
 

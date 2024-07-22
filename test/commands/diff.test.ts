@@ -1,7 +1,7 @@
 import base, { expect } from '@oclif/test';
 import nock from 'nock';
 import * as sinon from 'sinon';
-import { Diff } from '../../lib/core/diff';
+import { Diff } from '../../lib/core/diff.js';
 
 nock.disableNetConnect();
 

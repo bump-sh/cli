@@ -1,65 +1,60 @@
-import chalk from 'chalk';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { existsSync } from 'node:fs';
-import { dirname } from 'path';
+import { CLIError } from '@oclif/errors';
+import { safeStringify } from '@stoplight/yaml';
 
 import { API } from '../definition';
-import { confirm as promptConfirm } from '../core/utils/prompts';
 import Command from '../command';
 import * as flagsBuilder from '../flags';
 import { fileArg, overlayFileArg } from '../args';
 import { cli } from '../cli';
+import { applyOverlay } from '../core/overlay';
 
 export default class Overlay extends Command {
   static description = 'Apply an OpenAPI specified overlay to your API definition.';
 
   static examples = [
-    `Apply the OVERLAY_FILE to the existing DEFINITION_FILE. The resulting
-definition is output on stdout meaning you can redirect it to a new
-file.
-
-${chalk.dim('$ bump overlay DEFINITION_FILE OVERLAY_FILE > destination/file.json')}
-* Let's apply the overlay to the main definition... done
+    `$ bump overlay DEFINITION_FILE OVERLAY_FILE
 `,
   ];
 
   static flags = {
     help: flagsBuilder.help({ char: 'h' }),
-    out: flagsBuilder.out(),
   };
 
   static args = [fileArg, overlayFileArg];
 
   async run(): Promise<void> {
-    const { args, flags } = this.parse(Overlay);
-    const outputPath = flags.out;
+    const { args } = this.parse(Overlay);
+
+    const newDefinition = await this.applyOverlay(args.FILE, args.OVERLAY_FILE);
+
+    cli.log(newDefinition);
+
+    return;
+  }
+
+  async applyOverlay(file: string, overlayFile: string): Promise<string> {
+    const api = await API.load(file);
+    const definition = api.definition;
+
+    this.d(`${file} looks like an ${api.specName} spec version ${api.version}`);
+
+    const overlay = await API.load(overlayFile);
+    const overlayDefinition = overlay.definition;
+
+    if (!API.isOpenAPIOverlay(overlayDefinition)) {
+      throw new CLIError(`${overlayFile} does not look like an OpenAPI overlay`);
+    }
 
     cli.action.start("* Let's apply the overlay to the main definition");
 
-    const api = await API.load(args.FILE);
-
-    await api.applyOverlay(args.OVERLAY_FILE);
-    const [overlayedDefinition] = api.extractDefinition(outputPath);
+    const newDefinition = applyOverlay(definition, overlayDefinition);
 
     cli.action.stop();
 
-    if (outputPath) {
-      await mkdir(dirname(outputPath), { recursive: true });
-      let confirm = true;
-      if (existsSync(outputPath)) {
-        await promptConfirm(
-          `Do you want to override the existing destination file? (${outputPath})`,
-        ).catch(() => {
-          confirm = false;
-        });
-      }
-      if (confirm) {
-        await writeFile(outputPath, overlayedDefinition);
-      }
+    if (file.endsWith('.json')) {
+      return JSON.stringify(newDefinition);
     } else {
-      cli.log(overlayedDefinition);
+      return safeStringify(newDefinition);
     }
-
-    return;
   }
 }

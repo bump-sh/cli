@@ -11,9 +11,6 @@ import {
   JSONSchema7,
 } from 'json-schema';
 import path from 'path';
-import { safeStringify } from '@stoplight/yaml';
-
-import { Overlay } from './core/overlay';
 
 type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7;
 
@@ -52,7 +49,6 @@ class API {
   readonly location: string;
   readonly rawDefinition: string;
   readonly definition: APIDefinition;
-  overlayedDefinition: APIDefinition | undefined;
   readonly references: APIReference[];
   readonly version: string;
   readonly specName: string;
@@ -99,10 +95,6 @@ class API {
     } else {
       return (definition.openapi || definition.swagger) as string;
     }
-  }
-
-  guessFormat(output?: string): string {
-    return (output || this.location).endsWith('.json') ? 'json' : 'yaml';
   }
 
   versionWithoutPatch(): string {
@@ -178,22 +170,6 @@ class API {
     return [raw, parsed];
   }
 
-  serializeDefinition(outputPath?: string): string {
-    if (this.overlayedDefinition) {
-      let serializedDefinition: string;
-
-      if (this.guessFormat(outputPath) == 'json') {
-        serializedDefinition = JSON.stringify(this.overlayedDefinition);
-      } else {
-        serializedDefinition = safeStringify(this.overlayedDefinition);
-      }
-
-      return serializedDefinition;
-    } else {
-      return this.rawDefinition;
-    }
-  }
-
   static isOpenAPI(
     definition: JSONSchema4Object | JSONSchema6Object,
   ): definition is OpenAPI {
@@ -214,7 +190,7 @@ class API {
     return 'overlay' in definition;
   }
 
-  public extractDefinition(outputPath?: string): [string, APIReference[]] {
+  public extractDefinition(): [string, APIReference[]] {
     const references = [];
 
     for (let i = 0; i < this.references.length; i++) {
@@ -225,21 +201,7 @@ class API {
       });
     }
 
-    return [this.serializeDefinition(outputPath), references];
-  }
-
-  public async applyOverlay(overlayPath: string): Promise<void> {
-    const overlay = await API.load(overlayPath);
-    const overlayDefinition = overlay.definition;
-
-    if (!API.isOpenAPIOverlay(overlayDefinition)) {
-      throw new Error(`${overlayPath} does not look like an OpenAPI overlay`);
-    }
-
-    this.overlayedDefinition = await new Overlay().run(
-      this.definition,
-      overlayDefinition,
-    );
+    return [this.rawDefinition, references];
   }
 
   static async load(path: string): Promise<API> {
@@ -298,29 +260,23 @@ type APIReference = {
 
 type APIDefinition = OpenAPI | AsyncAPI | OpenAPIOverlay;
 
-type InfoObject = {
-  readonly title: string;
-  readonly version: string;
-  readonly description?: string;
-};
-
 // http://spec.openapis.org/oas/v3.1.0#oasObject
 type OpenAPI = JSONSchema4Object & {
   readonly openapi?: string;
   readonly swagger?: string;
-  readonly info: InfoObject;
+  readonly info: string;
 };
 
 type OpenAPIOverlay = JSONSchema4Object & {
   readonly overlay: string;
-  readonly info: InfoObject;
+  readonly info: string;
   readonly actions: JSONSchema4Array;
 };
 
 // https://www.asyncapi.com/docs/specifications/2.0.0#A2SObject
 type AsyncAPI = JSONSchema4Object & {
   readonly asyncapi: string;
-  readonly info: InfoObject;
+  readonly info: string;
 };
 
 export { API, APIDefinition, OpenAPIOverlay, SupportedFormat };
