@@ -85,7 +85,7 @@
     "@apidevtools/json-schema-ref-parser": "^9.0.7",
     "@asyncapi/specs": "^5.1.0",
     "@clack/prompts": "^0.6.3",
-    "@oclif/command": "^1.8.16",
+    "@oclif/command": "^1.8.36",
     "@oclif/config": "^1.17.0",
     "@oclif/core": "1.26.2",
     "@oclif/plugin-help": "^5.1.10",
