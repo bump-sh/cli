@@ -84,10 +84,10 @@
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.7",
     "@asyncapi/specs": "^5.1.0",
-    "@clack/prompts": "^0.6.3",
-    "@oclif/command": "^1.8.16",
-    "@oclif/config": "^1.17.0",
-    "@oclif/core": "1.20.4",
+    "@clack/prompts": "^0.6.3"
+    "@oclif/command": "^1.8.36",
+    "@oclif/config": "^1.18.17",
+    "@oclif/core": "1.26.2",
     "@oclif/plugin-help": "^5.2.20",
     "@oclif/plugin-warn-if-update-available": "^2.0.36",
     "@stoplight/yaml": "^4.2.3",
@@ -97,6 +97,6 @@
     "jsonpath": "^1.1.1",
     "mergician": "^1.0.3",
     "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#0f9d3ec7c033fef184ec54e1ffc201b2d61ce023",
-    "tslib": "^2.3.0"
+    "tslib": "^2.6.3"
   }
 }
