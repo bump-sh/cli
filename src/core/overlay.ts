@@ -27,7 +27,7 @@ export class Overlay {
         // Is it a remove?
         if (action.hasOwnProperty('remove')) {
           while (true) {
-            const path = jsonpath.paths(spec, target, 1);
+            const path = jsonpath.paths(spec, target);
             if (path.length == 0) {
               break;
             }
