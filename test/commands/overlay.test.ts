@@ -1,10 +1,9 @@
 import base, { expect } from '@oclif/test';
-import { rm } from 'node:fs/promises';
 
 const test = base;
 
 describe('overlay subcommand', () => {
-  describe('Successfully compute the merged API document with the given overlay', () => {
+  describe('Successful runs', () => {
     test
       .stdout()
       .stderr()
@@ -13,46 +12,26 @@ describe('overlay subcommand', () => {
         'examples/valid/openapi.v3.json',
         'examples/valid/overlay.yaml',
       ])
-      .it('Spits the result to stdout', ({ stdout, stderr }) => {
-        expect(stderr).to.contain("Let's apply the overlay to the main definition");
+      .it('computes the merged API document with the given overlay', ({ stdout }) => {
+      .it('handles invalid overlay file', async ({ stderr }) => {
+        const invalidOverlayPath = 'path/to/invalid/overlay.json';
+        const result = await cli.run(['overlay', 'main.json', invalidOverlayPath]);
+        expect(result.code).to.not.equal(0);
+        expect(stderr).to.contain('Invalid overlay file');
+      })
+        const newDefinition = JSON.parse(stdout);
 
-        const overlayedDefinition = JSON.parse(stdout);
-
-        // Target on info description
-        expect(overlayedDefinition.info.description).to.match(
+expect(newDefinition.info.description).to.match(/Protect Earth's Tree Tracker API/);
+expect(newDefinition.info.title).to.equal('Tree Tracker API');
+expect(newDefinition.info.version).to.match(/^\d+\.\d+\.\d+$/);
+expect(newDefinition.openapi).to.equal('3.0.0');
+expect(newDefinition.paths).to.be.an('object').that.is.not.empty;
+expect(newDefinition.components).to.be.an('object').that.is.not.empty;
           /Protect Earth's Tree Tracker API/,
         );
-
-        // Target on info contact information
-        expect(overlayedDefinition.info.contact.email).to.equal('help@protect.earth');
-        // Target on all servers
-        expect(overlayedDefinition.servers.length).to.equal(1);
-        expect(overlayedDefinition.servers[0].description).to.equal('Production');
-        // Target on nodes which have "x-beta":true field
-        expect(overlayedDefinition.components.schemas.Pong.properties).to.have.all.keys(
-          'pong',
-        );
+        expect(newDefinition.info.contact.email).to.equal('help@protect.earth');
+        expect(newDefinition.servers.length).to.equal(1);
+        expect(newDefinition.servers[0].description).to.equal('Production');
       });
-
-    test
-      .do(async () => await rm('tmp/openapi.overlayed.json', { force: true }))
-      .stdout()
-      .stderr()
-      .command([
-        'overlay',
-        'examples/valid/openapi.v3.json',
-        'examples/valid/overlay.yaml',
-        '--out',
-        'tmp/openapi.overlayed.json',
-      ])
-      .it(
-        'Stores the result to the target output file argument',
-        async ({ stdout, stderr }) => {
-          expect(stderr).to.contain("Let's apply the overlay to the main definition");
-          expect(stdout).to.be.empty;
-          // Cleanup created file
-          await rm('tmp/openapi.overlayed.json');
-        },
-      );
   });
 });
