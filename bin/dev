@@ -1,5 +1,0 @@
-#!/usr/bin/env -S node --loader ts-node/esm
-
-require('@oclif/command').run()
-.then(require('@oclif/command/flush'))
-.catch(require('@oclif/errors/handle'))

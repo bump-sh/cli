@@ -1,17 +1,17 @@
 import chalk from 'chalk';
-import { RequiredFlagError } from '@oclif/parser/lib/errors.js';
+import { RequiredFlagError } from '@oclif/parser/lib/errors';
 import { CLIError } from '@oclif/errors';
 
-import Command from '../command.js';
-import * as flagsBuilder from '../flags.js';
-import { DefinitionDirectory } from '../core/definition_directory.js';
-import { Deploy as CoreDeploy } from '../core/deploy.js';
-import { confirm as promptConfirm } from '../core/utils/prompts.js';
-import { isDir } from '../core/utils/file.js';
-import { fileArg } from '../args.js';
-import { cli } from '../cli/index.js';
-import { VersionResponse } from '../api/models.js';
-import { API } from '../definition.js';
+import Command from '../command';
+import * as flagsBuilder from '../flags';
+import { DefinitionDirectory } from '../core/definition_directory';
+import { Deploy as CoreDeploy } from '../core/deploy';
+import { confirm as promptConfirm } from '../core/utils/prompts';
+import { isDir } from '../core/utils/file';
+import { fileArg } from '../args';
+import { cli } from '../cli';
+import { VersionResponse } from '../api/models';
+import { API } from '../definition';
 
 export default class Deploy extends Command {
   static description =
