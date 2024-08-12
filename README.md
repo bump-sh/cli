@@ -176,6 +176,12 @@ Please check `bump deploy --help` for more usage details.
 
 _If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
 
+Please note that by default the command will always exit with a
+successful return code. If you want to use this command in a CI
+environment and want the command to fail **in case of a breaking
+change**, you will need to add the `--fail-on-breaking` flag to your
+diff command.
+
 #### Public API diffs
 
 From any two API documents or URLs, you can retrieve a comprehensive changelog of what has changed between them.
