@@ -55,7 +55,7 @@ yarn global add bump-cli
 
 ### Add Bump.sh to your node project
 
-As our CLI is a node package, you can easily embed it into your project by adding the package to your `package.json` file, either with NPM
+As our CLI is a node package, you can easily embed it to your project by adding the package to your `package.json` file, either with NPM
 
 ```sh-session
 npm install --save-dev bump-cli
@@ -173,7 +173,7 @@ Please check `bump deploy --help` for more usage details.
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested in [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
 
 Please note that by default the command will always exit with a
 successful return code. If you want to use this command in a CI
@@ -300,6 +300,6 @@ Everyone interacting in the Bump-CLI project codebases, issue trackers, chat roo
 
 This npm package starts at v2.0.0 for two main reasons:
 
-- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0 makes it clear we are working on our second version of the Bump CLI
+- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0, makes it clear we are working on our second version of the Bump CLI
 
 - The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transferring the ownership of the `bump-cli` package name!_

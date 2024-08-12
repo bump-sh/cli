@@ -12,7 +12,17 @@ import { JSONSchema4Object } from 'json-schema';
 
 import { APIDefinition, OpenAPIOverlay } from '../definition';
 
-import { debug } from './logger';
+export function applyOverlay(spec: APIDefinition, overlay: OpenAPIOverlay): APIDefinition {
+  try {
+    if (!spec || !overlay) {
+      throw new Error('Invalid input: spec and overlay must be provided');
+    }
+    // ... rest of the function implementation
+  } catch (error) {
+    console.error('Error applying overlay:', error);
+    throw error;
+  }
+}
 
 export function applyOverlay(spec: APIDefinition, overlay: OpenAPIOverlay) {
   debug('Applying overlay:', { spec: spec.info?.title, overlay: overlay.info?.title });
