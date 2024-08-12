@@ -88,7 +88,7 @@
     "@oclif/command": "^1.8.36",
     "@oclif/config": "^1.18.17",
     "@oclif/core": "1.26.2",
-    "@oclif/plugin-help": "^5.1.10",
+    "@oclif/plugin-help": "^5.2.20",
     "@oclif/plugin-warn-if-update-available": "^2.0.36",
     "@stoplight/yaml": "^4.2.3",
     "async-mutex": "^0.4.0",
