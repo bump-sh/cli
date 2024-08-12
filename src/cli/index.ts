@@ -1,6 +1,6 @@
 import { CliUx } from '@oclif/core';
 
-import success from './styled/success.js';
+import success from './styled/success';
 
 type Levels = 'info' | 'debug';
 

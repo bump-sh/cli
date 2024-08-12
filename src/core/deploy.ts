@@ -1,9 +1,9 @@
 import * as Config from '@oclif/config';
 import debug from 'debug';
 
-import { API } from '../definition.js';
-import { BumpApi } from '../api/index.js';
-import { VersionRequest, VersionResponse } from '../api/models.js';
+import { API } from '../definition';
+import { BumpApi } from '../api';
+import { VersionRequest, VersionResponse } from '../api/models';
 
 export class Deploy {
   _bump!: BumpApi;
