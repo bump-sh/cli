@@ -25,10 +25,6 @@ export default class APIError extends CLIError {
       case 402:
         messageAndExitCode = APIError.genericError(httpError.response.data as Error, 'You need to upgrade to a paid plan to perform this request.', 102);
         break;
-      case 404:
-      case 400:
-        messageAndExitCode = APIError.notFound(httpError.response.data as Error);
-        break;
     }
 
     if (messageAndExitCode) {
@@ -45,7 +41,7 @@ export default class APIError extends CLIError {
     this.http = httpError;
   }
 
-  static is(error: Error): error is APIError {
+  static is(error: Record<string, any>): error is APIError {
     return error instanceof CLIError && 'http' in error;
   }
 
