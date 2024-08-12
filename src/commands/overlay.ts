@@ -34,7 +34,7 @@ export default class Overlay extends Command {
 
   async applyOverlay(file: string, overlayFile: string): Promise<string> {
     const api = await API.load(file);
-    const {definition} = api;
+    const definition = api.definition;
 
     this.d(`${file} looks like an ${api.specName} spec version ${api.version}`);
 

@@ -175,12 +175,15 @@ Please check `bump deploy --help` for more usage details.
 ### `bump diff [FILE]`
 
 _If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
+<<<<<<< HEAD
 
 Please note that by default the command will always exit with a
 successful return code. If you want to use this command in a CI
 environment and want the command to fail **in case of a breaking
 change**, you will need to add the `--fail-on-breaking` flag to your
 diff command.
+=======
+>>>>>>> 951e33b (New branch name (#69))
 
 Please note that by default the command will always exit with a
 successful return code. If you want to use this command in a CI
@@ -307,6 +310,6 @@ Everyone interacting in the Bump-CLI project codebases, issue trackers, chat roo
 
 This npm package starts at v2.0.0 for two main reasons:
 
-- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0 makes it clear we are working on our second version of the Bump CLI
+- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0, makes it clear we are working on our second version of the Bump CLI
 
 - The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transfering the ownership of the `bump-cli` package name!_
