@@ -1,25 +1,25 @@
 import { CLIError } from '@oclif/errors';
-import { Config } from '@oclif/core';
+import * as Config from '@oclif/config';
 import debug from 'debug';
 
-import { API } from '../definition.js';
-import { BumpApi } from '../api/index.js';
+import { API } from '../definition';
+import { BumpApi } from '../api';
 import {
   VersionRequest,
   VersionResponse,
   WithDiff,
   DiffRequest,
   DiffResponse,
-} from '../api/models.js';
+} from '../api/models';
 
 export class Diff {
   // 120 seconds = 2 minutes
   static readonly TIMEOUT = 120;
 
   _bump!: BumpApi;
-  _config: Config;
+  _config: Config.IConfig;
 
-  public constructor(config: Config) {
+  public constructor(config: Config.IConfig) {
     this._config = config;
   }
 

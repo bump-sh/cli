@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { AxiosError } from 'axios';
 import d from 'debug';
 
-import { InvalidDefinitionError } from './models.js';
+import { InvalidDefinitionError } from './models';
 
 type MessagesAndExitCode = [string[], number];
 const debug = d('bump-cli:api-client');
@@ -26,9 +26,6 @@ export default class APIError extends CLIError {
       case 401:
         [info, exit] = APIError.unauthenticated();
         break;
-      case 402:
-        [info, exit] = APIError.paymentRequired(httpError.response.data as Error);
-        break;
       case 404:
       case 400:
         [info, exit] = APIError.notFound(httpError.response.data as Error);
@@ -45,7 +42,7 @@ export default class APIError extends CLIError {
     this.http = httpError;
   }
 
-  static is(error: Record<string, any>): error is APIError {
+  static is(error: Error): error is APIError {
     return error instanceof CLIError && 'http' in error;
   }
 
@@ -64,13 +61,6 @@ export default class APIError extends CLIError {
       ],
       104,
     ];
-  }
-
-  static paymentRequired(error: Error): MessagesAndExitCode {
-    const genericMessage =
-      error.message || 'You need to upgrade to a paid plan to perform this request.';
-
-    return [[genericMessage], 102];
   }
 
   static invalidDefinition(error: InvalidDefinitionError): MessagesAndExitCode {

@@ -25,6 +25,10 @@ actions:
     description: Remove all other servers so we can add our own.
     remove: true
 
+  - target: '$..[?(@["x-beta"]==true)]'
+    description: Remove all beta operations
+    remove: true
+
   - target: '$.servers'
     description: Pop our server into the empty server array.
     update:
