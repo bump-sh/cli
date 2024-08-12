@@ -9,9 +9,9 @@
   <a href="https://bump.sh/users/sign_up">Sign up</a>
 </p>
 
-The Bump.sh CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from Swagger, OpenAPI or AsyncAPI), it can help you to:
+The Bump.sh CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from Swagger, OpenAPI, or AsyncAPI), it can help you to:
 
-- Validate an API document before publishing to your documentation
+- Validate an API document before publishing it to your documentation
 - Publish an API document to your Bump.sh documentation or hubs
 - Compare two API documents to generate a human-readable diff from your API definitions
 
@@ -33,7 +33,6 @@ Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.
 ## Installation
 
 The Bump.sh CLI is a node package currently distributed via NPM. You must have the Node v14+ interpreter installed on your computer or CI servers.
-
 _If you are looking to use Bump.sh in a continuous integration environment you might be interested in [our GitHub Action](https://github.com/marketplace/actions/bump-sh)._
 
 > You can download a standalone package directly from the latest
@@ -74,7 +73,7 @@ You can then use any Bump.sh commands with `npx` (same as `npm exec`)
 npx bump --help
 ```
 
-### How should I do if I'm not using npm ?
+### How should I do if I'm not using npm?
 
 Unfortunately, at the moment we only support the Node environment. However, you can download a standalone package directly from the [latest Github release](https://github.com/bump-sh/cli/releases) assets which you can run as a standalone binary. Or you can push your documentation using [our API](https://developers.bump.sh/) (advanced usage only).
 
@@ -121,7 +120,7 @@ When you update your API, you also want its documentation to be up to date for y
 bump deploy path/to/api-document.yml --doc my-documentation --token $DOC_TOKEN
 ```
 
-> You can find your own `my-documentation` slug and `$DOC_TOKEN` api key from your [documentation settings](https://bump.sh/docs).
+> You can find your own `my-documentation` slug and `$DOC_TOKEN` API key from your [documentation settings](https://bump.sh/docs).
 {: .info}
 
 You can also deploy a given API document to a different branch of your documentation with the `--branch <branch-name>` parameter. Please note the branch will be created if it doesn’t exist. More details about the branching feature are available on [this dedicated help page](https://docs.bump.sh/help/branching). E.g. deploy the API document to the `staging` branch of the documentation:
@@ -138,7 +137,7 @@ If you already have a hub in your [Bump.sh](https://bump.sh) account, you can au
 bump deploy dir/path/to/apis/ --auto-create --hub my-hub --token $HUB_TOKEN
 ```
 
-> You can find your own `my-hub` slug and `$HUB_TOKEN` api key from your [hub settings](https://bump.sh/hubs).
+> You can find your own `my-hub` slug and `$HUB_TOKEN` API key from your [hub settings](https://bump.sh/hubs).
 {: .info}
 
 Please note, by default, only files named `{slug}-api.[format]` are published. Where `{slug}` is a name for your API and `[format]` is either `yaml` or `json`. Adjust to your file naming convention using the `--filename-pattern <pattern>` option.
@@ -156,7 +155,7 @@ path/to/apis
 └─ README.md
 ```
 
-In order to deploy the 3 services API definition files from this folder (`private-api-users-service.json`, `partner-api-payments-service.yml` and `public-api-contracts-service.yml`), you can execute the following command:
+To deploy the 3 services API definition files from this folder (`private-api-users-service.json`, `partner-api-payments-service.yml` and `public-api-contracts-service.yml`), you can execute the following command:
 
 ```
 bump deploy path/to/apis/ --hub my-hub --filename-pattern '*-api-{slug}-service'
@@ -174,7 +173,7 @@ Please check `bump deploy --help` for more usage details.
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested in [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
 
 Please note that by default the command will always exit with a
 successful return code. If you want to use this command in a CI
