@@ -11,7 +11,7 @@
 
 The Bump.sh CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from Swagger, OpenAPI or AsyncAPI), it can help you to:
 
-- Validate an API document before publishing it to your documentation
+- Validate an API document before publishing to your documentation
 - Publish an API document to your Bump.sh documentation or hubs
 - Compare two API documents to generate a human-readable diff from your API definitions
 
@@ -32,9 +32,9 @@ Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.
 
 ## Installation
 
-The Bump.sh CLI is a node package currently distributed via NPM. This means you must have the Node v14+ interpreter installed on your computer or CI servers.
+The Bump.sh CLI is a node package currently distributed via NPM. You must have the Node v14+ interpreter installed on your computer or CI servers.
 
-_If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
+_If you are looking to use Bump.sh in a continuous integration environment you might be interested in [our GitHub Action](https://github.com/marketplace/actions/bump-sh)._
 
 > You can download a standalone package directly from the latest
 > GitHub release assets if you don’t use Node.
@@ -87,7 +87,7 @@ $ bump --help
 The Bump.sh CLI is used to interact with your API documentation hosted on Bump.sh by using the API of developers.bump.sh
 
 VERSION
-  bump-cli/2.8.0 linux-x64 node-v16.19.0
+  bump-cli/2.7.2 linux-x64 node-v16.17.0
 
 USAGE
   $ bump [COMMAND]
@@ -96,7 +96,6 @@ COMMANDS
   deploy   Create a new version of your documentation from the given file or URL.
   diff     Get a comparison diff with your documentation from the given file or URL.
   help     Display help for bump.
-  overlay  Apply an OpenAPI specified overlay to your API definition.
   preview  Create a documentation preview from the given file or URL.
 ```
 
@@ -113,7 +112,6 @@ Head over to your Documentation settings in the “CI deployment” section or y
 * [`bump deploy [FILE]`](#bump-deploy-file)
 * [`bump diff [FILE]`](#bump-diff-file)
 * [`bump preview [FILE]`](#bump-preview-file)
-* [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]`](#bump-overlay-definition_file-overlay_file)
 
 ### `bump deploy [FILE]`
 
@@ -176,7 +174,7 @@ Please check `bump deploy --help` for more usage details.
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh#diff-on-pull-requests-only) diff command._
 
 Please note that by default the command will always exit with a
 successful return code. If you want to use this command in a CI
@@ -244,7 +242,7 @@ bump preview --live --open openapi-definition.json
 ```
 
 - Edit your `openapi-definition.json` file in your favorite text editor
-- Watch the live preview being updated each time you save your file.
+- Watch the live preview is updated each time you save your file.
 
 > You can create as many previews as you like without being authenticated. This is a **free and unlimited service**.
 {: .info}
@@ -252,26 +250,6 @@ bump preview --live --open openapi-definition.json
 _Note: the additional `--open` flag helps to automatically open the preview URL in your browser._
 
 Please check `bump preview --help` for more usage details
-
-### `bump overlay [DEFINITION_FILE] [OVERLAY_FILE]`
-
-> This feature implements the [OpenAPI Overlay specification](https://github.com/OAI/Overlay-Specification). It is possible to apply an Overlay to any kind of document, be it an OpenAPI or AsyncAPI definition file.
-
-The Overlay specification of OpenAPI makes it possible to modify the content of an API definition file by adding a layer on top of it. That layer helps add, remove, or change some or all of the content of the original definition. 
-
-Technically, the `bump overlay` command will output a modified version of the `[DEFINITION_FILE]` (an OpenAPI or AsyncAPI document) by applying the operations described in the `[OVERLAY_FILE]` Overlay file to the original API document.
-
-To redirect the output of the command to a new file you can run the following:
-
-```shell
-bump overlay api-document.yaml overlay-file.yaml > api-overlayed-document.yaml
-```
-
-_Note: you can also apply the overlay during the [`bump deploy` command]((#bump-deploy-file)) with the new `--overlay` flag:_
-
-```shell
-bump deploy api-document.yaml --doc my-doc --token my-token --overlay overlay-file.yaml 
-```
 
 ## Development
 
@@ -311,10 +289,6 @@ We currently support [OpenAPI](https://github.com/OAI/OpenAPI-Specification) fro
 
 Bug reports and pull requests are welcome on GitHub at <https://github.com/bump-sh/cli>. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
 
-## Thanks
-
-- [Lorna Mitchel](https://github.com/lornajane/) for [openapi-overlay-js](https://github.com/lornajane/openapi-overlays-js)
-
 ## License
 
 The Bump CLI project is released under the [MIT License](http://opensource.org/licenses/MIT).
@@ -327,6 +301,6 @@ Everyone interacting in the Bump-CLI project codebases, issue trackers, chat roo
 
 This npm package starts at v2.0.0 for two main reasons:
 
-- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0, which makes it clear we are working on our second version of the Bump CLI
+- Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0 makes it clear we are working on our second version of the Bump CLI
 
 - The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transferring the ownership of the `bump-cli` package name!_
