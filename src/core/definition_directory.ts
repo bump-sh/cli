@@ -5,10 +5,10 @@ import { join, extname, dirname, resolve, basename } from 'node:path';
 import * as p from '@clack/prompts';
 import { CLIError } from '@oclif/errors';
 
-import { cli } from '../cli';
-import { API } from '../definition';
-import { File } from './utils/file';
-import { confirm as promptConfirm } from '../core/utils/prompts';
+import { cli } from '../cli/index.js';
+import { API } from '../definition.js';
+import { File } from './utils/file.js';
+import { confirm as promptConfirm } from '../core/utils/prompts.js';
 
 export type DefinitionConfig = {
   definition: API;
