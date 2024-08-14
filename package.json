@@ -1,7 +1,7 @@
 {
   "name": "bump-cli",
   "description": "The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh",
-  "version": "2.8.1",
+  "version": "2.7.3-beta.1",
   "author": "Paul Bonaud <paulr@bump.sh>",
   "bin": {
     "bump": "./bin/run"
@@ -9,7 +9,7 @@
   "bugs": "https://github.com/bump-sh/cli/issues",
   "devDependencies": {
     "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^2.0.3",
+    "@oclif/test": "^3.1.8",
     "@types/debug": "^4.1.5",
     "@types/jsonpath": "^0.2.4",
     "@types/mocha": "^10.0.0",
@@ -24,16 +24,16 @@
     "globby": "^11.0.3",
     "mocha": "^10.0.0",
     "nock": "^13.0.11",
-    "np": "^10.0.5",
+    "np": "^10.0.7",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "sinon": "^14.0.0",
     "stdout-stderr": "^0.1.13",
     "ts-node": "^10.0.0",
-    "typescript": "4.5.5"
+    "typescript": "5.3.3"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=14.0.0"
   },
   "files": [
     "/bin",
@@ -82,21 +82,21 @@
   },
   "types": "lib/index.d.ts",
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.7",
+    "@apidevtools/json-schema-ref-parser": "^11.2.0",
     "@asyncapi/specs": "^5.1.0",
     "@clack/prompts": "^0.6.3",
     "@oclif/command": "^1.8.36",
     "@oclif/config": "^1.18.17",
-    "@oclif/core": "1.20.4",
-    "@oclif/plugin-help": "^5.1.10",
+    "@oclif/core": "1.26.2",
+    "@oclif/plugin-help": "^5.2.20",
     "@oclif/plugin-warn-if-update-available": "^2.0.36",
     "@stoplight/yaml": "^4.2.3",
     "async-mutex": "^0.4.0",
-    "axios": "^1.6.4",
+    "axios": "^1.7.3",
     "debug": "^4.3.1",
     "jsonpath": "^1.1.1",
     "mergician": "^1.0.3",
     "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#0f9d3ec7c033fef184ec54e1ffc201b2d61ce023",
-    "tslib": "^2.3.0"
+    "tslib": "^2.6.3"
   }
 }
