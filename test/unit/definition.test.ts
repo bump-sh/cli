@@ -145,7 +145,7 @@ describe('API class', () => {
         );
 
         expect(api.serializeDefinition('destination/file.yaml')).to.equal(
-          YAML.safeStringify(api.overlayedDefinition),
+          YAML.safeStringify(api.overlayedDefinition, { lineWidth: Infinity }),
         );
       });
     });
