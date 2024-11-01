@@ -89,7 +89,7 @@
     "@oclif/config": "^1.18.17",
     "@oclif/core": "1.20.4",
     "@oclif/plugin-help": "^5.1.10",
-    "@oclif/plugin-warn-if-update-available": "^2.0.36",
+    "@oclif/plugin-warn-if-update-available": "^3.1.20",
     "@stoplight/yaml": "^4.2.3",
     "async-mutex": "^0.4.0",
     "axios": "^1.6.4",
