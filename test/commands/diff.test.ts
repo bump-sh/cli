@@ -51,6 +51,40 @@ describe('diff subcommand', () => {
         api
           .post(
             '/api/v1/versions',
+            (body) => body.documentation === 'coucou' && !body.branch_name,
+          )
+          .once()
+          .reply(201, { id: '123', doc_public_url: 'http://localhost/doc/1' })
+          .get('/api/v1/versions/123')
+          .once()
+          .reply(202)
+          .get('/api/v1/versions/123')
+          .once()
+          .reply(200, { diff_details: [] });
+      })
+      .stdout()
+      .stderr()
+      .command([
+        'diff',
+        'examples/valid/openapi.v3.json',
+        '--doc',
+        'coucou',
+        '--format',
+        'json',
+      ])
+      .it(
+        'asks for a diff to Bump and returns the newly created version (no content change)',
+        async ({ stdout, stderr }) => {
+          expect(stderr).to.eq('');
+          expect(stdout).to.contain('[]');
+        },
+      );
+
+    test
+      .nock('https://bump.sh', (api) => {
+        api
+          .post(
+            '/api/v1/versions',
             (body) => body.documentation === 'coucou' && body.branch_name === 'next',
           )
           .once()

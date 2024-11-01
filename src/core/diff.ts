@@ -209,7 +209,9 @@ export class Diff {
   isVersionWithDiff(
     result: (VersionResponse & WithDiff) | DiffResponse,
   ): result is VersionResponse & WithDiff {
-    return (result as VersionResponse & WithDiff).diff_summary !== undefined;
+    const { diff_summary, diff_markdown, diff_details } = result as VersionResponse &
+      WithDiff;
+    return (diff_summary || diff_markdown || diff_details) !== undefined;
   }
 
   extractDiff(versionWithDiff: VersionResponse & WithDiff): DiffResponse {
