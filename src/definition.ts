@@ -17,6 +17,12 @@ import { Overlay } from './core/overlay';
 
 type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7;
 
+interface YamlOptions {
+  lineWidth?: number;
+  comments?: Record<any, any>;
+  keepComments?: boolean;
+}
+
 class SupportedFormat {
   static readonly openapi: Record<string, SpecSchema> = {
     '2.0': require('oas-schemas/schemas/v2.0/schema.json'),
@@ -178,14 +184,24 @@ class API {
     return [raw, parsed];
   }
 
-  serializeDefinition(outputPath?: string): string {
+  serializeDefinition(outputPath?: string, fileOptions?: YamlOptions): string {
     if (this.overlayedDefinition) {
       let serializedDefinition: string;
 
       if (this.guessFormat(outputPath) == 'json') {
         serializedDefinition = JSON.stringify(this.overlayedDefinition);
       } else {
-        serializedDefinition = safeStringify(this.overlayedDefinition);
+        // Set YAML options with defaults
+        const yamlOptions: YamlOptions = {
+          lineWidth:
+            fileOptions?.lineWidth === -1 ? Infinity : fileOptions?.lineWidth || Infinity,
+          keepComments: fileOptions?.keepComments ?? true,
+          comments:
+            fileOptions?.keepComments && fileOptions?.comments
+              ? fileOptions.comments
+              : undefined,
+        };
+        serializedDefinition = safeStringify(this.overlayedDefinition, yamlOptions);
       }
 
       return serializedDefinition;
