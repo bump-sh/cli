@@ -1,17 +1,21 @@
-import { CLIError } from '@oclif/errors';
+import {ux} from '@oclif/core'
+import {CLIError} from '@oclif/core/errors'
 
-import Command from '../command';
-import * as flagsBuilder from '../flags';
-import { Diff as CoreDiff } from '../core/diff';
-import { fileArg, otherFileArg } from '../args';
-import { cli } from '../cli';
-import { DiffResponse } from '../api/models';
+import {DiffResponse} from '../api/models.js'
+import {fileArg, otherFileArg} from '../args.js'
+import {BaseCommand} from '../base-command.js'
+import {Diff as CoreDiff} from '../core/diff.js'
+import * as flagsBuilder from '../flags.js'
 
-export default class Diff extends Command {
-  static description =
-    'Get a comparison diff with your documentation from the given file or URL.';
+export default class Diff extends BaseCommand<typeof Diff> {
+  static override args = {
+    file: fileArg,
+    otherFile: otherFileArg,
+  }
 
-  static examples = [
+  static override description = 'Get a comparison diff with your documentation from the given file or URL.'
+
+  static override examples = [
     `Compare a potential new version with the currently published one:
 
   $ bump diff FILE --doc <your_doc_id_or_slug> --token <your_doc_token>
@@ -41,21 +45,35 @@ export default class Diff extends Command {
   Updated: POST /versions
     Body attribute added: previous_version_id
 `,
-  ];
+  ]
 
-  static flags = {
-    help: flagsBuilder.help({ char: 'h' }),
-    doc: flagsBuilder.doc(),
-    hub: flagsBuilder.hub(),
+  static override flags = {
     branch: flagsBuilder.branch(),
-    token: flagsBuilder.token({ required: false }),
-    open: flagsBuilder.open({ description: 'Open the visual diff in your browser' }),
+    doc: flagsBuilder.doc(),
+    expires: flagsBuilder.expires(),
     'fail-on-breaking': flagsBuilder.failOnBreaking(),
     format: flagsBuilder.format(),
-    expires: flagsBuilder.expires(),
-  };
+    hub: flagsBuilder.hub(),
+    token: flagsBuilder.token({required: false}),
+  }
 
-  static args = [fileArg, otherFileArg];
+  async displayCompareResult(result: DiffResponse, format: string, failOnBreaking: boolean): Promise<void> {
+    if (format === 'text' && result.text) {
+      ux.stdout(result.text)
+    } else if (format === 'markdown' && result.markdown) {
+      ux.stdout(result.markdown)
+    } else if (format === 'json' && result.details) {
+      ux.stdout(JSON.stringify(result.details, null, 2))
+    } else if (format === 'html' && result.html) {
+      ux.stdout(result.html)
+    } else {
+      ux.stdout('No structural changes detected.')
+    }
+
+    if (failOnBreaking && result.breaking) {
+      this.exit(1)
+    }
+  }
 
   /*
     Oclif doesn't type parsed args & flags correctly and especially
@@ -64,86 +82,46 @@ export default class Diff extends Command {
     See https://github.com/oclif/oclif/issues/301 for details
   */
   async run(): Promise<void> {
-    const { args, flags } = this.parse(Diff);
-    /* Flags.format has a default value, so it's always defined. But
-     * oclif types doesn't detect it */
+    const {args, flags} = await this.parse(Diff)
     const [documentation, hub, branch, token, format, expires] = [
       flags.doc,
       flags.hub,
       flags.branch,
       flags.token,
-      /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-      flags.format!,
+      flags.format,
       flags.expires,
-    ];
-
+    ]
     if (format === 'text') {
-      if (args.FILE2) {
-        cli.action.start('* Comparing the two given definition files');
+      if (args.otherFile) {
+        ux.action.start('* Comparing the two given definition files')
       } else {
-        cli.action.start(
-          '* Comparing the given definition file with the currently deployed one',
-        );
+        ux.action.start('* Comparing the given definition file with the currently deployed one')
       }
     }
 
-    if (!args.FILE2 && (!documentation || !token)) {
-      throw new CLIError(
-        'Please provide a second file argument or login with an existing token',
-      );
+    if (!args.otherFile && (!documentation || !token)) {
+      throw new CLIError('Please provide a second file argument or login with an existing token')
     }
 
-    const diff: DiffResponse | undefined = await new CoreDiff(this.config).run(
-      args.FILE,
-      args.FILE2,
+    ux.action.status = '...diff on Bump.sh in progress'
+
+    const diff: DiffResponse | undefined = await new CoreDiff(this.bump).run(
+      args.file,
+      args.otherFile,
       documentation,
       hub,
       branch,
       token,
       format,
       expires,
-    );
+    )
 
-    cli.action.stop();
+    ux.action.stop()
 
     if (diff) {
-      await this.displayCompareResult(
-        diff,
-        format,
-        flags.open,
-        flags['fail-on-breaking'],
-      );
+      await this.displayCompareResult(diff, format, flags['fail-on-breaking'])
     } else {
-      await cli.log('No changes detected.');
-    }
-
-    return;
-  }
-
-  async displayCompareResult(
-    result: DiffResponse,
-    format: string,
-    open: boolean,
-    failOnBreaking: boolean,
-  ): Promise<void> {
-    if (format == 'text' && result.text) {
-      await cli.log(result.text);
-    } else if (format == 'markdown' && result.markdown) {
-      await cli.log(result.markdown);
-    } else if (format == 'json' && result.details) {
-      await cli.log(JSON.stringify(result.details, null, 2));
-    } else if (format == 'html' && result.html) {
-      await cli.log(result.html);
-    } else {
-      await cli.log('No structural changes detected.');
-    }
-
-    if (open && result.public_url) {
-      await cli.open(result.public_url);
-    }
-
-    if (failOnBreaking && result.breaking) {
-      this.exit(1);
+      ux.stdout('No changes detected.')
     }
   }
 }

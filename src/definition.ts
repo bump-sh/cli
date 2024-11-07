@@ -1,28 +1,26 @@
-import { CLIError } from '@oclif/errors';
-import $RefParser from '@apidevtools/json-schema-ref-parser';
-import { defaults } from '@apidevtools/json-schema-ref-parser/lib/options';
-import asyncapi from '@asyncapi/specs';
+import {default as $RefParser, getJsonSchemaRefParserDefaultOptions} from '@apidevtools/json-schema-ref-parser'
+import asyncapi from '@asyncapi/specs'
+import {CLIError} from '@oclif/core/errors'
+import {safeStringify} from '@stoplight/yaml'
 import {
   JSONSchema4,
-  JSONSchema4Object,
   JSONSchema4Array,
+  JSONSchema4Object,
   JSONSchema6,
   JSONSchema6Object,
   JSONSchema7,
-} from 'json-schema';
-import path from 'path';
-import { safeStringify } from '@stoplight/yaml';
+} from 'json-schema'
+import {createRequire} from 'node:module'
+import path from 'node:path'
 
-import { Overlay } from './core/overlay';
+// Used to require JSON files
+const require = createRequire(import.meta.url)
 
-type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7;
+import {Overlay} from './core/overlay.js'
+
+type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
 
 class SupportedFormat {
-  static readonly openapi: Record<string, SpecSchema> = {
-    '2.0': require('oas-schemas/schemas/v2.0/schema.json'),
-    '3.0': require('oas-schemas/schemas/v3.0/schema.json'),
-    '3.1': require('oas-schemas/schemas/v3.1/schema.json'),
-  };
   static readonly asyncapi: Record<string, SpecSchema> = {
     '2.0': asyncapi.schemas['2.0.0'],
     '2.1': asyncapi.schemas['2.1.0'],
@@ -31,296 +29,293 @@ class SupportedFormat {
     '2.4': asyncapi.schemas['2.4.0'],
     '2.5': asyncapi.schemas['2.5.0'],
     '2.6': asyncapi.schemas['2.6.0'],
-  };
+  }
+
+  static readonly openapi: Record<string, SpecSchema> = {
+    '2.0': require('oas-schemas/schemas/v2.0/schema.json'),
+    '3.0': require('oas-schemas/schemas/v3.0/schema.json'),
+    '3.1': require('oas-schemas/schemas/v3.1/schema.json'),
+  }
 }
 
 class UnsupportedFormat extends CLIError {
   constructor(message = '') {
-    const compatOpenAPI = Object.keys(SupportedFormat.openapi).join(', ');
-    const compatAsyncAPI = Object.keys(SupportedFormat.asyncapi).join(', ');
+    const compatOpenAPI = Object.keys(SupportedFormat.openapi).join(', ')
+    const compatAsyncAPI = Object.keys(SupportedFormat.asyncapi).join(', ')
 
     const errorMsgs = [
       `Unsupported API specification (${message})`,
       `Please try again with an OpenAPI ${compatOpenAPI} or AsyncAPI ${compatAsyncAPI} file.`,
-    ];
+    ]
 
-    super(errorMsgs.join('\n'));
+    super(errorMsgs.join('\n'))
   }
 }
 
 class API {
-  readonly location: string;
-  readonly rawDefinition: string;
-  readonly definition: APIDefinition;
-  overlayedDefinition: APIDefinition | undefined;
-  readonly references: APIReference[];
-  readonly version: string;
-  readonly specName: string;
-  readonly spec?: SpecSchema;
+  readonly definition: APIDefinition
+  readonly location: string
+  overlayedDefinition: APIDefinition | undefined
+  readonly rawDefinition: string
+  readonly references: APIReference[]
+  readonly spec?: SpecSchema
+  readonly specName: string
+  readonly version: string
 
-  constructor(location: string, $refs: $RefParser.$Refs) {
-    this.location = location;
-    this.references = [];
+  constructor(location: string, values: SpecSchema) {
+    this.location = location
+    this.references = []
 
-    const [raw, parsed] = this.resolveContent($refs);
-    this.rawDefinition = raw as string;
+    const [raw, parsed] = this.resolveContent(values)
+    this.rawDefinition = raw as string
 
-    this.definition = parsed;
-    this.specName = this.getSpecName(parsed);
-    this.version = this.getVersion(parsed);
-    this.spec = this.getSpec(parsed);
+    this.definition = parsed
+    this.specName = this.getSpecName(parsed)
+    this.version = this.getVersion(parsed)
+    this.spec = this.getSpec(parsed)
 
     if (this.spec === undefined) {
-      throw new UnsupportedFormat(`${this.specName} ${this.version}`);
+      throw new UnsupportedFormat(`${this.specName} ${this.version}`)
     }
+  }
+
+  static isAsyncAPI(definition: JSONSchema4Object | JSONSchema6Object): definition is AsyncAPI {
+    return 'asyncapi' in definition
+  }
+
+  static isOpenAPI(definition: JSONSchema4Object | JSONSchema6Object): definition is OpenAPI {
+    return typeof definition.openapi === 'string' || typeof definition.swagger === 'string'
+  }
+
+  static isOpenAPIOverlay(definition: JSONSchema4Object | JSONSchema6Object): definition is OpenAPIOverlay {
+    return 'overlay' in definition
+  }
+
+  static async load(path: string): Promise<API> {
+    const {json, text, yaml} = getJsonSchemaRefParserDefaultOptions().parse
+    // Not sure why the lib types the parser as potentially
+    // “undefined”, hence the forced typing in the following consts.
+    const TextParser = text as $RefParser.Plugin
+    const JSONParser = json as $RefParser.Plugin
+    const YAMLParser = yaml as $RefParser.Plugin
+    // We override the default parsers from $RefParser to be able
+    // to keep the raw content of the files parsed
+    const withRawTextParser = (parser: $RefParser.Plugin): $RefParser.Plugin => ({
+      ...parser,
+      async parse(file: $RefParser.FileInfo): Promise<JSONSchemaWithRaw> {
+        if (typeof parser.parse === 'function' && typeof TextParser.parse === 'function') {
+          const parsed = (await parser.parse(file)) as JSONSchema4 | JSONSchema6
+          return {parsed, raw: TextParser.parse(file) as string}
+        }
+
+        // Not sure why the lib states that Plugin.parse can be a
+        // scalar number | string (on not only a callable function)
+        return {}
+      },
+    })
+
+    return $RefParser
+      .resolve(path, {
+        dereference: {circular: false},
+        parse: {
+          json: withRawTextParser(JSONParser),
+          text: {
+            ...TextParser,
+            canParse: ['.md', '.markdown'],
+            encoding: 'utf8',
+            async parse(file: $RefParser.FileInfo): Promise<JSONSchemaWithRaw> {
+              if (typeof TextParser.parse === 'function') {
+                const parsed = (await TextParser.parse(file)) as string
+                return {parsed, raw: parsed}
+              }
+
+              // Not sure why the lib states that Plugin.parse can be a
+              // scalar number | string (on not only a callable function)
+              return {}
+            },
+          },
+          yaml: withRawTextParser(YAMLParser),
+        },
+      })
+      .then(($refs) => {
+        const values = $refs.values()
+        return new API(path, values)
+      })
+      .catch((error: Error) => {
+        throw new CLIError(error)
+      })
+  }
+
+  public async applyOverlay(overlayPath: string): Promise<void> {
+    const overlay = await API.load(overlayPath)
+    const overlayDefinition = overlay.definition
+
+    if (!API.isOpenAPIOverlay(overlayDefinition)) {
+      throw new Error(`${overlayPath} does not look like an OpenAPI overlay`)
+    }
+
+    this.overlayedDefinition = await new Overlay().run(this.definition, overlayDefinition)
+  }
+
+  public extractDefinition(outputPath?: string): [string, APIReference[]] {
+    const references = []
+
+    for (let i = 0; i < this.references.length; i++) {
+      const reference = this.references[i]
+      references.push({
+        content: reference.content,
+        location: reference.location,
+      })
+    }
+
+    return [this.serializeDefinition(outputPath), references]
   }
 
   getSpec(definition: APIDefinition): SpecSchema {
     if (API.isAsyncAPI(definition)) {
-      return SupportedFormat.asyncapi[this.versionWithoutPatch()];
-    } else if (API.isOpenAPIOverlay(definition)) {
-      return { overlay: { type: 'string' } };
-    } else {
-      return SupportedFormat.openapi[this.versionWithoutPatch()];
+      return SupportedFormat.asyncapi[this.versionWithoutPatch()]
     }
+
+    if (API.isOpenAPIOverlay(definition)) {
+      return {overlay: {type: 'string'}}
+    }
+
+    return SupportedFormat.openapi[this.versionWithoutPatch()]
   }
 
   getSpecName(definition: APIDefinition): string {
     if (API.isAsyncAPI(definition)) {
-      return 'AsyncAPI';
-    } else {
-      return 'OpenAPI';
+      return 'AsyncAPI'
     }
+
+    return 'OpenAPI'
   }
 
   getVersion(definition: APIDefinition): string {
     if (API.isAsyncAPI(definition)) {
-      return definition.asyncapi;
-    } else {
-      return (definition.openapi || definition.swagger) as string;
+      return definition.asyncapi
     }
+
+    return (definition.openapi || definition.swagger) as string
   }
 
   guessFormat(output?: string): string {
-    return (output || this.location).endsWith('.json') ? 'json' : 'yaml';
+    return (output || this.location).endsWith('.json') ? 'json' : 'yaml'
   }
 
-  versionWithoutPatch(): string {
-    const [major, minor] = this.version.split('.', 3);
-
-    return `${major}.${minor}`;
-  }
-
-  /* Resolve reference absolute paths to the main api location when possible */
-  resolveRelativeLocation(absPath: string): string {
-    const url = (location: string): Location | { hostname: string } => {
-      try {
-        return new URL(location);
-      } catch {
-        return { hostname: '' };
-      }
-    };
-    const definitionUrl = url(this.location);
-    const refUrl = url(absPath);
-
-    if (
-      absPath.match(/^\//) || // Unix style filesystem path
-      absPath.match(/^[a-zA-Z]+\:\\/) || // Windows style filesystem path
-      (absPath.match(/^https?:\/\//) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
-    ) {
-      return path.relative(path.dirname(this.location), absPath);
-    } else {
-      return absPath;
-    }
-  }
-
-  resolveContent($refs: $RefParser.$Refs): [string, APIDefinition] {
-    const values = $refs.values();
-    let mainReference: JSONSchemaWithRaw = { parsed: {}, raw: '' };
+  resolveContent(values: SpecSchema): [string, APIDefinition] {
+    let mainReference: JSONSchemaWithRaw = {parsed: {}, raw: ''}
 
     for (const [absPath, reference] of Object.entries(values)) {
       if (absPath === this.location || absPath === path.resolve(this.location)) {
         // $refs.values is not properly typed so we need to force it
         // with the resulting type of our custom defined parser
-        mainReference = reference as JSONSchemaWithRaw;
+        mainReference = reference as JSONSchemaWithRaw
       } else {
         // $refs.values is not properly typed so we need to force it
         // with the resulting type of our custom defined parser
-        const { raw } = reference as JSONSchemaWithRaw;
+        const {raw} = reference as JSONSchemaWithRaw
 
         if (!raw) {
-          throw new UnsupportedFormat('Reference ${absPath} is empty');
+          throw new UnsupportedFormat(`Reference ${absPath} is empty`)
         }
 
         this.references.push({
-          location: this.resolveRelativeLocation(absPath),
           content: raw,
-        });
+          location: this.resolveRelativeLocation(absPath),
+        })
       }
     }
 
-    const { raw, parsed } = mainReference;
+    const {parsed, raw} = mainReference
 
-    if (!parsed || !(parsed instanceof Object) || !('info' in parsed)) {
-      throw new UnsupportedFormat(
-        "Definition needs to be an object with at least an 'info' key",
-      );
+    if (!parsed || !raw || !(parsed instanceof Object) || !('info' in parsed)) {
+      throw new UnsupportedFormat("Definition needs to be an object with at least an 'info' key")
     }
+
+    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed) && !API.isOpenAPIOverlay(parsed)) {
+      throw new UnsupportedFormat()
+    }
+
+    return [raw, parsed]
+  }
+
+  /* Resolve reference absolute paths to the main api location when possible */
+  resolveRelativeLocation(absPath: string): string {
+    const definitionUrl = this.url()
+    const refUrl = this.url(absPath)
 
     if (
-      !API.isOpenAPI(parsed) &&
-      !API.isAsyncAPI(parsed) &&
-      !API.isOpenAPIOverlay(parsed)
+      /^\//.test(absPath) || // Unix style filesystem path
+      /^[A-Za-z]+:\\/.test(absPath) || // Windows style filesystem path
+      (/^https?:\/\//.test(absPath) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
     ) {
-      throw new UnsupportedFormat();
+      return path.relative(path.dirname(this.location), absPath)
     }
 
-    return [raw, parsed];
+    return absPath
   }
 
   serializeDefinition(outputPath?: string): string {
     if (this.overlayedDefinition) {
-      let serializedDefinition: string;
-
-      if (this.guessFormat(outputPath) == 'json') {
-        serializedDefinition = JSON.stringify(this.overlayedDefinition);
-      } else {
-        serializedDefinition = safeStringify(this.overlayedDefinition);
-      }
-
-      return serializedDefinition;
-    } else {
-      return this.rawDefinition;
-    }
-  }
-
-  static isOpenAPI(
-    definition: JSONSchema4Object | JSONSchema6Object,
-  ): definition is OpenAPI {
-    return (
-      typeof definition.openapi === 'string' || typeof definition.swagger === 'string'
-    );
-  }
-
-  static isAsyncAPI(
-    definition: JSONSchema4Object | JSONSchema6Object,
-  ): definition is AsyncAPI {
-    return 'asyncapi' in definition;
-  }
-
-  static isOpenAPIOverlay(
-    definition: JSONSchema4Object | JSONSchema6Object,
-  ): definition is OpenAPIOverlay {
-    return 'overlay' in definition;
-  }
-
-  public extractDefinition(outputPath?: string): [string, APIReference[]] {
-    const references = [];
-
-    for (let i = 0; i < this.references.length; i++) {
-      const reference = this.references[i];
-      references.push({
-        location: reference.location,
-        content: reference.content,
-      });
+      return this.guessFormat(outputPath) === 'json'
+        ? JSON.stringify(this.overlayedDefinition)
+        : safeStringify(this.overlayedDefinition)
     }
 
-    return [this.serializeDefinition(outputPath), references];
+    return this.rawDefinition
   }
 
-  public async applyOverlay(overlayPath: string): Promise<void> {
-    const overlay = await API.load(overlayPath);
-    const overlayDefinition = overlay.definition;
+  versionWithoutPatch(): string {
+    const [major, minor] = this.version.split('.', 3)
 
-    if (!API.isOpenAPIOverlay(overlayDefinition)) {
-      throw new Error(`${overlayPath} does not look like an OpenAPI overlay`);
+    return `${major}.${minor}`
+  }
+
+  private url(location: string = this.location): {hostname: string} | Location {
+    try {
+      return new URL(location)
+    } catch {
+      return {hostname: ''}
     }
-
-    this.overlayedDefinition = await new Overlay().run(
-      this.definition,
-      overlayDefinition,
-    );
-  }
-
-  static async load(path: string): Promise<API> {
-    const JSONParser = defaults.parse.json;
-    const YAMLParser = defaults.parse.yaml;
-    const TextParser = defaults.parse.text;
-    // We override the default parsers from $RefParser to be able
-    // to keep the raw content of the files parsed
-    const withRawTextParser = (
-      parser: $RefParser.ParserOptions,
-    ): $RefParser.ParserOptions => {
-      return {
-        ...parser,
-        parse: async (file: $RefParser.FileInfo): Promise<JSONSchemaWithRaw> => {
-          const parsed = (await parser.parse(file)) as JSONSchema4 | JSONSchema6;
-          return { parsed, raw: TextParser.parse(file) };
-        },
-      };
-    };
-
-    return $RefParser
-      .resolve(path, {
-        parse: {
-          json: withRawTextParser(JSONParser),
-          yaml: withRawTextParser(YAMLParser),
-          text: {
-            ...TextParser,
-            parse: async (file: $RefParser.FileInfo): Promise<JSONSchemaWithRaw> => {
-              const parsed = await TextParser.parse(file);
-              return { parsed, raw: parsed };
-            },
-            canParse: ['.md', '.markdown'],
-            encoding: 'utf8',
-          },
-        },
-        dereference: { circular: false },
-      })
-      .then(($refs) => {
-        return new API(path, $refs);
-      })
-      .catch((err: Error) => {
-        throw new CLIError(err);
-      });
   }
 }
 
 type JSONSchemaWithRaw = {
-  readonly parsed: JSONSchema4 | JSONSchema6;
-  readonly raw: string;
-};
+  readonly parsed?: JSONSchema4 | JSONSchema6 | string
+  readonly raw?: string
+}
 
 type APIReference = {
-  location: string;
-  content: string;
-};
+  content: string
+  location: string
+}
 
-type APIDefinition = OpenAPI | AsyncAPI | OpenAPIOverlay;
+type APIDefinition = AsyncAPI | OpenAPI | OpenAPIOverlay
 
 type InfoObject = {
-  readonly title: string;
-  readonly version: string;
-  readonly description?: string;
-};
+  readonly description?: string
+  readonly title: string
+  readonly version: string
+}
 
 // http://spec.openapis.org/oas/v3.1.0#oasObject
-type OpenAPI = JSONSchema4Object & {
-  readonly openapi?: string;
-  readonly swagger?: string;
-  readonly info: InfoObject;
-};
+type OpenAPI = {
+  readonly info: InfoObject
+  readonly openapi?: string
+  readonly swagger?: string
+} & JSONSchema4Object
 
-type OpenAPIOverlay = JSONSchema4Object & {
-  readonly overlay: string;
-  readonly info: InfoObject;
-  readonly actions: JSONSchema4Array;
-};
+type OpenAPIOverlay = {
+  readonly actions: JSONSchema4Array
+  readonly info: InfoObject
+  readonly overlay: string
+} & JSONSchema4Object
 
 // https://www.asyncapi.com/docs/specifications/2.0.0#A2SObject
-type AsyncAPI = JSONSchema4Object & {
-  readonly asyncapi: string;
-  readonly info: InfoObject;
-};
+type AsyncAPI = {
+  readonly asyncapi: string
+  readonly info: InfoObject
+} & JSONSchema4Object
 
-export { API, APIDefinition, OpenAPIOverlay, SupportedFormat };
+export {API, APIDefinition, OpenAPIOverlay, SupportedFormat}
