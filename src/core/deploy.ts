@@ -1,16 +1,42 @@
-import * as Config from '@oclif/config';
-import debug from 'debug';
+import debug from 'debug'
 
-import { API } from '../definition';
-import { BumpApi } from '../api';
-import { VersionRequest, VersionResponse } from '../api/models';
+import {BumpApi} from '../api/index.js'
+import {VersionRequest, VersionResponse} from '../api/models.js'
+import {API} from '../definition.js'
 
 export class Deploy {
-  _bump!: BumpApi;
-  _config: Config.IConfig;
+  private _bump!: BumpApi
 
-  public constructor(config: Config.IConfig) {
-    this._config = config;
+  public constructor(bumpClient: BumpApi) {
+    this._bump = bumpClient
+  }
+
+  protected async createVersion(request: VersionRequest, token: string): Promise<VersionResponse | undefined> {
+    const response = await this._bump.postVersion(request, token)
+    let version: VersionResponse | undefined
+
+    switch (response.status) {
+      case 204: {
+        break
+      }
+
+      case 201: {
+        version = response.data ?? {doc_public_url: 'https://bump.sh', id: ''}
+        break
+      }
+
+      default: {
+        this.d(`API status response was ${response.status}. Expected 201 or 204.`)
+        throw new Error('Unexpected server response. Please contact support at https://bump.sh if this error persists')
+      }
+    }
+
+    return version
+  }
+
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  d(formatter: any, ...args: any[]): void {
+    return debug(`bump-cli:core:deploy`)(formatter, ...args)
   }
 
   public async run(
@@ -24,81 +50,45 @@ export class Deploy {
     branch: string | undefined,
     overlay?: string | undefined,
   ): Promise<VersionResponse | undefined> {
-    let version: VersionResponse | undefined = undefined;
+    let version: VersionResponse | undefined
     if (overlay) {
-      await api.applyOverlay(overlay);
+      await api.applyOverlay(overlay)
     }
-    const [definition, references] = api.extractDefinition();
+
+    const [definition, references] = api.extractDefinition()
 
     const request: VersionRequest = {
-      documentation,
-      hub,
-      documentation_name: documentationName,
       auto_create_documentation: autoCreate && !dryRun,
-      definition,
-      references,
       branch_name: branch,
-    };
-
+      definition,
+      documentation,
+      documentation_name: documentationName,
+      hub,
+      references,
+    }
     if (dryRun) {
-      await this.validateVersion(request, token);
+      await this.validateVersion(request, token)
     } else {
-      version = await this.createVersion(request, token);
+      version = await this.createVersion(request, token)
     }
 
-    return version;
-  }
-
-  get bumpClient(): BumpApi {
-    if (!this._bump) this._bump = new BumpApi(this._config);
-    return this._bump;
-  }
-
-  async createVersion(
-    request: VersionRequest,
-    token: string,
-  ): Promise<VersionResponse | undefined> {
-    const response = await this.bumpClient.postVersion(request, token);
-    let version: VersionResponse | undefined = undefined;
-
-    switch (response.status) {
-      case 204:
-        break;
-      case 201:
-        version = response.data
-          ? response.data
-          : { id: '', doc_public_url: 'https://bump.sh' };
-        break;
-      default:
-        this.d(`API status response was ${response.status}. Expected 201 or 204.`);
-        throw new Error(
-          'Unexpected server response. Please contact support at https://bump.sh if this error persists',
-        );
-    }
-
-    return version;
-  }
-
-  async validateVersion(version: VersionRequest, token: string): Promise<undefined> {
-    const response = await this.bumpClient.postValidation(version, token);
-
-    switch (response.status) {
-      case 200:
-        break;
-      default:
-        this.d(`API status response was ${response.status}. Expected 200.`);
-        throw new Error(
-          'Unexpected server response. Please contact support at https://bump.sh if this error persists',
-        );
-    }
-
-    return;
+    return version
   }
 
   // Function signature type taken from @types/debug
   // Debugger(formatter: any, ...args: any[]): void;
-  /* eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any */
-  d(formatter: any, ...args: any[]): void {
-    return debug(`bump-cli:core:deploy`)(formatter, ...args);
+  async validateVersion(version: VersionRequest, token: string): Promise<undefined> {
+    const response = await this._bump.postValidation(version, token)
+
+    switch (response.status) {
+      case 200: {
+        break
+      }
+
+      default: {
+        this.d(`API status response was ${response.status}. Expected 200.`)
+        throw new Error('Unexpected server response. Please contact support at https://bump.sh if this error persists')
+      }
+    }
   }
 }

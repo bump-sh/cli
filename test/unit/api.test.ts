@@ -1,114 +1,101 @@
-import * as os from 'os';
-import * as path from 'path';
-import * as sinon from 'sinon';
-import base, { expect } from '@oclif/test';
-import * as Config from '@oclif/config';
-import nock from 'nock';
-import chalk from 'chalk';
+import {Config} from '@oclif/core'
+import {expect} from 'chai'
+import chalk from 'chalk'
+import nock from 'nock'
+import * as os from 'node:os'
+import {spy, stub} from 'sinon'
 
-import { BumpApi } from '../../src/api';
-import { PreviewRequest } from '../../src/api/models';
+import {BumpApi} from '../../src/api'
+import {PreviewRequest} from '../../src/api/models'
 
-nock.disableNetConnect();
-const root = path.join(__dirname, '../../');
-const test = base.add('config', () => Config.load(root));
+nock.disableNetConnect()
 // Force no colors in output messages
-chalk.level = 0;
+chalk.level = 0
+// Default oclif config from root of repo
+const config = await Config.load('../../')
 
 describe('BumpApi HTTP client class', () => {
   describe('nominal authenticated API call', () => {
-    const matchAuthorizationHeader = sinon.spy(sinon.stub().returns(true));
+    it('sends valid Authorization headers', async () => {
+      const matchAuthorizationHeader = spy(stub().returns(true))
 
-    test
-      .nock(
-        'https://bump.sh',
-        {
-          reqheaders: {
-            Authorization: matchAuthorizationHeader,
-          },
+      nock('https://bump.sh', {
+        reqheaders: {
+          Authorization: matchAuthorizationHeader,
         },
-        (api) => api.post('/api/v1/versions').reply(201, {}),
-      )
-      .do(
-        async (ctx) =>
-          await new BumpApi(ctx.config).postVersion(
-            { documentation: 'hello', definition: '' },
-            'my-secret-token',
-          ),
-      )
-      .it('sends valid Authorization headers', async () => {
-        expect(matchAuthorizationHeader.firstCall.args[0]).to.equal(
-          'Basic bXktc2VjcmV0LXRva2Vu',
-        );
-      });
-  });
+      })
+        .post('/api/v1/versions')
+        .reply(201, {})
+
+      await new BumpApi(config).postVersion({definition: '', documentation: 'hello'}, 'my-secret-token')
+
+      expect(matchAuthorizationHeader.firstCall.args[0]).to.equal('Basic bXktc2VjcmV0LXRva2Vu')
+    })
+  })
 
   describe('Customizing the API client with env variables', () => {
-    const matchUserAgentHeader = sinon.spy(sinon.stub().returns(true));
+    it('sends User-Agent with custom content', async () => {
+      // Create a stub for user agent header
+      const matchUserAgentHeader = spy(stub().returns(true))
 
-    test
-      .env(
-        { BUMP_HOST: 'http://localhost', BUMP_USER_AGENT: 'ua-extra-content' },
-        { clear: true },
-      )
-      .nock(
-        'http://localhost',
-        {
-          reqheaders: {
-            'User-Agent': matchUserAgentHeader,
-          },
+      // Mock env variables BUMP_HOST & BUMP_USER_AGENT
+      process.env.BUMP_HOST = process.env.BUMP_HOST || ''
+      process.env.BUMP_USER_AGENT = process.env.BUMP_USER_AGENT || ''
+      const stubs = [
+        stub(process.env, 'BUMP_HOST').value('http://localhost'),
+        stub(process.env, 'BUMP_USER_AGENT').value('ua-extra-content'),
+      ]
+
+      // Mock HTTP request
+      nock('http://localhost', {
+        reqheaders: {
+          'User-Agent': matchUserAgentHeader,
         },
-        (api) => api.post('/api/v1/versions').reply(201, {}),
+      })
+        .post('/api/v1/versions')
+        .reply(201, {})
+
+      // System under test
+      await new BumpApi(config).postVersion(
+        {
+          definition: '',
+          documentation: 'hello',
+        },
+        'token',
       )
-      .do(
-        async (ctx) =>
-          await new BumpApi(ctx.config).postVersion(
-            {
-              documentation: 'hello',
-              definition: '',
-            },
-            'token',
-          ),
+
+      expect(matchUserAgentHeader.firstCall.args[0]).to.match(
+        new RegExp(`^bump-cli/([0-9.]+)(-[a-z0-9.]+)? ${os.platform()}-${os.arch()} node-v[0-9.]+ ua-extra-content$`),
       )
-      .it('sends User-Agent with custom content', async () => {
-        expect(matchUserAgentHeader.firstCall.args[0]).to.match(
-          new RegExp(
-            `^bump-cli/([0-9\.]+)(-[a-z0-9\.]+)? ${os.platform()}-${os.arch()} node-v[0-9\.]+ ua-extra-content$`,
-          ),
-        );
-      });
-  });
+      stubs.map((s) => s.restore())
+    })
+  })
 
   describe('Handling HTTP errors', () => {
-    test
-      .nock('https://bump.sh', (api) =>
-        api.post('/api/v1/previews').reply(422, {
+    it('displays error information to the user', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/previews')
+        .reply(422, {
           errors: {
             documentation: {
               slug: 'is invalid',
             },
-            references: [{ location: 'not a filepath' }, { content: 'is invalid' }],
             param: ['invalid', 'too small', 'wrong'],
+            references: [{location: 'not a filepath'}, {content: 'is invalid'}],
           },
-        }),
-      )
-      .do(
-        async (ctx) =>
-          await new BumpApi(ctx.config).postPreview({
-            definition: '{}',
-          } as PreviewRequest),
-      )
-      .catch(
-        (err) => {
-          expect(err.message).to.match(/documentation.slug is invalid/);
-          expect(err.message).to.match(
-            /references 0.location not a filepath, 1.content is invalid/,
-          );
+        })
 
-          expect(err.message).to.match(/param invalid, too small, wrong/);
-        },
-        { raiseIfNotThrown: false },
-      )
-      .it('displays error information to the user');
-  });
-});
+      try {
+        await new BumpApi(config).postPreview({
+          definition: '{}',
+        } as PreviewRequest)
+      } catch (error) {
+        const {message} = error as Error
+        expect(message).to.match(/documentation.slug is invalid/)
+        expect(message).to.match(/references 0.location not a filepath, 1.content is invalid/)
+
+        expect(message).to.match(/param invalid, too small, wrong/)
+      }
+    })
+  })
+})

@@ -32,7 +32,7 @@ Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.
 
 ## Installation
 
-The Bump.sh CLI is a node package currently distributed via NPM. This means you must have the Node v14+ interpreter installed on your computer or CI servers.
+The Bump.sh CLI is a node package currently distributed via NPM. This means you must have the Node v20+ interpreter installed on your computer or CI servers.
 
 _If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump)._
 
@@ -275,7 +275,7 @@ bump deploy api-document.yaml --doc my-doc --token my-token --overlay overlay-fi
 
 ## Development
 
-Make sure to have Node.js (At least v14) installed on your machine.
+Make sure to have Node.js (At least v20) installed on your machine.
 
 - Install node dependencies with
 

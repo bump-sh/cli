@@ -1,245 +1,214 @@
-import base, { expect } from '@oclif/test';
-import nock from 'nock';
+import {runCommand} from '@oclif/test'
+import {expect} from 'chai'
+import nock from 'nock'
+import {stub} from 'sinon'
 
-nock.disableNetConnect();
+nock.disableNetConnect()
 
-const test = base.env({ BUMP_TOKEN: 'BAR' });
+process.env.BUMP_TOKEN = process.env.BUMP_TOKEN || 'BAR'
 
 describe('deploy subcommand', () => {
   describe('Successful runs', () => {
-    test
-      .nock('https://bump.sh', (api) =>
-        api
-          .post(
-            '/api/v1/versions',
-            (body) => body.documentation === 'coucou' && !body.branch_name,
-          )
-          .reply(201, { doc_public_url: 'http://localhost/doc/1' }),
+    it('sends new version to Bump', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.documentation === 'coucou' && !body.branch_name)
+        .reply(201, {doc_public_url: 'http://localhost/doc/1'})
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'].join(' '),
       )
-      .stdout()
-      .stderr()
-      .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
-      .it('sends new version to Bump', ({ stdout }) => {
-        expect(stdout).to.contain(
-          'Your new documentation version will soon be ready at http://localhost/doc/1',
-        );
-      });
-
-    test
-      .nock('https://bump.sh', (api) =>
-        api
-          .post(
-            '/api/v1/versions',
-            (body) => body.documentation === 'coucou' && body.branch_name === 'next',
-          )
-          .reply(201, { doc_public_url: 'http://localhost/doc/1/next' }),
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stdout).to.contain(
+        'Your coucou documentation...has received a new deployment which will soon be ready at:',
       )
-      .stdout()
-      .stderr()
-      .command([
-        'deploy',
-        'examples/valid/openapi.v3.json',
-        '--doc',
-        'coucou',
-        '--branch',
-        'next',
-      ])
-      .it('sends new version to Bump on given branch', ({ stdout }) => {
-        expect(stdout).to.contain(
-          'Your new documentation version will soon be ready at http://localhost/doc/1/next',
-        );
-      });
+      expect(stdout).to.contain('http://localhost/doc/1')
+    })
 
-    test
-      .nock('https://bump.sh', (api) => api.post('/api/v1/versions').reply(204))
-      .stdout()
-      .stderr()
-      .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
-      .it('sends unchanged version to Bump', ({ stderr }) => {
-        expect(stderr).to.contain("Let's deploy a new version");
-        expect(stderr).to.contain('Your documentation has not changed');
-      });
+    it('sends new version to Bump on given branch', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.documentation === 'coucou' && body.branch_name === 'next')
+        .reply(201, {doc_public_url: 'http://localhost/doc/1/next'})
 
-    test
-      .env({ BUMP_ID: 'coucou' })
-      .nock('https://bump.sh', (api) => api.post('/api/v1/versions').reply(201))
-      .stdout()
-      .stderr()
-      .command(['deploy', 'examples/valid/openapi.v3.json'])
-      .it('sends version to Bump with doc read from env variable', ({ stdout }) => {
-        expect(stdout).to.contain('Your new documentation version will soon be ready');
-      });
+      const {stdout} = await runCommand(
+        ['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou', '--branch', 'next'].join(' '),
+      )
+      expect(stdout).to.contain(
+        'Your coucou documentation...has received a new deployment which will soon be ready at:\nhttp://localhost/doc/1/next',
+      )
+    })
+
+    it('sends unchanged version to Bump', async () => {
+      nock('https://bump.sh').post('/api/v1/versions').reply(204)
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'].join(' '),
+      )
+      expect(stdout).to.equal('')
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stderr).to.contain(' ›   Warning: Your coucou documentation has not changed\n')
+    })
+
+    it('sends version to Bump with doc read from env variable', async () => {
+      // Mock env variables BUMP_ID
+      process.env.BUMP_ID = process.env.BUMP_ID || ''
+      const stubs = []
+      stubs.push(stub(process.env, 'BUMP_ID').value('coucou'))
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.documentation === 'coucou' && !body.branch_name)
+        .reply(201, {doc_public_url: 'http://localhost/doc/1'})
+
+      const {stdout} = await runCommand(['deploy', 'examples/valid/openapi.v3.json'].join(' '))
+      expect(stdout).to.contain('Your coucou documentation...has received a new deployment which will soon be ready')
+
+      stubs.map((s) => s.restore())
+    })
 
     describe('Successful dry-run deploy', () => {
-      test
-        .nock('https://bump.sh', (api) => api.post('/api/v1/validations').reply(200))
-        .stdout()
-        .stderr()
-        .command([
-          'deploy',
-          'examples/valid/openapi.v3.json',
-          '--doc',
-          'coucou',
-          '--dry-run',
-        ])
-        .it('sends validation to Bump', ({ stdout }) => {
-          expect(stdout).to.contain('Definition is valid');
-        });
+      it('sends validation to Bump', async () => {
+        nock('https://bump.sh').post('/api/v1/validations').reply(200)
 
-      test
-        .nock('https://bump.sh', (api) =>
-          api
-            .post('/api/v1/validations', (body) => !body.auto_create_documentation)
-            .reply(200),
+        const {stdout} = await runCommand(
+          ['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou', '--dry-run'].join(' '),
         )
-        .stdout()
-        .stderr()
-        .command([
-          'deploy',
-          'examples/valid/openapi.v3.json',
-          '--doc',
-          'coucou',
-          '--hub',
-          'coucou',
-          '--dry-run',
-          '--auto-create',
-        ])
-        .it("doesn't try to auto create a documentation");
-    });
-  });
+        expect(stdout).to.contain('Definition is valid')
+      })
+
+      it("doesn't try to auto create a documentation", async () => {
+        nock('https://bump.sh')
+          .post('/api/v1/validations', (body) => !body.auto_create_documentation)
+          .reply(200)
+
+        await runCommand(
+          [
+            'deploy',
+            'examples/valid/openapi.v3.json',
+            '--doc',
+            'coucou',
+            '--hub',
+            'coucou',
+            '--dry-run',
+            '--auto-create',
+          ].join(' '),
+        )
+      })
+    })
+  })
 
   describe('Successful runs on a directory', () => {
-    test
-      .nock('https://bump.sh', (api) =>
-        api
-          .post(
-            '/api/v1/versions',
-            (body) =>
-              // The “bump” slug is taken from the filename convention
-              // in “bump-api.json”
-              body.documentation === 'bump' && body.hub === 'my-hub' && !body.branch_name,
-          )
-          .reply(201, { doc_public_url: 'http://localhost/doc/1' }),
+    it('sends new version to Bump', async () => {
+      nock('https://bump.sh')
+        .post(
+          '/api/v1/versions',
+          (body) =>
+            // The “bump” slug is taken from the filename convention
+            // in “bump-api.json”
+            body.documentation === 'bump' && body.hub === 'my-hub' && !body.branch_name,
+        )
+        .reply(201, {doc_public_url: 'http://localhost/doc/1'})
+
+      const {stdout} = await runCommand(['deploy', 'examples/valid/', '--hub', 'my-hub'].join(' '))
+      expect(stdout).to.contain("We've found 1 valid API definitions to deploy")
+      expect(stdout).to.contain('   └─ bump-api.json (OpenAPI spec version 3.0.2)')
+      expect(stdout).to.contain(
+        'Your bump documentation...has received a new deployment which will soon be ready at:\nhttp://localhost/doc/1',
       )
-      .stdout()
-      .stderr()
-      .command(['deploy', 'examples/valid/', '--hub', 'my-hub'])
-      .it('sends new version to Bump', ({ stdout }) => {
-        expect(stdout).to.contain(
-          'Your new documentation version will soon be ready at http://localhost/doc/1',
-        );
-      });
-  });
+    })
+  })
 
   describe('Successful runs with a URL', () => {
-    test
-      .nock('https://bump.sh', (api) =>
-        api
-          .post(
-            '/api/v1/versions',
-            (body) => body.documentation === 'coucou' && !body.branch_name,
-          )
-          .reply(201, { doc_public_url: 'http://localhost/doc/1' }),
+    it('sends new version to Bump', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.documentation === 'coucou' && !body.branch_name)
+        .reply(201, {doc_public_url: 'http://localhost/doc/1'})
+
+      nock('https://developers.bump.sh')
+        .get('/source.json')
+        .replyWithFile(200, 'examples/valid/asyncapi.no-refs.v2.yml', {
+          'Content-Type': 'application/json',
+        })
+
+      const {stdout} = await runCommand(
+        ['deploy', 'https://developers.bump.sh/source.json', '--doc', 'coucou'].join(' '),
       )
-      .nock('https://developers.bump.sh', (api) =>
-        api
-          .get('/source.json')
-          .replyWithFile(200, 'examples/valid/asyncapi.no-refs.v2.yml', {
-            'Content-Type': 'application/json',
-          }),
+      expect(stdout).to.contain(
+        'Your coucou documentation...has received a new deployment which will soon be ready at:\nhttp://localhost/doc/1',
       )
-      .stdout()
-      .stderr()
-      .command(['deploy', 'https://developers.bump.sh/source.json', '--doc', 'coucou'])
-      .it('sends new version to Bump', ({ stdout }) => {
-        expect(stdout).to.contain(
-          'Your new documentation version will soon be ready at http://localhost/doc/1',
-        );
-      });
-  });
+    })
+  })
 
   describe('Server errors', () => {
     describe('Authentication error', () => {
-      test
-        .nock('https://bump.sh', (api) => api.post('/api/v1/versions').reply(401))
-        .stdout()
-        .stderr()
-        .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
-        .catch((err) => {
-          expect(err.message).to.contain('not allowed to deploy');
-          throw err;
-        })
-        .exit(101)
-        .it("Doesn't create a deployed version", ({ stdout }) => {
-          expect(stdout).to.not.contain(
-            'Your new documentation version will soon be ready',
-          );
-        });
-    });
+      it("Doesn't create a deployed version", async () => {
+        nock('https://bump.sh').post('/api/v1/versions').reply(401)
+
+        const {error, stdout} = await runCommand(
+          ['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'].join(' '),
+        )
+        expect(error?.message).to.contain('not allowed to deploy')
+        expect(error?.oclif?.exit).to.equal(101)
+        expect(stdout).to.not.contain(
+          'Your coucou documentation...has received a new deployment which will soon be ready',
+        )
+      })
+    })
 
     describe('Not found error', () => {
-      test
-        .nock('https://bump.sh', (api) => api.post('/api/v1/versions').reply(404))
-        .stdout()
-        .stderr()
-        .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
-        .catch((err) => {
-          expect(err.message).to.contain(
-            "It seems the documentation provided doesn't exist",
-          );
-          throw err;
-        })
-        .exit(104)
-        .it("Doesn't create a deployed version", ({ stdout }) => {
-          expect(stdout).to.not.contain(
-            'Your new documentation version will soon be ready',
-          );
-        });
-    });
+      it("Doesn't create a deployed version", async () => {
+        nock('https://bump.sh').post('/api/v1/versions').reply(404)
+
+        const {error, stdout} = await runCommand(
+          ['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'].join(' '),
+        )
+        expect(error?.message).to.contain("It seems the documentation provided doesn't exist")
+        expect(error?.oclif?.exit).to.equal(104)
+        expect(stdout).to.not.contain(
+          'Your coucou documentation...has received a new deployment which will soon be ready',
+        )
+      })
+    })
 
     describe('Invalid dry-run deploy', () => {
-      test
-        .nock('https://bump.sh', (api) => api.post('/api/v1/validations').reply(422))
-        .stdout()
-        .stderr()
-        .command([
-          'deploy',
-          'examples/invalid/asyncapi.yml',
-          '--doc',
-          'coucou',
-          '--dry-run',
-        ])
-        .catch((err) => {
-          expect(err.message).to.contain('Invalid definition file');
-          throw err;
-        })
-        .exit(122)
-        .it('warns user about the invalid version with details');
-    });
-  });
+      it('warns user about the invalid version with details', async () => {
+        nock('https://bump.sh').post('/api/v1/validations').reply(422)
+
+        const {error} = await runCommand(
+          ['deploy', 'examples/invalid/asyncapi.yml', '--doc', 'coucou', '--dry-run'].join(' '),
+        )
+        expect(error?.message).to.contain('Invalid definition file')
+        expect(error?.oclif?.exit).to.equal(122)
+      })
+    })
+  })
 
   describe('User bad usages', () => {
-    test
-      .command(['deploy', 'FILE', '--doc', 'coucou'])
-      .catch((err) => expect(err.message).to.match(/no such file or directory/))
-      .it('Fails deploying an inexistant file');
+    it('Fails deploying an inexistant file', async () => {
+      const {error} = await runCommand(['deploy', 'FILE', '--doc', 'coucou'].join(' '))
+      expect(error?.message).to.match(/no such file or directory/)
+      expect(error?.oclif?.exit).to.equal(2)
+    })
 
-    test
-      .command(['deploy'])
-      .exit(2)
-      .it('exits with status 2 when no file argument is provided');
+    it('exits with status 2 when no file argument is provided', async () => {
+      const {error} = await runCommand(['deploy'].join(' '))
+      expect(error?.oclif?.exit).to.equal(2)
+    })
 
-    test
-      .command(['deploy', 'examples/valid/openapi.v3.json'])
-      .catch((err) => expect(err.message).to.match(/missing required flag(.|\n)+--doc/im))
-      .it('fails when no documentation id or slug is provided');
+    it('fails when no documentation id or slug is provided', async () => {
+      const {error} = await runCommand(['deploy', 'examples/valid/openapi.v3.json'].join(' '))
+      expect(error?.message).to.contain('Missing required flag --doc=<slug>')
+      expect(error?.oclif?.exit).to.equal(2)
+    })
 
-    test
-      .env({ BUMP_TOKEN: '' }, { clear: true })
-      .command(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'])
-      .catch((err) =>
-        expect(err.message).to.match(/missing required flag(.|\n)+--token/im),
-      )
-      .it('fails when no access token is provided');
-  });
-});
+    it('fails when no access token is provided', async () => {
+      // Mock env variables BUMP_TOKEN
+      process.env.BUMP_TOKEN = process.env.BUMP_TOKEN || ''
+      const stubs = []
+      stubs.push(stub(process.env, 'BUMP_TOKEN').value(''))
+
+      const {error} = await runCommand(['deploy', 'examples/valid/openapi.v3.json', '--doc', 'coucou'].join(' '))
+      expect(error?.message).to.contain('Missing required flag token')
+      expect(error?.oclif?.exit).to.equal(2)
+
+      stubs.map((s) => s.restore())
+    })
+  })
+})
