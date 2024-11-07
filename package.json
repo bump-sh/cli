@@ -4,41 +4,41 @@
   "version": "2.8.4",
   "author": "Paul Bonaud <paulr@bump.sh>",
   "bin": {
-    "bump": "./bin/run"
+    "bump": "./bin/run.js"
   },
   "bugs": "https://github.com/bump-sh/cli/issues",
   "devDependencies": {
-    "@oclif/dev-cli": "^1.26.0",
-    "@oclif/test": "^2.0.3",
-    "@types/debug": "^4.1.5",
+    "@oclif/prettier-config": "^0.2.1",
+    "@oclif/test": "^4",
+    "@types/chai": "^4",
+    "@types/debug": "^4.1.12",
     "@types/jsonpath": "^0.2.4",
-    "@types/mocha": "^10.0.0",
-    "@types/node": "^20.7.0",
-    "@typescript-eslint/eslint-plugin": "^5.21.0",
-    "@typescript-eslint/parser": "^5.21.0",
-    "chai": "^4.3.4",
-    "cross-spawn": "^7.0.3",
-    "eslint": "^8.45.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "globby": "^11.0.3",
-    "mocha": "^10.0.0",
-    "nock": "^13.0.11",
-    "np": "^10.0.5",
-    "nyc": "^15.1.0",
-    "prettier": "^2.2.1",
-    "sinon": "^14.0.0",
-    "stdout-stderr": "^0.1.13",
-    "ts-node": "^10.0.0",
-    "typescript": "4.5.5"
+    "@types/mocha": "^10",
+    "@types/node": "^18",
+    "@types/sinon": "^17.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "chai": "^4.5.0",
+    "eslint": "^8",
+    "eslint-config-oclif": "^5",
+    "eslint-config-oclif-typescript": "^3",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "mocha": "^10",
+    "mock-stdin": "^1.0.0",
+    "nock": "^14.0.0-beta.16",
+    "nyc": "^17.1.0",
+    "oclif": "^4",
+    "shx": "^0.3.3",
+    "sinon": "^19.0.2",
+    "ts-node": "^10",
+    "typescript": "^5"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=20.0.0"
   },
   "files": [
     "/bin",
-    "/lib",
-    "/npm-shrinkwrap.json",
+    "/dist",
     "/oclif.manifest.json"
   ],
   "homepage": "https://bump.sh",
@@ -51,12 +51,19 @@
     "cli"
   ],
   "license": "MIT",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
+  "type": "module",
   "oclif": {
-    "commands": "./lib/commands",
     "bin": "bump",
+    "dirname": "bump",
+    "commands": {
+      "strategy": "explicit",
+      "target": "./dist/index.js",
+      "identifier": "COMMANDS"
+    },
     "plugins": [
-      "@oclif/plugin-help"
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available"
     ],
     "warn-if-update-available": {
       "timeoutInDays": 30,
@@ -65,36 +72,36 @@
   },
   "repository": "bump-sh/cli",
   "scripts": {
-    "build": "tsc -b",
-    "clean": "rm -rf lib oclif.manifest.json",
-    "lint": "eslint . --ext .ts --config .eslintrc",
-    "fmt": "eslint . --ext .ts --config .eslintrc --fix",
-    "pack": "oclif-dev pack",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && npm run build && oclif-dev manifest && oclif-dev readme",
-    "pretest": "npm run clean && npm run build && npm run lint",
+    "build": "shx rm -rf dist && tsc -b",
+    "clean": "rm -rf dist/ oclif.manifest.json",
+    "lint": "eslint . --ext .ts",
+    "fmt": "eslint --fix . --ext .ts",
+    "postpack": "shx rm -f oclif.manifest.json",
+    "posttest": "npm run lint",
+    "prepack": "npm run clean && npm run build && oclif manifest && oclif readme",
+    "pretest": "npm run clean && npm run build",
     "release": "np --no-release-draft",
-    "test": "mocha \"test/**/*.test.ts\"",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
     "test-coverage": "nyc npm run test",
-    "test-integration": "node ./test/integration.js",
-    "version": "oclif-dev readme && git add README.md"
+    "test-integration": "node ./test/integration.cjs",
+    "version": "oclif readme && git add README.md"
   },
-  "types": "lib/index.d.ts",
+  "types": "dist/index.d.ts",
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^9.0.7",
-    "@asyncapi/specs": "^5.1.0",
-    "@clack/prompts": "^0.6.3",
-    "@oclif/command": "^1.8.36",
-    "@oclif/config": "^1.18.17",
-    "@oclif/core": "1.20.4",
-    "@oclif/plugin-help": "^5.1.10",
-    "@stoplight/yaml": "^4.2.3",
-    "async-mutex": "^0.4.0",
-    "axios": "^1.6.4",
-    "debug": "^4.3.1",
+    "@apidevtools/json-schema-ref-parser": "^11.7.2",
+    "@asyncapi/specs": "^6.8.0",
+    "@clack/prompts": "^0.7.0",
+    "@oclif/core": "^4",
+    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-warn-if-update-available": "^3.1.20",
+    "@stoplight/yaml": "^4.3.0",
+    "async-mutex": "^0.5.0",
+    "axios": "^1.7.7",
+    "chalk": "^5.3.0",
+    "debug": "^4.3.7",
     "jsonpath": "^1.1.1",
-    "mergician": "^1.0.3",
-    "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#0f9d3ec7c033fef184ec54e1ffc201b2d61ce023",
-    "tslib": "^2.3.0"
+    "mergician": "^2.0.2",
+    "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#882d1caedb0bff825a1fd10728e7e3dc43912d37",
+    "open": "^10.1.0"
   }
 }
