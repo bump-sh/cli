@@ -45,7 +45,7 @@ describe('deploy subcommand', () => {
       )
       expect(stdout).to.equal('')
       expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
-      expect(stderr).to.contain(' ›   Warning: Your coucou documentation has not changed\n')
+      expect(stderr).to.contain('Warning: Your coucou documentation has not changed\n')
     })
 
     it('sends version to Bump with doc read from env variable', async () => {
