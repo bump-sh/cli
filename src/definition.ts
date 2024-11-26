@@ -2,6 +2,7 @@ import {default as $RefParser, getJsonSchemaRefParserDefaultOptions} from '@apid
 import asyncapi from '@asyncapi/specs'
 import {CLIError} from '@oclif/core/errors'
 import {safeStringify} from '@stoplight/yaml'
+import debug from 'debug'
 import {
   JSONSchema4,
   JSONSchema4Array,
@@ -11,7 +12,7 @@ import {
   JSONSchema7,
 } from 'json-schema'
 import {createRequire} from 'node:module'
-import path from 'node:path'
+import {default as nodePath} from 'node:path'
 
 // Used to require JSON files
 const require = createRequire(import.meta.url)
@@ -203,11 +204,23 @@ class API {
     return (output || this.location).endsWith('.json') ? 'json' : 'yaml'
   }
 
+  isMainRefPath(path: string): boolean {
+    // $refs from json-schema-ref-parser lib returns posix style
+    // paths. We need to make sure we compare all paths in posix style
+    // independently of the platform runtime.
+    const resolvedAbsLocation = nodePath
+      .resolve(this.location)
+      .split(nodePath?.win32?.sep)
+      .join(nodePath?.posix?.sep ?? '/')
+
+    return path === this.location || path === resolvedAbsLocation
+  }
+
   resolveContent(values: SpecSchema): [string, APIDefinition] {
     let mainReference: JSONSchemaWithRaw = {parsed: {}, raw: ''}
 
     for (const [absPath, reference] of Object.entries(values)) {
-      if (absPath === this.location || absPath === path.resolve(this.location)) {
+      if (this.isMainRefPath(absPath)) {
         // $refs.values is not properly typed so we need to force it
         // with the resulting type of our custom defined parser
         mainReference = reference as JSONSchemaWithRaw
@@ -230,6 +243,9 @@ class API {
     const {parsed, raw} = mainReference
 
     if (!parsed || !raw || !(parsed instanceof Object) || !('info' in parsed)) {
+      debug('bump-cli:definition')(
+        `Main location (${this.location}) not found or empty (within ${JSON.stringify(Object.keys(values))})`,
+      )
       throw new UnsupportedFormat("Definition needs to be an object with at least an 'info' key")
     }
 
@@ -246,11 +262,14 @@ class API {
     const refUrl = this.url(absPath)
 
     if (
-      /^\//.test(absPath) || // Unix style filesystem path
-      /^[A-Za-z]+:\\/.test(absPath) || // Windows style filesystem path
+      (refUrl.hostname === '' && // filesystem path
+        (/^\//.test(absPath) || // Unix style
+          /^[A-Za-z]+:[/\\]/.test(absPath))) || // Windows style
       (/^https?:\/\//.test(absPath) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
     ) {
-      return path.relative(path.dirname(this.location), absPath)
+      const relativeLocation = nodePath.relative(nodePath.dirname(this.location), absPath)
+      debug('bump-cli:definition')(`Resolved relative $ref location: ${relativeLocation}`)
+      return relativeLocation
     }
 
     return absPath
