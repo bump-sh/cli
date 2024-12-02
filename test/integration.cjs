@@ -1,7 +1,7 @@
 'use strict';
 
 const spawn = require('cross-spawn');
-const cmd = './bin/run';
+const cmd = './bin/run.js';
 const tests = [['--version'], ['--help']];
 
 for (let i = 0; i < tests.length; i++) {

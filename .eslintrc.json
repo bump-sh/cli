@@ -1,0 +1,15 @@
+{
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "oclif", "oclif-typescript",
+    "prettier",
+    "plugin:prettier/recommended"
+  ],
+  "rules": {
+    "camelcase": "off",
+    "padding-line-between-statements": [
+      "error",
+      { "blankLine": "always", "prev": "multiline-expression", "next": "multiline-expression" }
+    ]
+  }
+}
