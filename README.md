@@ -1,7 +1,7 @@
 # Bump CLI
 
 <p align="center">
-  <img width="20%" src="https://bump.sh/icon-default-large.png" />
+  <img width="20%" src="https://bump.sh/icon-default-maskable-large.png" />
 </p>
 
 <p align="center">
@@ -257,7 +257,7 @@ Please check `bump preview --help` for more usage details
 
 > This feature implements the [OpenAPI Overlay specification](https://github.com/OAI/Overlay-Specification). It is possible to apply an Overlay to any kind of document, be it an OpenAPI or AsyncAPI definition file.
 
-The Overlay specification of OpenAPI makes it possible to modify the content of an API definition file by adding a layer on top of it. That layer helps add, remove, or change some or all of the content of the original definition. 
+The Overlay specification of OpenAPI makes it possible to modify the content of an API definition file by adding a layer on top of it. That layer helps add, remove, or change some or all of the content of the original definition.
 
 Technically, the `bump overlay` command will output a modified version of the `[DEFINITION_FILE]` (an OpenAPI or AsyncAPI document) by applying the operations described in the `[OVERLAY_FILE]` Overlay file to the original API document.
 
@@ -270,7 +270,7 @@ bump overlay api-document.yaml overlay-file.yaml > api-overlayed-document.yaml
 _Note: you can also apply the overlay during the [`bump deploy` command]((#bump-deploy-file)) with the new `--overlay` flag:_
 
 ```shell
-bump deploy api-document.yaml --doc my-doc --token my-token --overlay overlay-file.yaml 
+bump deploy api-document.yaml --doc my-doc --token my-token --overlay overlay-file.yaml
 ```
 
 ## Development
@@ -278,26 +278,26 @@ bump deploy api-document.yaml --doc my-doc --token my-token --overlay overlay-fi
 Make sure to have Node.js (At least v14) installed on your machine.
 
 - Install node dependencies with
-  
+
   ```sh-session
   npm install
   ```
-  
+
 - Compile the Typescript code
-  
+
   ```sh-session
   npm run build
   npm run clean # to remove build artifacts
   ```
-  
+
 - Format the codebase to comply with the linter rules
-  
+
   ```sh-session
   npm run fmt
   ```
-  
+
 - Run the test suites
-  
+
   ```sh-session
   npm run test
   npm run test-coverage # Run tests with coverage
