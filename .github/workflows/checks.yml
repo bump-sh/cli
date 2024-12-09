@@ -16,7 +16,7 @@ jobs:
           - ubuntu-latest
           - macos-latest
           - windows-latest
-        node_version: [ '14', '16', '18' ]
+        node_version: [ '20', '23', 'latest' ]
         architecture: [ 'x64' ]
         # an extra windows-x86 run:
         # include:

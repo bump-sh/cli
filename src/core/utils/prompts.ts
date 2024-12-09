@@ -1,22 +1,18 @@
-import { CLIError } from '@oclif/errors';
-import * as p from '@clack/prompts';
+import * as p from '@clack/prompts'
+import {ExitError} from '@oclif/core/errors'
 
-export const confirm = async (message = 'Continue?'): Promise<void> => {
+export const confirm = async (message = 'Continue?'): Promise<boolean> => {
   const prompt = await p.group(
     {
-      shouldContinue: () => p.confirm({ message: message }),
+      shouldContinue: () => p.confirm({message}),
     },
     {
-      onCancel: () => {
-        p.cancel('Cancelled.');
-        process.exit(0);
+      onCancel() {
+        p.cancel('Cancelled.')
+        throw new ExitError(1)
       },
     },
-  );
+  )
 
-  if (!prompt.shouldContinue) {
-    throw new CLIError(`Cancelled`);
-  }
-
-  return;
-};
+  return prompt.shouldContinue
+}
