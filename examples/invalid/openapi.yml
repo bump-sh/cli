@@ -1,7 +1,7 @@
 {
   "info": {
-    "description": "This is the official Bump API documentation. Obviously created with Bump.\n",
-    "title": "Bump Api",
+    "description": "This is the official Bump.sh API documentation. Obviously created with Bump.sh.\n",
+    "title": "Bump.sh Api",
     "version": "1.0"
   },
   "openapii": "3.0.2",
