@@ -1,6 +1,6 @@
 {
   "name": "bump-cli",
-  "description": "The Bump CLI is used to interact with your API documentation hosted on Bump by using the API of developers.bump.sh",
+  "description": "The Bump CLI is used to interact with your API documentation hosted on Bump.sh by using the API of developers.bump.sh",
   "version": "2.9.0-0",
   "author": "Paul Bonaud <paulr@bump.sh>",
   "bin": {

@@ -12,7 +12,7 @@
                   "type": "string"
                 },
                 "references": {
-                  "description": "Import external references used by `definition`. It's usually resources not accessible by Bump servers, like local files or internal URLs.",
+                  "description": "Import external references used by `definition`. It's usually resources not accessible by Bump.sh servers, like local files or internal URLs.",
                   "items": {
                     "$ref": "#/components/schemas/Reference"
                   },
@@ -74,7 +74,7 @@
                   "type": "string"
                 },
                 "references": {
-                  "description": "Import external references used by `definition`. It's usually resources not accessible by Bump servers, like local files or internal URLs.",
+                  "description": "Import external references used by `definition`. It's usually resources not accessible by Bump.sh servers, like local files or internal URLs.",
                   "items": {
                     "$ref": "#/components/schemas/Reference"
                   },
@@ -163,8 +163,8 @@
     }
   },
   "info": {
-    "description": "This is the official Bump API documentation. Obviously created with Bump.\n",
-    "title": "Bump Api",
+    "description": "This is the official Bump.sh API documentation. Obviously created with Bump.sh.\n",
+    "title": "Bump.sh Api",
     "version": "1.0"
   },
   "openapi": "3.0.2",
