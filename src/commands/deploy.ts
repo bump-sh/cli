@@ -21,13 +21,13 @@ export default class Deploy extends BaseCommand<typeof Deploy> {
     `Deploy a new version of ${chalk.underline('an existing documentation')}
 
 ${chalk.dim('$ bump deploy FILE --doc <your_doc_id_or_slug> --token <your_doc_token>')}
-* Let's deploy a new documentation version on Bump... done
+* Let's deploy on Bump.sh... done
 * Your new documentation version will soon be ready
 `,
     `Deploy a new version of ${chalk.underline('an existing documentation attached to a hub')}
 
 ${chalk.dim('$ bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --token <your_doc_token>')}
-* Let's deploy a new documentation version on Bump... done
+* Let's deploy on Bump.sh... done
 * Your new documentation version will soon be ready
 `,
     `Deploy a whole directory of ${chalk.underline('API definitions files to a hub')}
@@ -49,7 +49,7 @@ Let's deploy a new version to your my-jobs-service documentation on Bump.sh... d
     `${chalk.underline('Validate a new documentation version')} before deploying it
 
 ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_token>')}
-* Let's validate a new documentation version on Bump... done
+* Let's validate on Bump.sh... done
 * Definition is valid
 `,
   ]
