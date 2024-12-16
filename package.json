@@ -77,6 +77,7 @@
     "clean": "rm -rf dist/ oclif.manifest.json",
     "lint": "eslint . --ext .ts",
     "fmt": "eslint --fix . --ext .ts",
+    "pack": "oclif pack tarballs",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
     "prepack": "npm run clean && npm run build && oclif manifest && oclif readme",

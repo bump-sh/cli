@@ -87,7 +87,7 @@ $ bump --help
 The Bump.sh CLI is used to interact with your API documentation hosted on Bump.sh by using the API of developers.bump.sh
 
 VERSION
-  bump-cli/2.8.0 linux-x64 node-v16.19.0
+  bump-cli/2.9.1 linux-x64 node-v20.18.1
 
 USAGE
   $ bump [COMMAND]
@@ -102,7 +102,7 @@ COMMANDS
 
  You can also get some help anytime by adding `--help` to any command. Example: `bump deploy --help`.
 
-## Prepare your Bump.sh account
+### Prepare your Bump.sh account
 
 While some commands don't need any API token (`preview` or `diff`) you will need an access key if you want to interact with your Bump.sh documentation.
 
@@ -330,3 +330,4 @@ This npm package starts at v2.0.0 for two main reasons:
 - Our [first version](https://github.com/bump-sh/bump-cli) of the Bump CLI was written in Ruby, starting at v2.0.0, which makes it clear we are working on our second version of the Bump CLI
 
 - The `bump-cli` package used to be [owned by Rico](https://github.com/rstacruz) which already published v1.x packages. If you are looking for the old npm package please head to [`@rstacruz/bump-cli` package](https://www.npmjs.com/package/@rstacruz/bump-cli). _A big thanks to Rico for transferring the ownership of the `bump-cli` package name!_
+w
