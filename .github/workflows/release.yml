@@ -1,41 +1,15 @@
-name: Release
+name: Release tag pushes on Github
+
 on:
-  workflow_run:
-    workflows: [ "Developer checks" ]
-    types: [ completed ]
+  push:
+    tags:
+      - v**
+
 jobs:
-  # This 'check_tag' job is a hack because Github doesn't provide the full ref from the
-  # original triggered workflow. Hopefully in the future we will only have to change
-  # the condition of the `release` job to:
-  #
-  # ${{ github.event.workflow_run.conclusion == 'success' &&
-  #   startsWith(github.event.workflow_run, 'refs/tag/v') }}
-  check_tag:
-    runs-on: ubuntu-latest
-    outputs:
-      run_release: ${{ steps.check-tag.outputs.run_jobs }}
-      tag: ${{ steps.check-tag.outputs.ref }}
-    steps:
-      - name: check reference of dependent workflow ${{ github.event.workflow_run.head_branch }}
-        id: check-tag
-        run: |
-          if [[ ${{ github.event.workflow_run.head_branch }} =~ v[0-9]+\.[0-9]+\.[0-9]+.* ]]; then
-            echo "::set-output name=run_jobs::true"
-            echo "::set-output name=ref::${{ github.event.workflow_run.head_branch }}"
-          else
-            echo "::set-output name=run_jobs::false"
-          fi
   release:
-    needs: [check_tag]
-    if: ${{ github.event.workflow_run.conclusion == 'success' && needs.check_tag.outputs.run_release == 'true' }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node_version: [ '16' ]
     steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ needs.check_tag.outputs.tag }}
+      - uses: actions/checkout@v4
       - name: Cache node modules
         uses: actions/cache@v2
         env:
@@ -46,17 +20,36 @@ jobs:
           key: node-${{ matrix.node_version }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             node-${{ matrix.node_version }}-build-${{ env.cache-name }}-
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node_version }}
+      - uses: actions/setup-node@v4
+      - name: Check if version already exists
+        id: version-check
+        run: |
+          package_version=$(node -p "require('./package.json').version")
+          exists=$(gh api repos/${{ github.repository }}/releases/tags/v$package_version >/dev/null 2>&1 && echo "true" || echo "")
+
+          if [ -n "$exists" ];
+          then
+            echo "Version v$package_version already exists"
+            echo "::warning file=package.json,line=1::Version v$package_version already exists - no release will be created. If you want to create a new release, please update the version in package.json and push again."
+            echo "skipped=true" >> $GITHUB_OUTPUT
+          else
+            echo "Version v$package_version does not exist. Creating release..."
+            echo "skipped=false" >> $GITHUB_OUTPUT
+            echo "tag=v$package_version" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm ci
+        if: ${{ steps.version-check.outputs.skipped == 'false' }}
       - run: npm run pack
-      - name: Release
+        if: ${{ steps.version-check.outputs.skipped == 'false' }}
+      - name: Create draft Github Release
+        if: ${{ steps.version-check.outputs.skipped == 'false' }}
         uses: softprops/action-gh-release@v1
         with:
           files: dist/**/*
           draft: true
-          tag_name: ${{ needs.check_tag.outputs.tag }}
+          tag_name: ${{ steps.version-check.outputs.tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: bump-sh/cli
