@@ -47,7 +47,7 @@ jobs:
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/**/*
+          files: dist/bump-*.tar.gz
           draft: true
           tag_name: ${{ steps.version-check.outputs.tag }}
         env:
