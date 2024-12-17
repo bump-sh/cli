@@ -1,0 +1,13 @@
+overlay: 1.0.0
+info:
+  title: Overlay to customise API for Streetlights
+  version: 0.0.1
+actions:
+  - target: '$.info.description'
+    description: Provide a better introduction for our end users than this techno babble.
+    update: |
+      Turn lights on or off. And get notified when lights are dimmed or switched.
+
+  - target: '$..[?(@["x-beta"]==true)]'
+    description: Remove all beta operations
+    remove: true
