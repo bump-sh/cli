@@ -105,7 +105,7 @@ export default class Diff extends BaseCommand<typeof Diff> {
 
     ux.action.status = '...diff on Bump.sh in progress'
 
-    const diff: DiffResponse | undefined = await new CoreDiff(this.bump).run(
+    const diff: DiffResponse | undefined = await new CoreDiff(this.config).run(
       args.file,
       args.otherFile,
       documentation,

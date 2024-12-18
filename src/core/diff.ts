@@ -1,3 +1,4 @@
+import {Config} from '@oclif/core'
 import {CLIError} from '@oclif/core/errors'
 import debug from 'debug'
 
@@ -10,9 +11,17 @@ export class Diff {
   static readonly TIMEOUT = 120
 
   private _bump!: BumpApi
+  private _config: Config | undefined
 
-  public constructor(bumpClient: BumpApi) {
-    this._bump = bumpClient
+  public constructor(config?: Config) {
+    if (config) {
+      this._config = config
+    }
+  }
+
+  get bumpClient(): BumpApi {
+    if (!this._bump) this._bump = new BumpApi(this._config!)
+    return this._bump
   }
 
   get pollingPeriod(): number {
@@ -32,7 +41,7 @@ export class Diff {
       references,
     }
 
-    const response = await this._bump.postDiff(request)
+    const response = await this.bumpClient.postDiff(request)
 
     switch (response.status) {
       case 201: {
@@ -68,7 +77,7 @@ export class Diff {
       unpublished: true,
     }
 
-    const response = await this._bump.postVersion(request, token)
+    const response = await this.bumpClient.postVersion(request, token)
 
     switch (response.status) {
       case 201: {
@@ -125,6 +134,8 @@ export class Diff {
     format: string,
     expires: string | undefined,
   ): Promise<DiffResponse | undefined> {
+    if (!this._config) this._config = await Config.load('../../')
+
     let diffVersion: DiffResponse | VersionResponse | undefined
 
     if (file2 && (!documentation || !token)) {
@@ -157,8 +168,8 @@ export class Diff {
     opts: {format: string; timeout: number},
   ): Promise<DiffResponse> {
     const pollingResponse = await (this.isVersion(result) && token
-      ? this._bump.getVersion(result.id, token)
-      : this._bump.getDiff(result.id, opts.format))
+      ? this.bumpClient.getVersion(result.id, token)
+      : this.bumpClient.getDiff(result.id, opts.format))
 
     if (opts.timeout <= 0) {
       throw new CLIError(
