@@ -73,6 +73,7 @@
   },
   "repository": "bump-sh/cli",
   "scripts": {
+    "prepare": "npm run build",
     "build": "shx rm -rf dist && tsc -b",
     "clean": "rm -rf dist/ oclif.manifest.json",
     "lint": "eslint . --ext .ts",
