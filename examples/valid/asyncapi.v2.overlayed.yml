@@ -1,18 +1,17 @@
 # Some comments in the API definition
-asyncapi: '2.2.0'
+asyncapi: 2.2.0
 info:
   title: Streetlights API
-  version: '1.0.0'
-  description:
-    $ref: "./doc/introduction.md"
+  version: 1.0.0
+  description: |
+    Turn lights on or off. And get notified when lights are dimmed or switched.
   license:
     name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
-
+    url: 'https://www.apache.org/licenses/LICENSE-2.0'
 servers:
   # This is a Production MQTT server
   production:
-    url: test.mosquitto.org:{port}
+    url: 'test.mosquitto.org:{port}'
     protocol: mqtt
     description: Test broker
     variables:
@@ -25,15 +24,13 @@ servers:
     security:
       - apiKey: []
       - supportedOauthFlows:
-        - streetlights:on
-        - streetlights:off
-        - streetlights:dim
+          - 'streetlights:on'
+          - 'streetlights:off'
+          - 'streetlights:dim'
       - openIdConnectWellKnown: []
-
 defaultContentType: application/json
-
 channels:
-  smartylighting/streetlights/1/0/event/{streetlightId}/lighting/measured:
+  'smartylighting/streetlights/1/0/event/{streetlightId}/lighting/measured':
     description: The topic on which measured values may be produced and consumed.
     parameters:
       streetlightId:
@@ -42,44 +39,33 @@ channels:
       summary: Inform about environmental lighting conditions of a particular streetlight.
       operationId: receiveLightMeasurement
       traits:
-        - $ref: './traits/kafka.yml'
+        - $ref: ./traits/kafka.yml
       message:
         $ref: '#/components/messages/lightMeasured'
-
-  smartylighting/streetlights/1/0/action/{streetlightId}/turn/on:
+  'smartylighting/streetlights/1/0/action/{streetlightId}/turn/on':
     parameters:
       streetlightId:
-        $ref: './params/streetlightId.json'
+        $ref: ./params/streetlightId.json
     subscribe:
       operationId: turnOn
       traits:
-        - $ref: './traits/kafka.yml'
+        - $ref: ./traits/kafka.yml
       message:
         $ref: '#/components/messages/turnOnOff'
-
-  smartylighting/streetlights/1/0/action/{streetlightId}/turn/off:
+  'smartylighting/streetlights/1/0/action/{streetlightId}/turn/off':
     parameters:
       streetlightId:
-        $ref: './params/streetlightId.json'
-    subscribe:
-      x-beta: true
-      operationId: turnOff
-      traits:
-        - $ref: './traits/kafka.yml'
-      message:
-        $ref: '#/components/messages/turnOnOff'
-
-  smartylighting/streetlights/1/0/action/{streetlightId}/dim:
+        $ref: ./params/streetlightId.json
+  'smartylighting/streetlights/1/0/action/{streetlightId}/dim':
     parameters:
       streetlightId:
-        $ref: 'params/streetlightId.json'
+        $ref: params/streetlightId.json
     subscribe:
       operationId: dimLight
       traits:
-        - $ref: './traits/kafka.yml'
+        - $ref: ./traits/kafka.yml
       message:
         $ref: '#/components/messages/dimLight'
-
 components:
   messages:
     lightMeasured:
@@ -90,7 +76,7 @@ components:
       traits:
         - $ref: '#/components/messageTraits/commonHeaders'
       payload:
-        $ref: "#/components/schemas/lightMeasuredPayload"
+        $ref: '#/components/schemas/lightMeasuredPayload'
     turnOnOff:
       name: turnOnOff
       title: Turn on/off
@@ -98,7 +84,7 @@ components:
       traits:
         - $ref: '#/components/messageTraits/commonHeaders'
       payload:
-        $ref: "#/components/schemas/turnOnOffPayload"
+        $ref: '#/components/schemas/turnOnOffPayload'
     dimLight:
       name: dimLight
       title: Dim light
@@ -106,8 +92,7 @@ components:
       traits:
         - $ref: '#/components/messageTraits/commonHeaders'
       payload:
-        $ref: "#/components/schemas/dimLightPayload"
-
+        $ref: '#/components/schemas/dimLightPayload'
   schemas:
     lightMeasuredPayload:
       type: object
@@ -117,18 +102,18 @@ components:
           minimum: 0
           description: Light intensity measured in lumens.
         sentAt:
-          $ref: "#/components/schemas/sentAt"
+          $ref: '#/components/schemas/sentAt'
     turnOnOffPayload:
       type: object
       properties:
         command:
           type: string
           enum:
-            - on
-            - off
+            - 'on'
+            - 'off'
           description: Whether to turn on or off the light.
         sentAt:
-          $ref: "#/components/schemas/sentAt"
+          $ref: '#/components/schemas/sentAt'
     dimLightPayload:
       type: object
       properties:
@@ -138,12 +123,11 @@ components:
           minimum: 0
           maximum: 100
         sentAt:
-          $ref: "#/components/schemas/sentAt"
+          $ref: '#/components/schemas/sentAt'
     sentAt:
       type: string
       format: date-time
       description: Date and time when the message was sent.
-
   securitySchemes:
     apiKey:
       type: apiKey
@@ -182,7 +166,6 @@ components:
     openIdConnectWellKnown:
       type: openIdConnect
       openIdConnectUrl: 'https://authserver.example/.well-known'
-
   messageTraits:
     commonHeaders:
       headers:

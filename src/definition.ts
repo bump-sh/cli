@@ -1,7 +1,7 @@
 import {default as $RefParser, getJsonSchemaRefParserDefaultOptions} from '@apidevtools/json-schema-ref-parser'
 import asyncapi from '@asyncapi/specs'
 import {CLIError} from '@oclif/core/errors'
-import {safeStringify} from '@stoplight/yaml'
+import {parseWithPointers, safeStringify} from '@stoplight/yaml'
 import debug from 'debug'
 import {
   JSONSchema4,
@@ -277,9 +277,11 @@ class API {
 
   serializeDefinition(outputPath?: string): string {
     if (this.overlayedDefinition) {
+      const {comments} = parseWithPointers(this.rawDefinition, {attachComments: true})
+      const dumpOptions = {comments, lineWidth: Number.POSITIVE_INFINITY}
       return this.guessFormat(outputPath) === 'json'
         ? JSON.stringify(this.overlayedDefinition)
-        : safeStringify(this.overlayedDefinition)
+        : safeStringify(this.overlayedDefinition, dumpOptions)
     }
 
     return this.rawDefinition
