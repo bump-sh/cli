@@ -59,10 +59,11 @@ class BumpApi {
   }
 
   // Check https://oclif.io/docs/config for details about Config.IConfig
-  public constructor(protected config: Config) {
+  public constructor(protected config?: Config) {
     const baseURL = `${vars.apiUrl}${vars.apiBasePath}`
+    const userAgent = config?.userAgent || 'bump-cli'
     const headers: {Authorization?: string; 'User-Agent': string} = {
-      'User-Agent': vars.apiUserAgent(config.userAgent),
+      'User-Agent': vars.apiUserAgent(userAgent),
     }
 
     this.client = axios.create({
