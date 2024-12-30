@@ -1,8 +1,4 @@
 import {Flags, Interfaces} from '@oclif/core'
-// import * as Parser from '@oclif/parser';
-
-// Re-export oclif flags https://oclif.io/docs/flags
-// export * from '@oclif/command/lib/flags';
 
 // Custom flags for bump-cli
 const doc = Flags.custom<string>({
@@ -131,9 +127,10 @@ const out = Flags.custom<string>({
   description: 'Output file path',
 })
 
-const overlay = Flags.custom<string>({
+const overlay = Flags.custom<string[]>({
   char: 'o',
-  description: 'Path or URL of an overlay file to apply before deploying',
+  description: 'Path or URL of overlay file(s) to apply before deploying',
+  multiple: true,
 })
 
 export {

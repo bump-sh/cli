@@ -146,7 +146,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     autoCreate: boolean,
     documentationName: string | undefined,
     branch: string | undefined,
-    overlay?: string | undefined,
+    overlay?: string[] | undefined,
   ): Promise<void> {
     ux.action.status = `...a new version to your ${documentation} documentation`
 
