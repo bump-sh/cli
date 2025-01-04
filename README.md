@@ -176,7 +176,7 @@ Please check `bump deploy --help` for more usage details.
 
 ### `bump diff [FILE]`
 
-_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/api-documentation-on-bump#api-diff-on-pull-requests) diff command._
+_If you want to receive automatic `bump diff` results on your Github Pull Requests you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh-api-documentation-changelog) which also has a diff command._
 
 Please note that by default the command will always exit with a
 successful return code. If you want to use this command in a CI
@@ -198,7 +198,7 @@ Modified: GET /consommations
 > You can create as many diffs as you like without being authenticated. This is a **free and unlimited service** provided as long as you use the service fairly.
 {: .info}
 
-_Note: You can also test this feature in our dedicated web application at <https://api-diff.io/>._
+_**Note:** You can also test this feature in our dedicated web application at <https://api-diff.io/>._
 
 #### Authenticated diffs related to your Bump.sh documentation
 
@@ -249,7 +249,7 @@ bump preview --live --open openapi-definition.json
 > You can create as many previews as you like without being authenticated. This is a **free and unlimited service**.
 {: .info}
 
-_Note: the additional `--open` flag helps to automatically open the preview URL in your browser._
+_**Note:** the additional `--open` flag helps to automatically open the preview URL in your browser._
 
 Please check `bump preview --help` for more usage details
 
@@ -267,7 +267,7 @@ To redirect the output of the command to a new file you can run the following:
 bump overlay api-document.yaml overlay-file.yaml > api-overlayed-document.yaml
 ```
 
-_Note: you can also apply the overlay during the [`bump deploy` command]((#bump-deploy-file)) with the new `--overlay` flag:_
+_**Note:** you can also apply the overlay during the [`bump deploy` command]((#bump-deploy-file)) with the new `--overlay` flag:_
 
 ```shell
 bump deploy api-document.yaml --doc my-doc --token my-token --overlay overlay-file.yaml
