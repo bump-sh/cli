@@ -1,0 +1,11 @@
+overlay: 1.0.0
+info:
+  title: Add Feedback Link
+  version: 0.0.1
+actions:
+  - target: '$.info'
+    description: Add a feedback link to the API
+    update:
+      x-feedbackLink:
+        label: Submit Feedback
+        url: https://github.com/bump-sh-examples/train-travel-api/issues/new

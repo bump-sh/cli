@@ -136,6 +136,39 @@ describe('deploy subcommand', () => {
     })
   })
 
+  describe('Successful runs with overlays', () => {
+    it('sends new version to Bump', async () => {
+      nock('https://bump.sh')
+        .post(
+          '/api/v1/versions',
+          (body) =>
+            body.documentation === 'coucou' &&
+            !body.branch_name &&
+            body.definition.includes('Submit Feedback') &&
+            body.definition.includes("Protect Earth's Tree Tracker"),
+        )
+        .reply(201, {doc_public_url: 'http://localhost/doc/123-with-overlays'})
+
+      const {stderr, stdout} = await runCommand(
+        [
+          'deploy',
+          'examples/valid/openapi.v3.json',
+          '--doc',
+          'coucou',
+          '--overlay',
+          'examples/valid/overlay.yaml',
+          '--overlay',
+          'examples/valid/overlay2.yaml',
+        ].join(' '),
+      )
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stdout).to.contain(
+        'Your coucou documentation...has received a new deployment which will soon be ready at:',
+      )
+      expect(stdout).to.contain('http://localhost/doc/123-with-overlays')
+    })
+  })
+
   describe('Server errors', () => {
     describe('Authentication error', () => {
       it("Doesn't create a deployed version", async () => {

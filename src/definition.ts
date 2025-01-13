@@ -150,12 +150,13 @@ class API {
   public async applyOverlay(overlayPath: string): Promise<void> {
     const overlay = await API.load(overlayPath)
     const overlayDefinition = overlay.definition
+    const currentDefinition = this.overlayedDefinition || this.definition
 
     if (!API.isOpenAPIOverlay(overlayDefinition)) {
       throw new Error(`${overlayPath} does not look like an OpenAPI overlay`)
     }
 
-    this.overlayedDefinition = await new Overlay().run(this.definition, overlayDefinition)
+    this.overlayedDefinition = await new Overlay().run(currentDefinition, overlayDefinition)
   }
 
   public extractDefinition(outputPath?: string): [string, APIReference[]] {
