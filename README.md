@@ -184,7 +184,7 @@ environment and want the command to fail **in case of a breaking
 change**, you will need to add the `--fail-on-breaking` flag to your
 diff command. By default if the environment variable `CI=1` is present
 (in most continuous integration environment), the flag will be
-enabled. In that case you can disable to failures with
+enabled. In that case you can disable the failures with
 `--no-fail-on-breaking` flag.
 
 #### Public API diffs
