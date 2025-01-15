@@ -97,7 +97,8 @@ const failOnBreaking = (opts: Partial<Interfaces.BooleanFlag<boolean>> = {}) => 
 
       return false
     },
-    description: 'Fail when diff contains a breaking change',
+    description:
+      'Fail when diff contains a breaking change. Defaults to false locally. In CI environments where the env variable CI=1 is set, it defaults to true.',
   })
 }
 

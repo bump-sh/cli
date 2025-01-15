@@ -51,7 +51,7 @@ export default class Diff extends BaseCommand<typeof Diff> {
     branch: flagsBuilder.branch(),
     doc: flagsBuilder.doc(),
     expires: flagsBuilder.expires(),
-    'fail-on-breaking': flagsBuilder.failOnBreaking(),
+    'fail-on-breaking': flagsBuilder.failOnBreaking({allowNo: true}),
     format: flagsBuilder.format(),
     hub: flagsBuilder.hub(),
     token: flagsBuilder.token({required: false}),

@@ -174,6 +174,34 @@ describe('diff subcommand', () => {
       expect(error?.oclif?.exit).to.equal(1)
     })
 
+    it('asks for a public diff between the two files to Bump and exit 0 on breaking change due to --no-fail-on-breaking flag', async () => {
+      // Mock env variables CI
+      process.env.CI = process.env.CI || ''
+      const stubs = []
+      stubs.push(stub(process.env, 'CI').value('1'))
+      nock('https://bump.sh')
+        .post('/api/v1/diffs')
+        .once()
+        .reply(201, {
+          id: '321abc',
+          public_url: 'http://localhost/preview/321abc',
+        })
+        .get('/api/v1/diffs/321abc?formats[]=text')
+        .once()
+        .reply(202)
+        .get('/api/v1/diffs/321abc?formats[]=text')
+        .once()
+        .reply(200, {diff_breaking: true, diff_summary: 'Updated: POST /versions'})
+
+      const {error, stderr, stdout} = await runCommand(
+        ['diff', '--no-fail-on-breaking', 'examples/valid/openapi.v3.json', 'examples/valid/openapi.v2.json'].join(' '),
+      )
+      expect(stderr).to.match(/Comparing the two given definition files/)
+      expect(stdout).to.contain('Updated: POST /versions')
+      /* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
+      expect(error).to.be.undefined
+    })
+
     it('asks for a diff with content change only', async () => {
       nock('https://bump.sh')
         .post('/api/v1/versions')
