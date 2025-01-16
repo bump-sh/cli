@@ -1,6 +1,7 @@
 import * as YAML from '@stoplight/yaml'
 import {expect} from 'chai'
 import nock from 'nock'
+import * as fs from 'node:fs'
 import path from 'node:path'
 
 import {API, APIDefinition} from '../../src/definition'
@@ -136,7 +137,20 @@ describe('API class', () => {
 
         expect(api.serializeDefinition()).to.equal(JSON.stringify(api.overlayedDefinition))
 
-        expect(api.serializeDefinition('destination/file.yaml')).to.equal(YAML.safeStringify(api.overlayedDefinition))
+        expect(api.serializeDefinition('destination/file.yaml')).to.equal(
+          YAML.safeStringify(api.overlayedDefinition, {lineWidth: Number.POSITIVE_INFINITY}),
+        )
+      })
+
+      it('preserves line width and YAML comments', async () => {
+        nock('http://example.org').get('/param-lights.json').reply(200, {})
+
+        const api = await API.load('examples/valid/asyncapi.v2.yml')
+        await api.applyOverlay('examples/valid/overlay-async.yaml')
+
+        expect(api.serializeDefinition()).to.equal(
+          fs.readFileSync('examples/valid/asyncapi.v2.overlayed.yml', 'utf8').replaceAll('\r', ''),
+        )
       })
     })
   })
