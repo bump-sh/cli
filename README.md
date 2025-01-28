@@ -41,13 +41,13 @@ _If you are looking to use Bump.sh in a continuous integration environment you m
 
 ### Global installation
 
-To install it globally, run the following command with NPM
+To install it globally, run the following command with NPM:
 
 ```shell
 npm install -g bump-cli
 ```
 
-Or, with Yarn via
+Or, with Yarn via:
 
 ```shell
 yarn global add bump-cli
@@ -55,19 +55,19 @@ yarn global add bump-cli
 
 ### Add Bump.sh to your Node project
 
-As our CLI is a node package, you can easily embed it to your project by adding the package to your `package.json` file, either with NPM
+As our CLI is a node package, you can easily embed it to your project by adding the package to your `package.json` file, either with NPM:
 
 ```shell
 npm install --save-dev bump-cli
 ```
 
-Or with Yarn via
+Or with Yarn via:
 
 ```shell
 yarn add --dev bump-cli
 ```
 
-You can then use any Bump.sh commands with `npx` (same as `npm exec`)
+You can then use any Bump.sh commands with `npx` (same as `npm exec`):
 
 ```shell
 npx bump --help
@@ -113,10 +113,10 @@ We currently support [OpenAPI](https://github.com/OAI/OpenAPI-Specification) fro
 
 ## Commands
 
-* [`bump deploy [FILE]`](#bump-deploy-file)
-* [`bump diff [FILE]`](#bump-diff-file)
-* [`bump preview [FILE]`](#bump-preview-file)
-* [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]`](#bump-overlay-definition_file-overlay_file)
+* [`bump deploy [FILE]`](#the-deploy-command)
+* [`bump diff [FILE]`](#the-diff-command)
+* [`bump preview [FILE]`](#the-preview-command)
+* [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]`](#the-overlay-command)
 
 ### The `deploy` command
 
