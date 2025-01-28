@@ -95,8 +95,8 @@ COMMANDS
   deploy   Create a new version of your documentation from the given file or URL.
   diff     Get a comparison diff with your documentation from the given file or URL.
   help     Display help for bump.
-  preview  Create a documentation preview from the given file or URL.
   overlay  Apply an OpenAPI specified overlay to your API definition.
+  preview  Create a documentation preview from the given file or URL.
 ```
 
  You can also get some help anytime by adding `--help` to any command. Example: `bump deploy --help`.
@@ -198,7 +198,11 @@ Modified: GET /consommations
 By default the command will always exit with a successful return code. If you
 want to use this command in a CI environment and want the command to fail **in
 case of a breaking change**, you will need to add the `--fail-on-breaking` flag
-to your diff command.
+to your diff command. 
+
+By default if the environment variable `CI=1` is present (in most continuous
+integration environment), the flag will be enabled. In that case you can disable
+the failures with `--no-fail-on-breaking` flag.
 
 You can also test this feature in our dedicated web application at
 <https://api-diff.io/>.
@@ -268,7 +272,7 @@ Please check `bump preview --help` for more usage details
 
 ### The `overlay` command
 
-The [Overlay specification](https://github.com/OAI/Overlay-Specification) from the OpenAPI Initiative makes it possible to modify the content of an API definition by adding a layer on top of it. That layer helps adding, removing or changing some or all of the content of the original definition. 
+The [Overlay Specification](https://spec.openapis.org/overlay/v1.0.0.html) from the OpenAPI Initiative makes it possible to modify the content of an API definition by adding a layer on top of it. That layer helps adding, removing or changing some or all of the content of the original definition. 
 
 The `bump overlay` command takes an original API document, applies the changes from the overlay document, and outputs a modified version. No changes are made directly to the original document.
 
@@ -285,13 +289,13 @@ bump overlay api-document.yaml overlay.yaml > modified-api-document.yaml
 You can also apply the overlay using the [`deploy` command](#the-deploy-command) with the `--overlay` flag:
 
 ```shell
-bump deploy openapi.yaml --doc my-doc --token my-token --overlay overlay.yaml
+bump deploy api-document.yaml --doc my-doc --token my-token --overlay overlay.yaml
 ```
 
 If there are multiple overlays which need to be applied, the `--overlay` can be passed multiple times.
 
 ```shell
-bump deploy openapi.yaml \
+bump deploy api-document.yaml \
   --doc my-doc \
   --token my-token \
   --overlay overlay1.yaml \
@@ -304,27 +308,27 @@ Make sure to have Node.js (At least v20) installed on your machine.
 
 - Install node dependencies with
 
-  ```sh-session
+  ```shell
   npm install
   ```
 
 - Compile the Typescript code
 
 
-  ```sh-session
+  ```shell
   npm run build
-  npm run clean # to remove build artifacts
+  npm run clean # Remove build artifacts
   ```
 
 - Format the codebase to comply with the linter rules
 
-  ```sh-session
+  ```shell
   npm run fmt
   ```
 
 - Run the test suites
   
-  ```sh-session
+  ```shell
   npm run test
   npm run test-coverage # Run tests with coverage
   ```
