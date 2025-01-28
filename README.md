@@ -9,7 +9,9 @@
   <a href="https://bump.sh/users/sign_up">Sign up</a>
 </p>
 
-The Bump.sh CLI is used to interact with your API documentation or hubs hosted on Bump.sh. With any API definition of your choice (from OpenAPI, Swagger, or AsyncAPI), it can help you to:
+The Bump.sh CLI is used to interact with API documentation and hubs hosted on Bump.sh from your choice of popular API description formats: OpenAPI, Swagger, or AsyncAPI.
+
+Using [OpenAPI](https://github.com/OAI/OpenAPI-Specification) (v3.x and v2.0) or [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) (2.x), you can do any of the following:
 
 - Validate an API document before publishing to your documentation.
 - Publish an API document to your Bump.sh documentation or hubs.
@@ -106,10 +108,6 @@ COMMANDS
 While some commands don't need any API token (`preview` or `diff`) you will need an access key if you want to interact with your Bump.sh documentation.
 
 Head over to your Documentation settings in the “CI deployment” section or your Account or Organization settings in the “API keys” section to fetch a personal token for later usage.
-
-### Compatible API description formats
-
-We currently support [OpenAPI](https://github.com/OAI/OpenAPI-Specification) from v2.0 to v3.1 and [AsyncAPI 2.x](https://www.asyncapi.com/docs/reference/specification/latest) description formats. Both YAML or JSON file formats are accepted file inputs to the CLI.
 
 ## Commands
 
