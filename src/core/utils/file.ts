@@ -1,11 +1,28 @@
+import {CLIError} from '@oclif/core/errors'
 import {readdirSync, statSync} from 'node:fs'
 import {basename, extname} from 'node:path'
 
 type FileDescription = {filename: string; label: string; value: string}
 
-export const isDir = (path: string): boolean => {
+export const isDir = (path_or_url: string): boolean => {
+  if (isHttpUrl(path_or_url)) {
+    return false
+  }
+
   try {
-    return statSync(path).isDirectory()
+    return statSync(path_or_url).isDirectory()
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new CLIError(error)
+    }
+    return false
+  }
+}
+
+const isHttpUrl = (path: string): boolean => {
+  try {
+    const url = new URL(path)
+    return ['http:', 'https:'].includes(url.protocol)
   } catch {
     return false
   }
