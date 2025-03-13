@@ -3,6 +3,7 @@ import {expect} from 'chai'
 import nock from 'nock'
 import * as fs from 'node:fs'
 import path from 'node:path'
+import {stub} from 'sinon'
 
 import {API, APIDefinition} from '../../src/definition'
 
@@ -132,6 +133,7 @@ describe('API class', () => {
 
     describe('with an overlay applied', () => {
       it('returns the overlayed definition', async () => {
+        const spyOnStderr = stub(process.stderr, 'write')
         const api = await API.load('examples/valid/openapi.v2.json')
         await api.applyOverlay('examples/valid/overlay.yaml')
 
@@ -140,6 +142,17 @@ describe('API class', () => {
         expect(api.serializeDefinition('destination/file.yaml')).to.equal(
           YAML.safeStringify(api.overlayedDefinition, {lineWidth: Number.POSITIVE_INFINITY}),
         )
+
+        expect(spyOnStderr.firstCall.args[0]).to.equal(
+          "WARNING: Action target '$.servers.*' has no matching elements\n",
+        )
+
+        expect(spyOnStderr.secondCall.args[0]).to.equal(
+          'WARNING: Action target \'$..[?(@["x-beta"]==true)]\' has no matching elements\n',
+        )
+
+        expect(spyOnStderr.thirdCall.args[0]).to.equal("WARNING: Action target '$.servers' has no matching elements\n")
+        spyOnStderr.restore()
       })
 
       it('preserves line width and YAML comments', async () => {
@@ -157,6 +170,10 @@ describe('API class', () => {
 
   describe('applyOverlay()', () => {
     describe('when overlay is valid', () => {
+      before(() => {
+        stub(process.stderr, 'write')
+      })
+
       it('sets the overlayedDefinition with the given overlay file path', async () => {
         const api = await API.load('examples/valid/openapi.v2.json')
 

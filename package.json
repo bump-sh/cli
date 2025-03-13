@@ -101,7 +101,7 @@
     "axios": "^1.7.7",
     "chalk": "^5.3.0",
     "debug": "^4.3.7",
-    "jsonpath": "^1.1.1",
+    "jsonpathly": "^2.0.2",
     "mergician": "^2.0.2",
     "oas-schemas": "git+https://git@github.com/OAI/OpenAPI-Specification.git#882d1caedb0bff825a1fd10728e7e3dc43912d37",
     "open": "^10.1.0"
