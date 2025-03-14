@@ -64,6 +64,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     hub: flagsBuilder.hub(),
     interactive: flagsBuilder.interactive(),
     overlay: flagsBuilder.overlay(),
+    preview: flagsBuilder.preview(),
     token: flagsBuilder.token(),
   }
 
@@ -147,6 +148,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     documentationName: string | undefined,
     branch: string | undefined,
     overlay?: string[] | undefined,
+    temporary?: boolean | false,
   ): Promise<void> {
     ux.action.status = `...a new version to your ${documentation} documentation`
 
@@ -160,6 +162,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       documentationName,
       branch,
       overlay,
+      temporary,
     )
 
     if (dryRun) {
@@ -193,6 +196,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       documentationName,
       branch,
       overlay,
+      temporary,
     ] = [
       flags['dry-run'],
       flags.doc,
@@ -208,9 +212,11 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       flags['doc-name'],
       flags.branch,
       flags.overlay,
+      /* when --preview is provided, generate temporary version */
+      flags.preview,
     ]
 
-    const action = dryRun ? 'validate' : 'deploy'
+    const action = dryRun ? 'validate' : temporary ? 'preview' : 'deploy'
     ux.action.start(`Let's ${action} on Bump.sh`)
 
     if (isDir(args.file)) {
@@ -243,6 +249,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
         documentationName,
         branch,
         overlay,
+        temporary,
       )
     } else {
       throw new CLIError('Missing required flag --doc=<slug>')
