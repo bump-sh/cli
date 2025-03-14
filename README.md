@@ -88,7 +88,7 @@ $ bump --help
 The Bump.sh CLI is used to interact with your API documentation hosted on Bump.sh by using the API of developers.bump.sh
 
 VERSION
-  bump-cli/2.9.2 linux-x64 node-v20.18.1
+  bump-cli/2.9.3 linux-x64 node-v20.18.1
 
 USAGE
   $ bump [COMMAND]
@@ -325,10 +325,35 @@ Make sure to have Node.js (At least v20) installed on your machine.
   ```
 
 - Run the test suites
-  
+
   ```shell
   npm run test
   npm run test-coverage # Run tests with coverage
+  ```
+
+### Use package in local environment
+
+You can run the package by running file `run.js`:
+
+  ```shell
+  bin/run.js
+  ```
+
+For example to generate a preview:
+
+  ```shell
+  ./bin/run.js preview path/to/file.json
+  > Your preview is visible at: https://bump.sh/preview/42
+  ```
+
+Please note that even if CLI is run locally, requests are sent to Bump API for real.
+
+If you have a local version of Bump API, you can run CLI 100% in local environment,
+with env variable `BUMP_HOST`:
+
+  ```shell
+  BUMP_HOST="http://localhost:3000" ./bin/run.js preview path/to/file.json
+  > Your preview is visible at: http://localhost:3000/preview/42
   ```
 
 ## License
