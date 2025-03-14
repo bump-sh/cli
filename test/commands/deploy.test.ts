@@ -220,6 +220,12 @@ describe('deploy subcommand', () => {
       expect(error?.oclif?.exit).to.equal(2)
     })
 
+    it('Fails deploying an inexistant directory', async () => {
+      const {error} = await runCommand(['deploy', 'FILE', '--hub', 'coucou'].join(' '))
+      expect(error?.message).to.match(/no such file or directory/)
+      expect(error?.oclif?.exit).to.equal(2)
+    })
+
     it('exits with status 2 when no file argument is provided', async () => {
       const {error} = await runCommand(['deploy'].join(' '))
       expect(error?.oclif?.exit).to.equal(2)
