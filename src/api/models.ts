@@ -36,6 +36,7 @@ export interface VersionRequest {
   hub?: string
   previous_version_id?: string
   references?: Reference[]
+  temporary?: boolean
   unpublished?: boolean
 }
 
