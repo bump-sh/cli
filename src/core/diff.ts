@@ -1,6 +1,7 @@
 import {Config} from '@oclif/core'
 import {CLIError} from '@oclif/core/errors'
 import debug from 'debug'
+import {resolve} from 'node:path'
 
 import {BumpApi} from '../api/index.js'
 import {DiffRequest, DiffResponse, VersionRequest, VersionResponse, WithDiff} from '../api/models.js'
@@ -134,7 +135,7 @@ export class Diff {
     format: string,
     expires: string | undefined,
   ): Promise<DiffResponse | undefined> {
-    if (!this._config) this._config = await Config.load('../../')
+    if (!this._config) this._config = await Config.load(resolve(import.meta.dirname, './../../'))
 
     let diffVersion: DiffResponse | VersionResponse | undefined
 
