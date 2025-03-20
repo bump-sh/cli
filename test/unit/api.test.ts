@@ -3,6 +3,7 @@ import {expect} from 'chai'
 import chalk from 'chalk'
 import nock from 'nock'
 import * as os from 'node:os'
+import {resolve} from 'node:path'
 import {spy, stub} from 'sinon'
 
 import {BumpApi} from '../../src/api'
@@ -12,7 +13,7 @@ nock.disableNetConnect()
 // Force no colors in output messages
 chalk.level = 0
 // Default oclif config from root of repo
-const config = await Config.load('../../')
+const config = await Config.load(resolve(import.meta.dirname, './../../'))
 
 describe('BumpApi HTTP client class', () => {
   describe('nominal authenticated API call', () => {
