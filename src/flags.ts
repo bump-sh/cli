@@ -115,7 +115,7 @@ const preview = (opts: Partial<Interfaces.BooleanFlag<boolean>> = {}) => {
     ...opts,
     char: 'p',
     default: false,
-    description: 'Generate preview in your API context. This version is temporary.',
+    description: 'Generate a preview in your API context. The resulting version is temporary and not visible by your documentation viewers.',
   })
 }
 
