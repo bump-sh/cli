@@ -169,6 +169,22 @@ describe('deploy subcommand', () => {
     })
   })
 
+  describe('Successful runs with option preview', () => {
+    it('sends new version to Bump and receive temporary version', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.documentation === 'tempy' && body.temporary)
+        .reply(201, {doc_public_url: 'http://localhost/doc/1'})
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/openapi.v3.json', '--doc', 'tempy', '--preview'].join(' '),
+      )
+
+      expect(stderr).to.contain("Let's preview on Bump.sh... done\n")
+      expect(stdout).to.contain('Your tempy documentation...has received a new preview which will soon be ready at:')
+      expect(stdout).to.contain('http://localhost/doc/1')
+    })
+  })
+
   describe('Server errors', () => {
     describe('Authentication error', () => {
       it("Doesn't create a deployed version", async () => {
