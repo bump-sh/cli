@@ -119,7 +119,7 @@ export class Overlay {
         // target with the jsonpathly lib, this is just us merging
         // the given update with the whole spec.
         spec = merger(spec, update)
-      } else if (property_or_index) {
+      } else if (property_or_index !== undefined) {
         const targetObject = parent[property_or_index]
 
         if (typeof targetObject === 'object' && typeof update === 'object') {
