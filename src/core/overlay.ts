@@ -46,7 +46,7 @@ export class Overlay {
         for (const path of paths) {
           // The 'executeAction' will mutate the passed spec object in
           // place.
-          this.executeAction(spec, action, path)
+          spec = this.executeAction(spec, action, path)
         }
       }
     } else {
@@ -61,7 +61,7 @@ export class Overlay {
    * if the path is valid in the object as this is the role of the
    * jsonpathly lib which we used previously to extract the target
    * paths. */
-  private executeAction(spec: APIDefinition, action: JSONSchema4Object, path: string): void {
+  private executeAction(spec: APIDefinition, action: JSONSchema4Object, path: string): APIDefinition {
     const explodedPath: string[] = path.split(/(?:]\[|\$\[)+/)
     // Remove root
     explodedPath.shift()
@@ -85,10 +85,12 @@ export class Overlay {
     if (Object.hasOwn(action, 'remove')) {
       this.remove(parent, thingToActUpon)
     } else if (Object.hasOwn(action, 'update')) {
-      this.update(spec, parent, action.update, thingToActUpon)
+      spec = this.update(spec, parent, action.update, thingToActUpon)
     } else {
       process.stderr.write(`WARNING: ${this.humanName(action)} needs either a 'remove' or an 'update' property\n`)
     }
+
+    return spec
   }
 
   private humanName(action: JSONSchema4Object): string {
@@ -108,7 +110,7 @@ export class Overlay {
     parent: JSONSchema4Object,
     update: JSONSchema4Type,
     property_or_index: number | string,
-  ): void {
+  ): APIDefinition {
     try {
       // Deep merge objects using a module (built-in spread operator is only shallow)
       const merger = mergician({appendArrays: true})
@@ -132,5 +134,7 @@ export class Overlay {
     } catch (error) {
       process.stderr.write(`Error applying overlay: ${(error as Error).message}\n`)
     }
+
+    return spec
   }
 }
