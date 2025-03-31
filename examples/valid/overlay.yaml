@@ -3,6 +3,13 @@ info:
   title: Overlay to customise API for Protect Earth
   version: 0.0.1
 actions:
+  - target: '$'
+    description: Add an extra x-topic
+    update:
+      x-topics:
+        - title: Getting started
+          content: |
+            Use this API directly in your browser with the API explorer!
   - target: '$.info.description'
     description: Provide a better introduction for our end users than this techno babble.
     update: |
@@ -34,3 +41,8 @@ actions:
     update:
       - description: Production
         url: https://api.protect.earth/
+
+  - target: '$.tags[?(@.name=="test")]'
+    update:
+      description: |
+        This is my test description
