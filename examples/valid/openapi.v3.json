@@ -254,6 +254,11 @@
       "url": "https://bump.sh/api/v1"
     }
   ],
+  "tags": [
+    {
+      "name": "test"
+    }
+  ],
   "x-topics": [
     {
       "content": "# Api token authentication\n\nUse the token from your documentation settings as the username of the basic auth, with no password.\n\nExample: `curl https://bump.sh/api/v1/docs/1/versions -u DOC_TOKEN:`\n\nNote that adding a colon after your token prevents cURL from asking for a password.\n",
