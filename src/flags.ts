@@ -110,6 +110,16 @@ const live = (opts: Partial<Interfaces.BooleanFlag<boolean>> = {}) => {
   })
 }
 
+const preview = (opts: Partial<Interfaces.BooleanFlag<boolean>> = {}) => {
+  return Flags.boolean({
+    ...opts,
+    char: 'p',
+    default: false,
+    description:
+      'Generate a preview in your API context. The resulting version is temporary and not visible by your documentation viewers.',
+  })
+}
+
 const format = Flags.custom<string>({
   char: 'f',
   default: 'text',
@@ -150,5 +160,6 @@ export {
   open,
   out,
   overlay,
+  preview,
   token,
 }

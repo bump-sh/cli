@@ -49,6 +49,7 @@ export class Deploy {
     documentationName: string | undefined,
     branch: string | undefined,
     overlay?: string[] | undefined,
+    temporary?: boolean | false,
   ): Promise<VersionResponse | undefined> {
     let version: VersionResponse | undefined
     if (overlay) {
@@ -71,6 +72,7 @@ export class Deploy {
       documentation_name: documentationName,
       hub,
       references,
+      temporary,
     }
     if (dryRun) {
       await this.validateVersion(request, token)
