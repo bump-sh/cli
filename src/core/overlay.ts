@@ -43,6 +43,24 @@ export class Overlay {
           continue
         }
 
+        // When we execute a 'remove' action we need to be careful if
+        // the targets are elements of an array. Because the list of
+        // paths contains an index of each element.
+        //
+        // E.g.
+        // ["servers"][0]
+        // ["servers"][1]
+        // ["servers"][2]
+        //
+        // And if we remove elements starting from the 0, the array
+        // will be reindexed and thus the '2' index won't be valid
+        // anymore.
+        //
+        // Thus, in that case we revers the list of paths
+        if (action.remove) {
+          paths.reverse()
+        }
+
         for (const path of paths) {
           // The 'executeAction' will mutate the passed spec object in
           // place.
@@ -83,8 +101,10 @@ export class Overlay {
     // Do the overlay action
     // Is it a remove?
     if (Object.hasOwn(action, 'remove')) {
+      this.d(`Executing 'remove' on target path: ${path}`)
       this.remove(parent, thingToActUpon)
     } else if (Object.hasOwn(action, 'update')) {
+      this.d(`Executing 'update' on target path: ${path}`)
       spec = this.update(spec, parent, action.update, thingToActUpon)
     } else {
       process.stderr.write(`WARNING: ${this.humanName(action)} needs either a 'remove' or an 'update' property\n`)
