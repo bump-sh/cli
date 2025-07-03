@@ -279,7 +279,7 @@ class API {
   serializeDefinition(outputPath?: string): string {
     if (this.overlayedDefinition) {
       const {comments} = parseWithPointers(this.rawDefinition, {attachComments: true})
-      const dumpOptions = {comments, lineWidth: Number.POSITIVE_INFINITY}
+      const dumpOptions = {comments, lineWidth: Number.POSITIVE_INFINITY, noRefs: true}
       return this.guessFormat(outputPath) === 'json'
         ? JSON.stringify(this.overlayedDefinition)
         : safeStringify(this.overlayedDefinition, dumpOptions)

@@ -1,7 +1,6 @@
 import {runCommand} from '@oclif/test'
 import {expect} from 'chai'
-import {existsSync} from 'node:fs'
-import {rm} from 'node:fs/promises'
+import {readFile, rm} from 'node:fs/promises'
 
 describe('overlay subcommand', () => {
   describe('Successfully compute the merged API document with the given overlay', () => {
@@ -27,25 +26,27 @@ describe('overlay subcommand', () => {
       expect(overlayedDefinition['x-topics'].length).to.equal(2)
     })
 
-    it('Stores the result to the target output file argument', async () => {
-      await rm('tmp/openapi.overlayed.json', {force: true})
+    it('Stores the result to the target output (and format) file argument', async () => {
+      await rm('tmp/openapi.overlayed.yaml', {force: true})
       const {stderr, stdout} = await runCommand(
         [
           'overlay',
           'examples/valid/openapi.v3.json',
           'examples/valid/overlay.yaml',
           '--out',
-          'tmp/openapi.overlayed.json',
+          'tmp/openapi.overlayed.yaml',
         ].join(' '),
       )
       expect(stderr).to.contain("Let's apply the overlay to the main definition")
       /* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
       expect(stdout).to.be.empty
-      /* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
-      expect(existsSync('tmp/openapi.overlayed.json')).to.be.true
+      const data = await readFile('tmp/openapi.overlayed.yaml', {encoding: 'utf8'})
+      expect(data).to.contain("Protect Earth's Tree Tracker API")
+      // YAML export shouldn't create yaml <anchor/aliases refs
+      expect(data).to.not.contain('*ref')
 
       // Cleanup created file
-      await rm('tmp/openapi.overlayed.json')
+      await rm('tmp/openapi.overlayed.yaml')
     })
   })
 })
