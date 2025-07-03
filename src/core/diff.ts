@@ -29,11 +29,16 @@ export class Diff {
     return process.env.BUMP_POLLING_PERIOD ? Number(process.env.BUMP_POLLING_PERIOD) : 1000
   }
 
-  async createDiff(file1: string, file2: string, expires: string | undefined): Promise<DiffResponse | undefined> {
+  async createDiff(
+    file1: string,
+    file2: string,
+    expires: string | undefined,
+    overlays?: string[] | undefined,
+  ): Promise<DiffResponse | undefined> {
     const api = await API.load(file1)
-    const [previous_definition, previous_references] = api.extractDefinition()
+    const [previous_definition, previous_references] = await api.extractDefinition(undefined, overlays)
     const api2 = await API.load(file2)
-    const [definition, references] = api2.extractDefinition()
+    const [definition, references] = await api2.extractDefinition(undefined, overlays)
     const request: DiffRequest = {
       definition,
       expires_at: expires,
@@ -65,9 +70,11 @@ export class Diff {
     hub: string | undefined,
     branch_name: string | undefined,
     previous_version_id: string | undefined = undefined,
+    overlays?: string[] | undefined,
   ): Promise<VersionResponse | undefined> {
     const api = await API.load(file)
-    const [definition, references] = api.extractDefinition()
+
+    const [definition, references] = await api.extractDefinition(undefined, overlays)
     const request: VersionRequest = {
       branch_name,
       definition,
@@ -134,13 +141,14 @@ export class Diff {
     token: string | undefined,
     format: string,
     expires: string | undefined,
+    overlays: string[] | undefined,
   ): Promise<DiffResponse | undefined> {
     if (!this._config) this._config = await Config.load(resolve(import.meta.dirname, './../../'))
 
     let diffVersion: DiffResponse | VersionResponse | undefined
 
     if (file2 && (!documentation || !token)) {
-      diffVersion = await this.createDiff(file1, file2, expires)
+      diffVersion = await this.createDiff(file1, file2, expires, overlays)
     } else {
       if (!documentation || !token) {
         throw new Error('Please login to bump (with documentation & token) when using a single file argument')

@@ -178,7 +178,7 @@ Please check `bump deploy --help` for more usage details.
 ### The `diff` command
 
 Using the `diff` command can help to spot differences between the local API
-document and the latest deployed version. 
+document and the latest deployed version.
 
 #### Public API diffs
 
@@ -196,7 +196,7 @@ Modified: GET /consommations
 By default the command will always exit with a successful return code. If you
 want to use this command in a CI environment and want the command to fail **in
 case of a breaking change**, you will need to add the `--fail-on-breaking` flag
-to your diff command. 
+to your diff command.
 
 By default if the environment variable `CI=1` is present (in most continuous
 integration environment), the flag will be enabled. In that case you can disable
@@ -229,6 +229,14 @@ bump diff path/to/your/file.yml path/to/your/next-file.yml --doc my-documentatio
 ```
 
 Please check `bump diff --help` for full usage details.
+
+#### Diffs with overlayed source files
+
+The `bump diff` command also supports [overlays](#the-overlay-command). This means you can pass the `--overlay my-overlay-file.yml` flag to the command and it will apply the overlay on both files **before** running the diff. E.g.:
+
+```shell
+bump diff --overlay my-overlay.yml path/to/your/file.yml path/to/your/next-file.yml
+```
 
 ### The `preview` command
 

@@ -54,6 +54,7 @@ export default class Diff extends BaseCommand<typeof Diff> {
     'fail-on-breaking': flagsBuilder.failOnBreaking({allowNo: true}),
     format: flagsBuilder.format(),
     hub: flagsBuilder.hub(),
+    overlay: flagsBuilder.overlay(),
     token: flagsBuilder.token({required: false}),
   }
 
@@ -83,13 +84,14 @@ export default class Diff extends BaseCommand<typeof Diff> {
   */
   async run(): Promise<void> {
     const {args, flags} = await this.parse(Diff)
-    const [documentation, hub, branch, token, format, expires] = [
+    const [documentation, hub, branch, token, format, expires, overlays] = [
       flags.doc,
       flags.hub,
       flags.branch,
       flags.token,
       flags.format,
       flags.expires,
+      flags.overlay,
     ]
     if (format === 'text') {
       if (args.otherFile) {
@@ -114,6 +116,7 @@ export default class Diff extends BaseCommand<typeof Diff> {
       token,
       format,
       expires,
+      overlays,
     )
 
     ux.action.stop()

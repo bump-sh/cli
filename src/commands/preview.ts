@@ -51,7 +51,7 @@ export default class Preview extends BaseCommand<typeof Preview> {
     currentPreview: PreviewResponse | undefined = undefined,
   ): Promise<PreviewResponse> {
     const api = await API.load(file)
-    const [definition, references] = api.extractDefinition()
+    const [definition, references] = await api.extractDefinition()
 
     this.d(`${file} looks like an ${api.specName} spec version ${api.version}`)
 
