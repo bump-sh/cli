@@ -46,3 +46,8 @@ actions:
     update:
       description: |
         This is my test description
+
+  - target: '$..schemas.*'
+    update:
+      examples:
+        - one: two
