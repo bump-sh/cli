@@ -10,6 +10,9 @@ actions:
         - title: Getting started
           content: |
             Use this API directly in your browser with the API explorer!
+        - title: Error codes
+          content:
+            $ref: "../valid/doc/error-codes.md"
   - target: '$.info.description'
     description: Provide a better introduction for our end users than this techno babble.
     update: |

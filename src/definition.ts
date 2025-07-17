@@ -156,6 +156,12 @@ class API {
       throw new Error(`${overlayPath} does not look like an OpenAPI overlay`)
     }
 
+    for (const reference of overlay.references) {
+      // Keep overlay reference data only if there's no existing refs with the same location
+      if (this.references.every((existing) => existing.location !== reference.location)) {
+        this.references.push(reference)
+      }
+    }
     this.overlayedDefinition = await new Overlay().run(currentDefinition, overlayDefinition)
   }
 
