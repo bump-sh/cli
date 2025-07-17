@@ -23,7 +23,7 @@ describe('overlay subcommand', () => {
       // Target on nodes which have "x-beta":true field
       expect(overlayedDefinition.components.schemas.Pong.properties).to.have.all.keys('pong')
       expect(overlayedDefinition.tags[0].description).to.equal('This is my test description\n')
-      expect(overlayedDefinition['x-topics'].length).to.equal(2)
+      expect(overlayedDefinition['x-topics'].length).to.equal(3)
     })
 
     it('Stores the result to the target output (and format) file argument', async () => {
