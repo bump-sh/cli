@@ -52,17 +52,7 @@ export class Deploy {
     temporary?: boolean | false,
   ): Promise<VersionResponse | undefined> {
     let version: VersionResponse | undefined
-    if (overlay) {
-      /* eslint-disable no-await-in-loop */
-      // Alternatively we can apply all overlays in parallel
-      // https://stackoverflow.com/questions/48957022/unexpected-await-inside-a-loop-no-await-in-loop
-      for (const overlayFile of overlay) {
-        await api.applyOverlay(overlayFile)
-      }
-      /* eslint-enable no-await-in-loop */
-    }
-
-    const [definition, references] = api.extractDefinition()
+    const [definition, references] = await api.extractDefinition(undefined, overlay)
 
     const request: VersionRequest = {
       auto_create_documentation: autoCreate && !dryRun,

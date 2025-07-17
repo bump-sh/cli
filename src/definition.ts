@@ -159,7 +159,20 @@ class API {
     this.overlayedDefinition = await new Overlay().run(currentDefinition, overlayDefinition)
   }
 
-  public extractDefinition(outputPath?: string): [string, APIReference[]] {
+  public async extractDefinition(
+    outputPath?: string,
+    overlays?: string[] | undefined,
+  ): Promise<[string, APIReference[]]> {
+    if (overlays) {
+      /* eslint-disable no-await-in-loop */
+      // Alternatively we can apply all overlays in parallel
+      // https://stackoverflow.com/questions/48957022/unexpected-await-inside-a-loop-no-await-in-loop
+      for (const overlayFile of overlays) {
+        await this.applyOverlay(overlayFile)
+      }
+      /* eslint-enable no-await-in-loop */
+    }
+
     const references = []
 
     for (let i = 0; i < this.references.length; i++) {

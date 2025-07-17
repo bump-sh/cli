@@ -35,17 +35,17 @@ ${chalk.dim('$ bump overlay DEFINITION_FILE OVERLAY_FILE > destination/file.json
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Overlay)
     const outputPath = flags.out
+    const {file, overlay} = args
 
     ux.action.start("* Let's apply the overlay to the main definition")
 
     ux.action.status = '...loading definition file'
 
-    const api = await API.load(args.file)
+    const api = await API.load(file)
 
     ux.action.status = '...applying overlay'
 
-    await api.applyOverlay(args.overlay)
-    const [overlayedDefinition] = api.extractDefinition(outputPath)
+    const [overlayedDefinition] = await api.extractDefinition(outputPath, [overlay])
 
     ux.action.stop()
 

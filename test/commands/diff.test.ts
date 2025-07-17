@@ -147,6 +147,37 @@ describe('diff subcommand', () => {
       expect(stdout).to.contain('Updated: POST /versions')
     })
 
+    it('asks for a public diff between the two files with an overlay to Bump', async () => {
+      nock('https://bump.sh')
+        // Make sure both definition has been overlayed
+        .post(
+          '/api/v1/diffs',
+          (body) =>
+            body.definition.includes("Protect Earth's Tree Tracker") &&
+            body.previous_definition.includes("Protect Earth's Tree Tracker"),
+        )
+        .once()
+        .reply(201, {
+          id: '321abc',
+          public_url: 'http://localhost/preview/321abc',
+        })
+        .get('/api/v1/diffs/321abc?formats[]=text')
+        .once()
+        .reply(200, {diff_summary: 'Updated: POST /versions'})
+
+      const {stderr, stdout} = await runCommand(
+        [
+          'diff',
+          'examples/valid/openapi.v3.json',
+          'examples/valid/openapi.v2.json',
+          '--overlay',
+          'examples/valid/overlay.yaml',
+        ].join(' '),
+      )
+      expect(stderr).to.match(/Comparing the two given definition files/)
+      expect(stdout).to.contain('Updated: POST /versions')
+    })
+
     it('asks for a public diff between the two files to Bump and exit 1 due to breaking change', async () => {
       // Mock env variables CI
       process.env.CI = process.env.CI || ''
