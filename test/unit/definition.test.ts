@@ -153,6 +153,10 @@ describe('API class', () => {
 
         expect(spyOnStderr.thirdCall.args[0]).to.equal("WARNING: Action target '$.servers' has no matching elements\n")
         spyOnStderr.restore()
+
+        // Make sure overlay references are stored on the main definition
+        expect(api.references.length).to.equal(1)
+        expect(api.references[0].location).to.equal(['doc', 'error-codes.md'].join(path.sep))
       })
 
       it('preserves line width and YAML comments', async () => {
@@ -186,9 +190,15 @@ describe('API class', () => {
       })
 
       it('sets the overlayedDefinition with the given overlay URL', async () => {
-        nock('http://example.org').get('/source.yaml').replyWithFile(200, 'examples/valid/overlay.yaml', {
-          'Content-Type': 'application/yaml',
-        })
+        nock('http://example.org')
+          .get('/source.yaml')
+          .replyWithFile(200, 'examples/valid/overlay.yaml', {
+            'Content-Type': 'application/yaml',
+          })
+          .get('/valid/doc/error-codes.md')
+          .replyWithFile(200, 'examples/valid/doc/error-codes.md', {
+            'Content-Type': 'text/markdown',
+          })
 
         const api = await API.load('examples/valid/openapi.v2.json')
 
