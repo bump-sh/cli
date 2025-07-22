@@ -154,10 +154,18 @@ export class Diff {
         throw new Error('Please login to bump (with documentation & token) when using a single file argument')
       }
 
-      diffVersion = await this.createVersion(file1, documentation, token, hub, branch)
+      diffVersion = await this.createVersion(file1, documentation, token, hub, branch, undefined, overlays)
 
       if (file2) {
-        diffVersion = await this.createVersion(file2, documentation, token, hub, branch, diffVersion && diffVersion.id)
+        diffVersion = await this.createVersion(
+          file2,
+          documentation,
+          token,
+          hub,
+          branch,
+          diffVersion && diffVersion.id,
+          overlays,
+        )
       }
     }
 

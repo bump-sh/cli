@@ -174,6 +174,7 @@ class API {
       // Alternatively we can apply all overlays in parallel
       // https://stackoverflow.com/questions/48957022/unexpected-await-inside-a-loop-no-await-in-loop
       for (const overlayFile of overlays) {
+        debug('bump-cli:definition')(`Applying overlay (${overlayFile}) to definition (location: ${this.location})`)
         await this.applyOverlay(overlayFile)
       }
       /* eslint-enable no-await-in-loop */
