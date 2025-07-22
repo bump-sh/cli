@@ -109,6 +109,33 @@ describe('diff subcommand', () => {
       expect(stdout).to.contain('Updated: POST /versions')
     })
 
+    it('asks for an authenticated diff between the two files with an overlay to Bump', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.definition.includes("Protect Earth's Tree Tracker"))
+        .once()
+        .reply(201)
+        .post('/api/v1/versions', (body) => body.definition.includes("Protect Earth's Tree Tracker"))
+        .once()
+        .reply(201, {doc_public_url: 'http://localhost/doc/1', id: '321'})
+        .get('/api/v1/versions/321')
+        .once()
+        .reply(200, {diff_summary: 'Updated: POST /versions'})
+
+      const {stderr, stdout} = await runCommand(
+        [
+          'diff',
+          'examples/valid/openapi.v3.json',
+          'examples/valid/openapi.v2.json',
+          '--doc',
+          'coucou',
+          '--overlay',
+          'examples/valid/overlay.yaml',
+        ].join(' '),
+      )
+      expect(stderr).to.match(/Comparing the two given definition files/)
+      expect(stdout).to.contain('Updated: POST /versions')
+    })
+
     it("doesn't display any diff when second file has no changes", async () => {
       nock('https://bump.sh')
         .post('/api/v1/versions')
