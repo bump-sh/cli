@@ -78,6 +78,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     filenamePattern: string,
     documentationName: string | undefined,
     branch: string | undefined,
+    overlays?: string[] | undefined,
   ): Promise<void> {
     const definitionDirectory = new DefinitionDirectory(dir, filenamePattern)
 
@@ -125,6 +126,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
           autoCreate,
           definition.slug || documentationName,
           branch,
+          overlays,
         )
       })
     } else {
@@ -233,6 +235,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
           filenamePattern,
           documentationName,
           branch,
+          overlay,
         )
       } else {
         throw new CLIError('Missing required flag --hub when deploying an entire directory')
