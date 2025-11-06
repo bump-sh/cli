@@ -9,6 +9,21 @@ process.env.BUMP_TOKEN = process.env.BUMP_TOKEN || 'BAR'
 
 describe('deploy subcommand', () => {
   describe('Successful runs', () => {
+    it('sends new version to Bump with OpenAPI 3.2', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.documentation === 'moonwalk' && !body.branch_name)
+        .reply(201, {doc_public_url: 'http://localhost/doc/1'})
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/openapi.v3.2.yml', '--doc', 'moonwalk'].join(' '),
+      )
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stdout).to.contain(
+        'Your moonwalk documentation...has received a new deployment which will soon be ready at:',
+      )
+      expect(stdout).to.contain('http://localhost/doc/1')
+    })
+
     it('sends new version to Bump', async () => {
       nock('https://bump.sh')
         .post('/api/v1/versions', (body) => body.documentation === 'coucou' && !body.branch_name)
