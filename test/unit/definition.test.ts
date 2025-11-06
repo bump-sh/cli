@@ -30,6 +30,11 @@ describe('API class', () => {
         expect(api.references).to.be.an('array').that.is.empty
       })
 
+      it('parses successfully an OpenAPI 3.2 contract', async () => {
+        const api = await API.load('examples/valid/openapi.v3.2.yml')
+        expect(api.version).to.equal('3.2.0')
+      })
+
       it('parses successfully an AsyncAPI contract', async () => {
         const api = await API.load('examples/valid/asyncapi.v2.3.yml')
         expect(api.version).to.equal('2.3.0')

@@ -36,6 +36,7 @@ class SupportedFormat {
     '2.0': require('oas-schemas/schemas/v2.0/schema.json'),
     '3.0': require('oas-schemas/schemas/v3.0/schema.json'),
     '3.1': require('oas-schemas/schemas/v3.1/schema.json'),
+    '3.2': require('oas-schemas/schemas/v3.1/schema.json'),
   }
 }
 
