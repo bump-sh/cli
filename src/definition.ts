@@ -11,13 +11,10 @@ import {
   JSONSchema6Object,
   JSONSchema7,
 } from 'json-schema'
-import {createRequire} from 'node:module'
 import {default as nodePath} from 'node:path'
 
-// Used to require JSON files
-const require = createRequire(import.meta.url)
-
 import {Overlay} from './core/overlay.js'
+import openapiSchemas from './core/schemas/oas-schemas/index.js'
 
 type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
 
@@ -33,10 +30,10 @@ class SupportedFormat {
   }
 
   static readonly openapi: Record<string, SpecSchema> = {
-    '2.0': require('oas-schemas/schemas/v2.0/schema.json'),
-    '3.0': require('oas-schemas/schemas/v3.0/schema.json'),
-    '3.1': require('oas-schemas/schemas/v3.1/schema.json'),
-    '3.2': require('oas-schemas/schemas/v3.1/schema.json'),
+    '2.0': openapiSchemas.schemas['2.0'] as SpecSchema,
+    '3.0': openapiSchemas.schemas['3.0'] as SpecSchema,
+    '3.1': openapiSchemas.schemas['3.1'] as SpecSchema,
+    '3.2': openapiSchemas.schemas['3.2'] as SpecSchema,
   }
 }
 
