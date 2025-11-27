@@ -30,10 +30,10 @@ class SupportedFormat {
   }
 
   static readonly openapi: Record<string, SpecSchema> = {
-    '2.0': openapiSchemas.schemas['2.0'] as SpecSchema,
-    '3.0': openapiSchemas.schemas['3.0'] as SpecSchema,
-    '3.1': openapiSchemas.schemas['3.1'] as SpecSchema,
-    '3.2': openapiSchemas.schemas['3.2'] as SpecSchema,
+    '2.0': openapiSchemas.schemas['2.0'],
+    '3.0': openapiSchemas.schemas['3.0'],
+    '3.1': openapiSchemas.schemas['3.1'],
+    '3.2': openapiSchemas.schemas['3.2'],
   }
 }
 
