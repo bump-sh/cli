@@ -1,5 +1,7 @@
 import type {JSONSchema4, JSONSchema7} from 'json-schema'
 
+// All spec version definitions are copied from the official
+// spec repo https://spec.openapis.org/oas/
 import schemaV20 from './v2.0/schema.json' with {type: 'json'}
 import schemaV30 from './v3.0/schema.json' with {type: 'json'}
 import schemaV31 from './v3.1/schema.json' with {type: 'json'}
