@@ -33,12 +33,13 @@ export class Diff {
     file1: string,
     file2: string,
     expires: string | undefined,
-    overlays?: string[] | undefined,
+    overlays1?: string[] | undefined,
+    overlays2?: string[] | undefined,
   ): Promise<DiffResponse | undefined> {
     const api = await API.load(file1)
-    const [previous_definition, previous_references] = await api.extractDefinition(undefined, overlays)
+    const [previous_definition, previous_references] = await api.extractDefinition(undefined, overlays1)
     const api2 = await API.load(file2)
-    const [definition, references] = await api2.extractDefinition(undefined, overlays)
+    const [definition, references] = await api2.extractDefinition(undefined, overlays2 || overlays1)
     const request: DiffRequest = {
       definition,
       expires_at: expires,
@@ -140,21 +141,22 @@ export class Diff {
     branch: string | undefined,
     token: string | undefined,
     format: string,
-    expires: string | undefined,
-    overlays: string[] | undefined,
+    expires?: string | undefined,
+    overlays1?: string[] | undefined,
+    overlays2?: string[] | undefined,
   ): Promise<DiffResponse | undefined> {
     if (!this._config) this._config = await Config.load(resolve(import.meta.dirname, './../../'))
 
     let diffVersion: DiffResponse | VersionResponse | undefined
 
     if (file2 && (!documentation || !token)) {
-      diffVersion = await this.createDiff(file1, file2, expires, overlays)
+      diffVersion = await this.createDiff(file1, file2, expires, overlays1, overlays2)
     } else {
       if (!documentation || !token) {
         throw new Error('Please login to bump (with documentation & token) when using a single file argument')
       }
 
-      diffVersion = await this.createVersion(file1, documentation, token, hub, branch, undefined, overlays)
+      diffVersion = await this.createVersion(file1, documentation, token, hub, branch, undefined, overlays1)
 
       if (file2) {
         diffVersion = await this.createVersion(
@@ -164,7 +166,7 @@ export class Diff {
           hub,
           branch,
           diffVersion && diffVersion.id,
-          overlays,
+          overlays2 || overlays1,
         )
       }
     }
