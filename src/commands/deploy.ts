@@ -30,6 +30,12 @@ ${chalk.dim('$ bump deploy FILE --doc <doc_slug> --hub <your_hub_id_or_slug> --t
 * Let's deploy on Bump.sh... done
 * Your new documentation version will soon be ready
 `,
+    `Deploy a new version of ${chalk.underline('an existing workflow set')}
+
+${chalk.dim('$ bump deploy FILE --workflow <your_workflow_set_id_or_slug> --token <your_organization_token>')}
+* Let's deploy on Bump.sh... done
+* Your new workflow definition will soon be ready on your MCP Server
+`,
     `Deploy a whole directory of ${chalk.underline('API definitions files to a hub')}
 
 ${chalk.dim('$ bump deploy DIR --filename-pattern *-{slug}-api --hub <hub_slug> --token <hub_token>')}
@@ -66,6 +72,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     overlay: flagsBuilder.overlay(),
     preview: flagsBuilder.preview(),
     token: flagsBuilder.token(),
+    workflow: flagsBuilder.workflow(),
   }
 
   protected async deployDirectory(
@@ -180,6 +187,15 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     }
   }
 
+  protected async deploySingleWorkflowFile(
+    workflowDefinition: string,
+    workflowSet: string,
+    token: string,
+  ): Promise<void> {
+    ux.action.status = `...a new workflow definition to your ${workflowSet} MCP server ${token}`
+    throw new CLIError('Coucou, workflow definition is ready.')
+  }
+
   /*
     Oclif doesn't type parsed args & flags correctly and especially
     required-ness which is not known by the compiler, thus the use of
@@ -201,6 +217,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       branch,
       overlay,
       temporary,
+      workflowSet,
     ] = [
       flags['dry-run'],
       flags.doc,
@@ -218,6 +235,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       flags.overlay,
       /* when --preview is provided, generate temporary version */
       flags.preview,
+      flags.workflow,
     ]
 
     const action = dryRun ? 'validate' : temporary ? 'preview' : 'deploy'
@@ -256,6 +274,21 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
         overlay,
         temporary,
       )
+    } else if (workflowSet) {
+      const workflowDefinition = await API.load(args.file)
+
+      console.log('workflowSet', workflowSet)
+      console.log('workflowDefinition', workflowDefinition)
+      console.log('token', token)
+      throw new CLIError('Coucou, workflow set is ready.')
+
+
+      // await this.deploySingleWorkflowFile(
+      //   workflowDefinition,
+      //   workflowSet,
+      //   token,
+      // )
+
     } else {
       throw new CLIError('Missing required flag --doc=<slug>')
     }
