@@ -1,0 +1,53 @@
+flower: "0.1"
+id: parking
+title: Get live information about Angers' parkings
+description: >
+  This flow set allows a person living in Angers, France, to get access to the live number of remaining slots in local parkings.
+  Here is a list of additional matching we should take care when dealing with user inputs:
+    * Saint Serge: Berges de Maine, Saint Serge Patinoire Moins
+    * Center: Ralliement, Moliere,
+    * Hospital: Confluences, Maternite
+    * Gare: Marengo, Saint Laud, Saint Laud 2
+
+flows:
+  - id: available_slots
+    description: Get the number of available slots for a given parking
+    inputs:
+      properties:
+        parking:
+          type: string
+          enum:
+            - Berges De Maine
+            - Bressigny
+            - Confluences
+            - Haras Public
+            - Larrey
+            - Leclerc
+            - Mail
+            - Marengo
+            - Maternite
+            - Mitterrand Maine
+            - Mitterrand Rennes
+            - Moliere
+            - Quai
+            - Ralliement
+            - Republique
+            - Saint Laud
+            - Saint Laud 2
+            - Saint Serge Patinoire Moins
+      required:
+        - parking
+
+    steps:
+      - id: get_slots
+        request:
+          method: GET
+          url: https://data.angers.fr/api/explore/v2.1/catalog/datasets/parking-angers/records
+          query:
+            limit: "20"
+            refine: nom%3A"$inputs.parking"
+        outputs:
+          remaining_slots: $response.body.results.0.disponible
+
+    outputs:
+      remaining_slots: $steps.get_slots.outputs.remaining_slots
