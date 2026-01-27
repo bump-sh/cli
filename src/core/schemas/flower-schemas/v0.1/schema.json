@@ -1,0 +1,126 @@
+{
+  "title": "Flower 0.1 schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": [
+    "flower",
+    "id",
+    "flows"
+  ],
+  "additionalProperties": false,
+  "patternProperties": {
+    "^x-[\\w\\d\\.\\-\\_]+$": {
+      "$ref": "#/definitions/specificationExtension"
+    }
+  },
+  "properties": {
+    "flower": {
+      "type": [
+        "string"
+      ],
+      "enum": [
+        "0.1"
+      ],
+      "description": "The Flower specification version of this document."
+    },
+    "id": {
+      "type": "string",
+      "description": "A unique id representing the workflow set."
+    },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "flows": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/flow"
+      }
+    }
+  },
+  "definitions": {
+    "flow": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "inputs": {
+          "$ref": "#/definitions/schema"
+        },
+        "outputs": {
+          "$ref": "#/definitions/schema"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/step"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "steps"
+      ]
+    },
+    "step": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "outputs": {
+          "$ref": "#/definitions/schema"
+        },
+        "request": {
+          "type": "object",
+          "properties": {
+            "method": {
+              "type": "string"
+            },
+            "query": {
+              "$ref": "#/definitions/schema"
+            },
+            "url": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "request"
+      ]
+    },
+    "schema": {
+      "allOf": [
+        {
+          "$ref": "http://json-schema.org/draft-07/schema#"
+        },
+        {
+          "type": "object",
+          "patternProperties": {
+            "^x-[\\w\\d\\.\\-\\_]+$": {
+              "$ref": "#/definitions/specificationExtension"
+            }
+          }
+        }
+      ]
+    },
+    "specificationExtension": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Any property starting with x- is valid.",
+          "additionalProperties": true
+        },
+        {}
+      ]
+    }
+  }
+}
