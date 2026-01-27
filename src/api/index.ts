@@ -1,5 +1,6 @@
 import {Config} from '@oclif/core'
 import axios, {AxiosError, AxiosInstance, AxiosResponse} from 'axios'
+import debug from 'debug'
 
 import APIError from './error.js'
 import {
@@ -11,6 +12,8 @@ import {
   VersionRequest,
   VersionResponse,
   WithDiff,
+  WorkflowVersionRequest,
+  WorkflowVersionResponse,
 } from './models.js'
 import {vars} from './vars.js'
 
@@ -42,6 +45,15 @@ class BumpApi {
 
   public postVersion = (body: VersionRequest, token: string): Promise<AxiosResponse<VersionResponse>> =>
     this.client.post<VersionResponse>('/versions', body, {
+      headers: this.authorizationHeader(token),
+    })
+
+  // chelou, le token envoyé n'est pas reçu pareil par notre API
+  public postWorkflowVersion = (
+    body: WorkflowVersionRequest,
+    token: string,
+  ): Promise<AxiosResponse<WorkflowVersionResponse>> =>
+    this.client.post<WorkflowVersionResponse>(`/workflow/sets/${body.slug}/versions`, body, {
       headers: this.authorizationHeader(token),
     })
 

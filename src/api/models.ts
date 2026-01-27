@@ -79,3 +79,16 @@ export interface DiffItem {
   status: string
   type: string
 }
+
+export interface WorkflowVersionRequest {
+  definition: string // workflowDefinition
+  slug: string // workflowSet
+}
+
+export interface WorkflowVersionResponse {
+  definition: string
+  id: string
+  state: string
+  workflow_set_active: boolean
+  workflow_set_id: string
+}

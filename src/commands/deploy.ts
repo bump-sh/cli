@@ -1,8 +1,9 @@
 import {ux} from '@oclif/core'
 import {CLIError} from '@oclif/core/errors'
 import chalk from 'chalk'
+import debug from 'debug'
 
-import {VersionResponse} from '../api/models.js'
+import {VersionResponse, WorkflowVersionResponse} from '../api/models.js'
 import {fileArg} from '../args.js'
 import {BaseCommand} from '../base-command.js'
 import {DefinitionDirectory} from '../core/definition-directory.js'
@@ -187,13 +188,23 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     }
   }
 
-  protected async deploySingleWorkflowFile(
-    workflowDefinition: string,
-    workflowSet: string,
-    token: string,
-  ): Promise<void> {
+  protected async deploySingleWorkflowFile(workflowDefinition: API, workflowSet: string, token: string): Promise<void> {
     ux.action.status = `...a new workflow definition to your ${workflowSet} MCP server ${token}`
-    throw new CLIError('Coucou, workflow definition is ready.')
+    debug('bump-cli:crab')(`Definition: ${workflowDefinition}`)
+    // throw new CLIError('Coucou, workflow definition is ready.')
+
+    const response: WorkflowVersionResponse | undefined = await new CoreDeploy(this.bump).runWorkflow(
+      workflowDefinition,
+      workflowSet,
+      token,
+    )
+
+    if (response) {
+      process.stdout.write(ux.colorize('green', `Your ${workflowSet} MCP server...`))
+      ux.stdout(ux.colorize('green', `has received a new workflow definition which will soon be ready.`))
+    } else {
+      ux.warn(`Your ${workflowSet} MCP server has not changed.`)
+    }
   }
 
   /*
@@ -280,15 +291,8 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       console.log('workflowSet', workflowSet)
       console.log('workflowDefinition', workflowDefinition)
       console.log('token', token)
-      throw new CLIError('Coucou, workflow set is ready.')
 
-
-      // await this.deploySingleWorkflowFile(
-      //   workflowDefinition,
-      //   workflowSet,
-      //   token,
-      // )
-
+      await this.deploySingleWorkflowFile(workflowDefinition, workflowSet, token)
     } else {
       throw new CLIError('Missing required flag --doc=<slug>')
     }

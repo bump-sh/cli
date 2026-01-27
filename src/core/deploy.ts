@@ -1,7 +1,7 @@
 import debug from 'debug'
 
 import {BumpApi} from '../api/index.js'
-import {VersionRequest, VersionResponse} from '../api/models.js'
+import {VersionRequest, VersionResponse, WorkflowVersionRequest, WorkflowVersionResponse} from '../api/models.js'
 import {API} from '../definition.js'
 
 export class Deploy {
@@ -34,11 +34,42 @@ export class Deploy {
     return version
   }
 
+  protected async createWorkflowVersion(
+    request: WorkflowVersionRequest,
+    token: string,
+  ): Promise<WorkflowVersionResponse | undefined> {
+    debug('bump-cli:core:crab')(`request: ${JSON.stringify(request)} - token: ${token}`)
+    debug('bump-cli:core:crab')(`slug: ${request.slug}`)
+    debug('bump-cli:core:crab')(`definition: ${request.definition}`)
+    const response = await this._bump.postWorkflowVersion(request, token)
+    let version: WorkflowVersionResponse | undefined
+
+    switch (response.status) {
+      case 204: {
+        break // polling ?
+      }
+
+      case 201: {
+        debug('bump-cli:core:crab')(`Workflow version created: ${response.data}`)
+        version = response.data
+        break
+      }
+
+      default: {
+        this.d(`API status response was ${response.status}. Expected 201 or 204.`)
+        throw new Error('Unexpected server response. Please contact support at https://bump.sh if this error persists')
+      }
+    }
+
+    return version
+  }
+
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   d(formatter: any, ...args: any[]): void {
     return debug(`bump-cli:core:deploy`)(formatter, ...args)
   }
 
+  // runApi
   public async run(
     api: API,
     dryRun: boolean,
@@ -69,6 +100,28 @@ export class Deploy {
     } else {
       version = await this.createVersion(request, token)
     }
+
+    return version
+  }
+
+  public async runWorkflow(
+    workflowDefinition: API,
+    workflowSet: string,
+    token: string,
+  ): Promise<WorkflowVersionResponse | undefined> {
+    let version: WorkflowVersionResponse | undefined
+    // const version = WorkflowVersionResponse | undefined
+    // const [definition, references] = await api.extractDefinition(undefined, overlay)
+
+    // const definition = workflowDefinition.serializeDefinition()
+
+    const request: WorkflowVersionRequest = {
+      definition: workflowDefinition.rawDefinition,
+      slug: workflowSet,
+    }
+
+    // eslint-disable-next-line prefer-const
+    version = await this.createWorkflowVersion(request, token)
 
     return version
   }
