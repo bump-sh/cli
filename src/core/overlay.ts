@@ -86,12 +86,7 @@ export class Overlay {
 
     // Take last element from path (which is the thing to act
     // upon)
-    let thingToActUpon: number | string | undefined = explodedPath.pop()
-    // The last element (e.g. '"price"]' or '0]') contains a final ']'
-    // so we need to remove it AND we need to parse the element to
-    // transform the string in either a string or a number
-    thingToActUpon =
-      thingToActUpon === undefined ? '$' : (thingToActUpon = JSON.parse(thingToActUpon.slice(0, -1)) as number | string)
+    const thingToActUpon: number | string = this.pathEntryToKey(explodedPath.pop())
 
     // Reconstruct the stringified path expression targeting the parent
     const parentPath: string = explodedPath.join('][')
@@ -115,6 +110,17 @@ export class Overlay {
 
   private humanName(action: JSONSchema4Object): string {
     return action.description ? `Action '${action.description}'` : 'Action'
+  }
+
+  // The last path entry (e.g. "'price']" or '0]') contains a final
+  // ']' so we need to remove it AND we need to replace single quotes
+  // to double quotes AND FINALLY parse the element to transform the
+  // string in either a string or a number.
+  private pathEntryToKey(pathEntry: string | undefined): number | string {
+    if (pathEntry === undefined) {
+      return '$'
+    }
+    return JSON.parse(pathEntry.slice(0, -1).replaceAll(/(^'|'$)/g, '"'))
   }
 
   private remove(parent: JSONSchema4Object, property_or_index: number | string): void {
