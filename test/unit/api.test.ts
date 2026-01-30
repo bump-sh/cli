@@ -30,7 +30,7 @@ describe('BumpApi HTTP client class', () => {
 
       await new BumpApi(config).postVersion({definition: '', documentation: 'hello'}, 'my-secret-token')
 
-      expect(matchAuthorizationHeader.firstCall.args[0]).to.equal('Basic bXktc2VjcmV0LXRva2Vu')
+      expect(matchAuthorizationHeader.firstCall.args[0]).to.equal('Token my-secret-token')
     })
   })
 
