@@ -101,7 +101,7 @@
     "axios": "^1.7.7",
     "chalk": "^5.3.0",
     "debug": "^4.3.7",
-    "jsonpathly": "^2.0.2",
+    "jsonpathly": "^3.0.0",
     "mergician": "^2.0.2",
     "open": "^10.1.0"
   }
