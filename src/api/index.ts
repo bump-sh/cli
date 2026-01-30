@@ -49,7 +49,7 @@ class BumpApi {
     this.client.put<PreviewResponse>(`/previews/${versionId}`, body)
 
   private authorizationHeader = (token: string) => ({
-    Authorization: `Basic ${Buffer.from(token).toString('base64')}`,
+    Authorization: `Token ${token}`,
   })
 
   private handleError = (error: AxiosError) => Promise.reject(new APIError(error))
