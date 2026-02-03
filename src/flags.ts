@@ -47,7 +47,7 @@ const token = Flags.custom<string>({
     const envToken = process.env.BUMP_TOKEN
     if (envToken) return envToken
   },
-  description: 'Documentation or Hub token. Can be provided via BUMP_TOKEN environment variable',
+  description: 'Documentation, Hub or Organization token. Can be provided via BUMP_TOKEN environment variable',
   required: true,
 })
 
@@ -144,6 +144,11 @@ const overlay = Flags.custom<string[]>({
   multiple: true,
 })
 
+const mcpServer = Flags.custom<string>({
+  char: 'm',
+  description: 'MCP server id or slug',
+})
+
 export {
   autoCreate,
   branch,
@@ -157,6 +162,7 @@ export {
   hub,
   interactive,
   live,
+  mcpServer,
   open,
   out,
   overlay,

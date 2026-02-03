@@ -79,3 +79,12 @@ export interface DiffItem {
   status: string
   type: string
 }
+
+export interface WorkflowVersionRequest {
+  definition: string // workflowDefinition
+}
+
+export interface WorkflowVersionResponse {
+  id: string
+  mcp_server_id: string
+}

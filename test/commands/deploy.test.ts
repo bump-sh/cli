@@ -109,6 +109,33 @@ describe('deploy subcommand', () => {
     })
   })
 
+  describe('Successful runs with MCP server', () => {
+    it('sends new workflow definition to Bump', async () => {
+      nock('https://bump.sh').post('/api/v1/mcp_servers/crab/deploy').reply(201, {})
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/flower/parking.yml', '--mcp-server', 'crab'].join(' '),
+      )
+
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stdout).to.contain(
+        'Your crab MCP server...has received a new workflow definition which will soon be ready.',
+      )
+    })
+
+    it('sends unchanged workflow definition to Bump', async () => {
+      nock('https://bump.sh').post('/api/v1/mcp_servers/crab/deploy').reply(204)
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/flower/parking.yml', '--mcp-server', 'crab'].join(' '),
+      )
+
+      expect(stdout).to.equal('')
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stderr).to.contain('Warning: Your crab MCP server has not changed.')
+    })
+  })
+
   describe('Successful runs on a directory', () => {
     it('sends new version to Bump', async () => {
       nock('https://bump.sh')
@@ -264,7 +291,7 @@ describe('deploy subcommand', () => {
 
     it('fails when no documentation id or slug is provided', async () => {
       const {error} = await runCommand(['deploy', 'examples/valid/openapi.v3.json'].join(' '))
-      expect(error?.message).to.contain('Missing required flag --doc=<slug>')
+      expect(error?.message).to.contain('Missing required flag --doc=<slug> or --mcp-server=<slug>')
       expect(error?.oclif?.exit).to.equal(2)
     })
 

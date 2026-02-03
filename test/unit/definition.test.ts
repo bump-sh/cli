@@ -5,7 +5,7 @@ import * as fs from 'node:fs'
 import path from 'node:path'
 import {stub} from 'sinon'
 
-import {API, APIDefinition} from '../../src/definition'
+import {API, OpenAPI} from '../../src/definition'
 
 nock.disableNetConnect()
 
@@ -191,7 +191,7 @@ describe('API class', () => {
         await api.applyOverlay('examples/valid/overlay.yaml')
         /* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
         expect(api.overlayedDefinition).to.exist
-        expect((api.overlayedDefinition as APIDefinition).info.description).to.match(/Protect Earth's Tree Tracker API/)
+        expect((api.overlayedDefinition as OpenAPI).info.description).to.match(/Protect Earth's Tree Tracker API/)
       })
 
       it('sets the overlayedDefinition with the given overlay URL', async () => {
@@ -212,7 +212,7 @@ describe('API class', () => {
         await api.applyOverlay('http://example.org/source.yaml')
         /* eslint-disable-next-line @typescript-eslint/no-unused-expressions */
         expect(api.overlayedDefinition).to.exist
-        expect((api.overlayedDefinition as APIDefinition).info.description).to.match(/Protect Earth's Tree Tracker API/)
+        expect((api.overlayedDefinition as OpenAPI).info.description).to.match(/Protect Earth's Tree Tracker API/)
       })
     })
 

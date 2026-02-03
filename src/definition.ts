@@ -14,6 +14,7 @@ import {
 import {default as nodePath} from 'node:path'
 
 import {Overlay} from './core/overlay.js'
+import flowerSchemas from './core/schemas/flower-schemas/index.js'
 import openapiSchemas from './core/schemas/oas-schemas/index.js'
 
 type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
@@ -27,6 +28,10 @@ class SupportedFormat {
     '2.4': asyncapi.schemas['2.4.0'],
     '2.5': asyncapi.schemas['2.5.0'],
     '2.6': asyncapi.schemas['2.6.0'],
+  }
+
+  static readonly flower: Record<string, SpecSchema> = {
+    '0.1': flowerSchemas.schemas['0.1'],
   }
 
   static readonly openapi: Record<string, SpecSchema> = {
@@ -57,9 +62,8 @@ class API {
   overlayedDefinition: APIDefinition | undefined
   readonly rawDefinition: string
   readonly references: APIReference[]
-  readonly spec?: SpecSchema
-  readonly specName: string
-  readonly version: string
+  readonly specName?: string
+  readonly version?: string
 
   constructor(location: string, values: SpecSchema) {
     this.location = location
@@ -71,15 +75,18 @@ class API {
     this.definition = parsed
     this.specName = this.getSpecName(parsed)
     this.version = this.getVersion(parsed)
-    this.spec = this.getSpec(parsed)
 
-    if (this.spec === undefined) {
+    if (!this.getSpec(parsed)) {
       throw new UnsupportedFormat(`${this.specName} ${this.version}`)
     }
   }
 
   static isAsyncAPI(definition: JSONSchema4Object | JSONSchema6Object): definition is AsyncAPI {
     return 'asyncapi' in definition
+  }
+
+  static isFlower(definition: JSONSchema4Object | JSONSchema6Object): definition is Flower {
+    return 'flower' in definition
   }
 
   static isOpenAPI(definition: JSONSchema4Object | JSONSchema6Object): definition is OpenAPI {
@@ -191,7 +198,7 @@ class API {
     return [this.serializeDefinition(outputPath), references]
   }
 
-  getSpec(definition: APIDefinition): SpecSchema {
+  getSpec(definition: APIDefinition): SpecSchema | undefined {
     if (API.isAsyncAPI(definition)) {
       return SupportedFormat.asyncapi[this.versionWithoutPatch()]
     }
@@ -200,23 +207,52 @@ class API {
       return {overlay: {type: 'string'}}
     }
 
-    return SupportedFormat.openapi[this.versionWithoutPatch()]
+    if (API.isFlower(definition)) {
+      return SupportedFormat.flower[this.versionWithoutPatch()]
+    }
+
+    if (API.isOpenAPI(definition)) {
+      return SupportedFormat.openapi[this.versionWithoutPatch()]
+    }
+
+    return undefined
   }
 
-  getSpecName(definition: APIDefinition): string {
+  getSpecName(definition: APIDefinition): string | undefined {
     if (API.isAsyncAPI(definition)) {
       return 'AsyncAPI'
     }
+    if (API.isFlower(definition)) {
+      return 'Flower'
+    }
+    if (API.isOpenAPIOverlay(definition)) {
+      return 'OpenAPIOverlay'
+    }
+    if (API.isOpenAPI(definition)) {
+      return 'OpenAPI'
+    }
 
-    return 'OpenAPI'
+    return undefined
   }
 
-  getVersion(definition: APIDefinition): string {
+  getVersion(definition: APIDefinition): string | undefined {
     if (API.isAsyncAPI(definition)) {
       return definition.asyncapi
     }
 
-    return (definition.openapi || definition.swagger) as string
+    if (API.isFlower(definition)) {
+      return definition.flower
+    }
+
+    if (API.isOpenAPIOverlay(definition)) {
+      return definition.overlay
+    }
+
+    if (API.isOpenAPI(definition)) {
+      return (definition.openapi || definition.swagger) as string
+    }
+
+    return undefined
   }
 
   guessFormat(output?: string): string {
@@ -261,14 +297,14 @@ class API {
 
     const {parsed, raw} = mainReference
 
-    if (!parsed || !raw || !(parsed instanceof Object) || !('info' in parsed)) {
+    if (!parsed || !raw || !(parsed instanceof Object) || !('info' in parsed || 'flower' in parsed)) {
       debug('bump-cli:definition')(
         `Main location (${this.location}) not found or empty (within ${JSON.stringify(Object.keys(values))})`,
       )
-      throw new UnsupportedFormat("Definition needs to be an object with at least an 'info' key")
+      throw new UnsupportedFormat('Definition needs to be a valid Object')
     }
 
-    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed) && !API.isOpenAPIOverlay(parsed)) {
+    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed) && !API.isOpenAPIOverlay(parsed) && !API.isFlower(parsed)) {
       throw new UnsupportedFormat()
     }
 
@@ -307,6 +343,9 @@ class API {
   }
 
   versionWithoutPatch(): string {
+    if (!this.version) {
+      return ''
+    }
     const [major, minor] = this.version.split('.', 3)
 
     return `${major}.${minor}`
@@ -322,7 +361,7 @@ class API {
 }
 
 type JSONSchemaWithRaw = {
-  readonly parsed?: JSONSchema4 | JSONSchema6 | string
+  readonly parsed?: JSONSchema4 | JSONSchema4Object | JSONSchema6 | JSONSchema6Object | string
   readonly raw?: string
 }
 
@@ -331,7 +370,7 @@ type APIReference = {
   location: string
 }
 
-type APIDefinition = AsyncAPI | OpenAPI | OpenAPIOverlay
+type APIDefinition = AsyncAPI | Flower | OpenAPI | OpenAPIOverlay
 
 type InfoObject = {
   readonly description?: string
@@ -358,4 +397,8 @@ type AsyncAPI = {
   readonly info: InfoObject
 } & JSONSchema4Object
 
-export {API, APIDefinition, OpenAPIOverlay, SupportedFormat}
+type Flower = {
+  readonly flower: string
+} & JSONSchema4Object
+
+export {API, APIDefinition, OpenAPI, OpenAPIOverlay, SupportedFormat}

@@ -11,6 +11,8 @@ import {
   VersionRequest,
   VersionResponse,
   WithDiff,
+  WorkflowVersionRequest,
+  WorkflowVersionResponse,
 } from './models.js'
 import {vars} from './vars.js'
 
@@ -31,6 +33,15 @@ class BumpApi {
 
   public postDiff = (body: DiffRequest): Promise<AxiosResponse<DiffResponse>> =>
     this.client.post<PreviewResponse>('/diffs', body)
+
+  public postMCPServerDeploy = (
+    mcpServerIdOrSlug: string,
+    body: WorkflowVersionRequest,
+    token: string,
+  ): Promise<AxiosResponse<WorkflowVersionResponse>> =>
+    this.client.post<WorkflowVersionResponse>(`/mcp_servers/${mcpServerIdOrSlug}/deploy`, body, {
+      headers: this.authorizationHeader(token),
+    })
 
   public postPreview = (body?: PreviewRequest): Promise<AxiosResponse<PreviewResponse>> =>
     this.client.post<PreviewResponse>('/previews', body)
