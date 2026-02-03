@@ -2,13 +2,14 @@ import {ux} from '@oclif/core'
 import {CLIError} from '@oclif/core/errors'
 import chalk from 'chalk'
 
-import {VersionResponse} from '../api/models.js'
+import {VersionResponse, WorkflowVersionResponse} from '../api/models.js'
 import {fileArg} from '../args.js'
 import {BaseCommand} from '../base-command.js'
 import {DefinitionDirectory} from '../core/definition-directory.js'
 import {Deploy as CoreDeploy} from '../core/deploy.js'
 import {isDir} from '../core/utils/file.js'
 import {confirm as promptConfirm} from '../core/utils/prompts.js'
+import {WorkflowDeploy as CoreWorkflowDeploy} from '../core/workflow-deploy.js'
 import {API} from '../definition.js'
 import * as flagsBuilder from '../flags.js'
 
@@ -52,6 +53,12 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
 * Let's validate on Bump.sh... done
 * Definition is valid
 `,
+    `Deploy a new workflow document of ${chalk.underline('an existing MCP server')}
+
+${chalk.dim('$ bump deploy FILE --mcp-server <your_mcp_server_id_or_slug> --token <your_organization_token>')}
+* Let's deploy on Bump.sh... done
+* Your <your_mcp_server_id_or_slug> MCP server... has received a new workflow definition which will soon be ready.
+`,
   ]
 
   static flags = {
@@ -63,6 +70,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     'filename-pattern': flagsBuilder.filenamePattern(),
     hub: flagsBuilder.hub(),
     interactive: flagsBuilder.interactive(),
+    'mcp-server': flagsBuilder.mcpServer(),
     overlay: flagsBuilder.overlay(),
     preview: flagsBuilder.preview(),
     token: flagsBuilder.token(),
@@ -180,6 +188,23 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
     }
   }
 
+  protected async deploySingleWorkflowFile(workflowDefinition: API, mcpServer: string, token: string): Promise<void> {
+    ux.action.status = `...a new workflow definition to your ${mcpServer} MCP server`
+
+    const response: WorkflowVersionResponse | undefined = await new CoreWorkflowDeploy(this.bump).run(
+      workflowDefinition,
+      mcpServer,
+      token,
+    )
+
+    if (response) {
+      process.stdout.write(ux.colorize('green', `Your ${mcpServer} MCP server...`))
+      ux.stdout(ux.colorize('green', `has received a new workflow definition which will soon be ready.`))
+    } else {
+      ux.warn(`Your ${mcpServer} MCP server has not changed.`)
+    }
+  }
+
   /*
     Oclif doesn't type parsed args & flags correctly and especially
     required-ness which is not known by the compiler, thus the use of
@@ -201,6 +226,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       branch,
       overlay,
       temporary,
+      mcpServer,
     ] = [
       flags['dry-run'],
       flags.doc,
@@ -218,6 +244,7 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
       flags.overlay,
       /* when --preview is provided, generate temporary version */
       flags.preview,
+      flags['mcp-server'],
     ]
 
     const action = dryRun ? 'validate' : temporary ? 'preview' : 'deploy'
@@ -256,8 +283,12 @@ ${chalk.dim('$ bump deploy FILE --dry-run --doc <doc_slug> --token <your_doc_tok
         overlay,
         temporary,
       )
+    } else if (mcpServer) {
+      const workflowDefinition = await API.load(args.file)
+
+      await this.deploySingleWorkflowFile(workflowDefinition, mcpServer, token)
     } else {
-      throw new CLIError('Missing required flag --doc=<slug>')
+      throw new CLIError('Missing required flag --doc=<slug> or --mcp-server=<slug>')
     }
 
     ux.action.stop()
