@@ -1,0 +1,13 @@
+overlay: 1.0.0
+info:
+  title: Update config with overlapping enum values
+  version: 1.0.0
+actions:
+  - target: $.paths['/items/{id}'].put.requestBody.content['application/json'].schema.properties
+    update:
+      request:
+        type: object
+        properties:
+          method:
+            type: string
+            enum: [POST, PUT, DELETE]

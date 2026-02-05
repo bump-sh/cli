@@ -183,6 +183,18 @@ describe('API class', () => {
         stub(process.stderr, 'write')
       })
 
+      it('deduplicates enum arrays when merging overlapping values', async () => {
+        const api = await API.load('examples/valid/enum/base-spec-nested.yaml')
+        await api.applyOverlay('examples/valid/enum/overlay-duplicate.yaml')
+
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+        const overlayed = api.overlayedDefinition as any
+        const {schema} = overlayed.paths['/items/{id}'].put.requestBody.content['application/json']
+
+        expect(schema.properties.method.enum).to.deep.equal(['GET', 'POST'])
+        expect(schema.properties.request.properties.method.enum).to.deep.equal(['POST', 'PUT', 'DELETE'])
+      })
+
       it('sets the overlayedDefinition with the given overlay file path', async () => {
         const api = await API.load('examples/valid/openapi.v2.json')
 
