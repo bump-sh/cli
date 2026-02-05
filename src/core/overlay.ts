@@ -139,7 +139,7 @@ export class Overlay {
   ): APIDefinition {
     try {
       // Deep merge objects using a module (built-in spread operator is only shallow)
-      const merger = mergician({appendArrays: true})
+      const merger = mergician({appendArrays: true, dedupArrays: true})
       if (property_or_index === '$') {
         // You can't actually merge an update on a root object
         // target with the jsonpathly lib, this is just us merging
