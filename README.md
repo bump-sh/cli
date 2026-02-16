@@ -37,9 +37,9 @@ The Bump.sh CLI is a node package currently distributed via NPM. This means you 
 
 _If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh-api-documentation-changelog)._
 
+> [!NOTE]
 > You can download a standalone package directly from the latest
 > Github release assets if you don’t use Node.
-{: .info}
 
 ### Global installation
 
@@ -124,8 +124,8 @@ When an API is updated, the documentation should be updated at the same time. Th
 bump deploy path/to/api-document.yml --doc my-documentation --token $DOC_TOKEN
 ```
 
-> You can find your own `my-documentation` slug and `$DOC_TOKEN` api key from your [documentation settings](https://bump.sh/docs).
-{: .info}
+> [!TIP]
+> You can find your own `my-documentation` slug and `$DOC_TOKEN` api key from your [documentation settings](https://bump.sh/dashboard).
 
 You can also deploy a given API document to a different branch of your documentation with the `--branch <branch-name>` parameter. Please note the branch will be created if it doesn’t exist. More details about the branching feature are available on [this dedicated help page](https://docs.bump.sh/help/branching). E.g. deploy the API document to the `staging` branch of the documentation:
 
@@ -141,8 +141,8 @@ If you already have a hub in your [Bump.sh](https://bump.sh) account, you can au
 bump deploy dir/path/to/apis/ --auto-create --hub my-hub --token $HUB_TOKEN
 ```
 
+> [!TIP]
 > You can find your own `my-hub` slug and `$HUB_TOKEN` api key from your [hub settings](https://bump.sh/hubs).
-{: .info}
 
 Please note, by default, only files named `{slug}-api.[format]` are published. Where `{slug}` is a name for your API and `[format]` is either `yaml` or `json`. Adjust to your file naming convention using the `--filename-pattern <pattern>` option.
 
@@ -285,14 +285,14 @@ bump preview --live --open api-document.yaml
 - Watch the live preview being updated each time you save your file.
 - The additional `--open` flag helps to automatically open the preview URL in your browser.
 
+> [!NOTE]
 > You can create as many previews as you like without being authenticated. This is a **free and unlimited service**.
-{: .info}
 
 Please check `bump preview --help` for more usage details
 
 ### The `overlay` command
 
-The [Overlay Specification](https://spec.openapis.org/overlay/v1.0.0.html) from the OpenAPI Initiative makes it possible to modify the content of an API definition by adding a layer on top of it. That layer helps adding, removing or changing some or all of the content of the original definition. 
+The [Overlay Specification](https://spec.openapis.org/overlay/v1.0.0.html) from the OpenAPI Initiative makes it possible to modify the content of an API definition by adding a layer on top of it. That layer helps adding, removing or changing some or all of the content of the original definition.
 
 The `bump overlay` command takes an original API document, applies the changes from the overlay document, and outputs a modified version. No changes are made directly to the original document.
 
