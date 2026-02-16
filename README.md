@@ -175,6 +175,20 @@ bump deploy path/to/api-document.yml --dry-run --doc my-documentation --token $D
 
 Please check `bump deploy --help` for more usage details.
 
+#### Deploy a workflow document on your MCP server
+
+Use the `bump deploy` command with the `--mcp-server` flag to push a workflow definition to your MCP server.
+
+```shell
+bump deploy path/to/flower-document.yml --mcp-server my-mcp-server-id-or-slug --token $BUMP_TOKEN
+```
+
+> [!NOTE]
+> You can find your own `mcp-server-id-or-slug` and `$BUMP_TOKEN` api key from your [MCP server settings](https://bump.sh/dashboard) at 'https://bump.sh/{your-organization}/workflow/set/{mcp-server-id}/tokens'.
+
+This feature is currently in closed beta.
+Request an early access at hello@bump.sh
+
 ### The `diff` command
 
 Using the `diff` command can help to spot differences between the local API
