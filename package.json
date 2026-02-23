@@ -90,7 +90,7 @@
   },
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^11.7.2",
+    "@apidevtools/json-schema-ref-parser": "^15.2.2",
     "@asyncapi/specs": "^6.8.0",
     "@clack/prompts": "^1.0.0",
     "@oclif/core": "^4",
