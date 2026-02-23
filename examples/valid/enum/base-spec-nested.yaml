@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  title: Test API
+  version: 1.0.0
+paths:
+  /items/{id}:
+    put:
+      summary: Update item
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                config:
+                  type: object
+                  properties:
+                    method:
+                      type: string
+                      enum: [GET, POST]
+      responses:
+        '200':
+          description: Success
