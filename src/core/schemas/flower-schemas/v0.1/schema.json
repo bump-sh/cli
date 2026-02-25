@@ -54,7 +54,7 @@
           "$ref": "#/definitions/schema"
         },
         "outputs": {
-          "$ref": "#/definitions/schema"
+          "$ref": "#/definitions/expressionMap"
         },
         "steps": {
           "type": "array",
@@ -75,7 +75,7 @@
           "type": "string"
         },
         "outputs": {
-          "$ref": "#/definitions/schema"
+          "$ref": "#/definitions/expressionMap"
         },
         "request": {
           "type": "object",
@@ -83,12 +83,37 @@
             "method": {
               "type": "string"
             },
-            "query": {
-              "$ref": "#/definitions/schema"
-            },
             "url": {
               "type": "string"
+            },
+            "headers": {
+              "$ref": "#/definitions/expressionMap"
+            },
+            "query": {
+              "$ref": "#/definitions/expressionMap"
+            },
+            "body": {
+              "$ref": "#/definitions/expressionMap"
             }
+          }
+        },
+        "actions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/next"
+              },
+              {
+                "$ref": "#/definitions/retry"
+              },
+              {
+                "$ref": "#/definitions/goto"
+              },
+              {
+                "$ref": "#/definitions/end"
+              }
+            ]
           }
         }
       },
@@ -96,6 +121,122 @@
         "id",
         "request"
       ]
+    },
+    "action": {
+      "type": "object",
+      "required": [
+        "do"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "when": {
+          "type": "string",
+          "description": "A runtime expression conditioning this action"
+        },
+        "do": {
+          "type": "string"
+        }
+      },
+      "discriminator": {
+        "propertyName": "do",
+        "mapping": {
+          "next": "#/definitions/next",
+          "retry": "#/definitions/retry",
+          "goto": "#/definitions/goto",
+          "end": "#/definitions/end"
+        }
+      }
+    },
+    "next": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/action"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "do": {
+              "type": "string",
+              "const": "next"
+            }
+          }
+        }
+      ]
+    },
+    "retry": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/action"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "do": {
+              "type": "string",
+              "const": "retry"
+            },
+            "wait": {
+              "type": "integer",
+              "description": "Number of seconds to wait",
+              "default": 5
+            },
+            "max_retry": {
+              "type": "integer",
+              "description": "Maximum number of subsequent retries to execute",
+              "default": 5
+            }
+          }
+        }
+      ]
+    },
+    "goto": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/action"
+        },
+        {
+          "type": "object",
+          "required": [
+            "step"
+          ],
+          "properties": {
+            "do": {
+              "type": "string",
+              "const": "goto"
+            },
+            "step": {
+              "type": "string",
+              "description": "The target step ID to jump to"
+            }
+          }
+        }
+      ]
+    },
+    "end": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/action"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "do": {
+              "type": "string",
+              "const": "end"
+            }
+          }
+        }
+      ]
+    },
+    "expressionMap": {
+      "type": "object",
+      "description": "A map of names to runtime expressions.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "A runtime expression."
+      }
     },
     "schema": {
       "allOf": [
