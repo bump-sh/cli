@@ -1,0 +1,111 @@
+{
+  "arazzo": "1.0.1",
+  "info": {
+    "title": "Wikimedia Math API",
+    "version": "1.0.0",
+    "description": "Based on Jentic automatically generated Arazzo specification but adapted by humans to make it actually work"
+  },
+  "sourceDescriptions": [
+    {
+      "name": "openapi_source",
+      "url": "./wikimedia/openapi.json",
+      "type": "openapi"
+    }
+  ],
+  "workflows": [
+    {
+      "workflowId": "render-mathematical-formula",
+      "summary": "Checks a TeX formula for validity and correctness, then renders it into a specified visual format (SVG, MML, or PNG). This is useful for displaying mathematical notation dynamically.",
+      "description": "Checks a TeX formula for validity and correctness, then renders it into a specified visual format (SVG, MML, or PNG). This is useful for displaying mathematical notation dynamically.",
+      "inputs": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["tex", "inline-tex", "chem"],
+            "default": "tex"
+          },
+          "formula": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string",
+            "enum": ["svg", "mml", "png"],
+            "default": "svg"
+          },
+          "email": {
+            "type": "string",
+            "description": "Wikimedia API usage policy asks for an email or url to prevent abuse. Please use this fairly. https://foundation.wikimedia.org/wiki/Policy:Wikimedia_Foundation_User-Agent_Policy"
+          }
+        }
+      },
+      "steps": [
+        {
+          "stepId": "check-formula",
+          "description": "Submits a TeX or inline-TeX formula for validation and normalization. Returns formula information and a hash identifier in the 'x-resource-location' header for rendering.",
+          "operationPath": "openapi_source#/paths/~1media~1math~1check~1{type}/post",
+          "parameters": [
+            {
+              "name": "type",
+              "in": "path",
+              "value": "$inputs.type"
+            },
+            {
+              "name": "User-Agent",
+              "in": "header",
+              "value": "Arazzo Workflow (From:$inputs.email)"
+            }
+          ],
+          "requestBody": {
+            "contentType": "multipart/form-data",
+            "payload": {
+              "q": "$inputs.formula"
+            }
+          },
+          "successCriteria": [
+            {
+              "condition": "$statusCode == 200"
+            },
+            {
+              "condition": "$response.body#/success == true"
+            }
+          ],
+          "outputs": {
+            "formula_info": "$response.body",
+            "formula_hash": "$response.header.x-resource-location"
+          }
+        },
+        {
+          "stepId": "render-formula",
+          "description": "Retrieves the rendered representation (SVG, MML, or PNG) of a previously checked formula using its hash.",
+          "operationPath": "openapi_source#/paths/~1media~1math~1render~1{format}~1{hash}/get",
+          "parameters": [
+            {
+              "name": "format",
+              "in": "path",
+              "value": "$inputs.format"
+            },
+            {
+              "name": "hash",
+              "in": "path",
+              "value": "$steps.check-formula.outputs.formula_hash"
+            }
+          ],
+          "successCriteria": [
+            {
+              "condition": "$statusCode == 200"
+            }
+          ],
+          "outputs": {
+            "rendered_formula": "$response.body"
+          }
+        }
+      ],
+      "outputs": {
+        "formula_info": "$steps.check-formula.outputs.formula_info",
+        "formula_hash": "$steps.check-formula.outputs.formula_hash",
+        "rendered_formula": "$steps.render-formula.outputs.rendered_formula"
+      }
+    }
+  ]
+}

@@ -14,12 +14,15 @@ import {
 import {default as nodePath} from 'node:path'
 
 import {Overlay} from './core/overlay.js'
+import arazzoSchemas from './core/schemas/arazzo-schemas/index.js'
 import flowerSchemas from './core/schemas/flower-schemas/index.js'
 import openapiSchemas from './core/schemas/oas-schemas/index.js'
 
 type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
 
 class SupportedFormat {
+  static readonly arazzo: Record<string, SpecSchema> = arazzoSchemas.schemas
+
   static readonly asyncapi: Record<string, SpecSchema> = {
     '2.0': asyncapi.schemas['2.0.0'],
     '2.1': asyncapi.schemas['2.1.0'],
@@ -30,16 +33,9 @@ class SupportedFormat {
     '2.6': asyncapi.schemas['2.6.0'],
   }
 
-  static readonly flower: Record<string, SpecSchema> = {
-    '0.1': flowerSchemas.schemas['0.1'],
-  }
+  static readonly flower: Record<string, SpecSchema> = flowerSchemas.schemas
 
-  static readonly openapi: Record<string, SpecSchema> = {
-    '2.0': openapiSchemas.schemas['2.0'],
-    '3.0': openapiSchemas.schemas['3.0'],
-    '3.1': openapiSchemas.schemas['3.1'],
-    '3.2': openapiSchemas.schemas['3.2'],
-  }
+  static readonly openapi: Record<string, SpecSchema> = openapiSchemas.schemas
 }
 
 class UnsupportedFormat extends CLIError {
@@ -81,6 +77,10 @@ class API {
     }
   }
 
+  static isArazzo(definition: JSONSchema4Object | JSONSchema6Object): definition is Arazzo {
+    return 'arazzo' in definition
+  }
+
   static isAsyncAPI(definition: JSONSchema4Object | JSONSchema6Object): definition is AsyncAPI {
     return 'asyncapi' in definition
   }
@@ -95,6 +95,16 @@ class API {
 
   static isOpenAPIOverlay(definition: JSONSchema4Object | JSONSchema6Object): definition is OpenAPIOverlay {
     return 'overlay' in definition
+  }
+
+  static isSupportedFormat(definition: JSONSchema4Object | JSONSchema6Object): definition is APIDefinition {
+    return (
+      API.isOpenAPI(definition) ||
+        API.isAsyncAPI(definition) ||
+        API.isOpenAPIOverlay(definition) ||
+        API.isFlower(definition) ||
+        API.isArazzo(definition)
+    )
   }
 
   static async load(path: string): Promise<API> {
@@ -199,6 +209,10 @@ class API {
   }
 
   getSpec(definition: APIDefinition): SpecSchema | undefined {
+    if (API.isArazzo(definition)) {
+      return SupportedFormat.arazzo[this.versionWithoutPatch()]
+    }
+
     if (API.isAsyncAPI(definition)) {
       return SupportedFormat.asyncapi[this.versionWithoutPatch()]
     }
@@ -219,6 +233,9 @@ class API {
   }
 
   getSpecName(definition: APIDefinition): string | undefined {
+    if (API.isArazzo(definition)) {
+      return 'Arazzo'
+    }
     if (API.isAsyncAPI(definition)) {
       return 'AsyncAPI'
     }
@@ -236,6 +253,10 @@ class API {
   }
 
   getVersion(definition: APIDefinition): string | undefined {
+    if (API.isArazzo(definition)) {
+      return definition.arazzo
+    }
+
     if (API.isAsyncAPI(definition)) {
       return definition.asyncapi
     }
@@ -304,7 +325,7 @@ class API {
       throw new UnsupportedFormat('Definition needs to be a valid Object')
     }
 
-    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed) && !API.isOpenAPIOverlay(parsed) && !API.isFlower(parsed)) {
+    if (!API.isSupportedFormat(parsed)) {
       throw new UnsupportedFormat()
     }
 
@@ -370,7 +391,7 @@ type APIReference = {
   location: string
 }
 
-type APIDefinition = AsyncAPI | Flower | OpenAPI | OpenAPIOverlay
+type APIDefinition = Arazzo | AsyncAPI | Flower | OpenAPI | OpenAPIOverlay
 
 type InfoObject = {
   readonly description?: string
@@ -399,6 +420,11 @@ type AsyncAPI = {
 
 type Flower = {
   readonly flower: string
+} & JSONSchema4Object
+
+type Arazzo = {
+  readonly arazzo: string
+  readonly info: InfoObject
 } & JSONSchema4Object
 
 export {API, APIDefinition, OpenAPI, OpenAPIOverlay, SupportedFormat}

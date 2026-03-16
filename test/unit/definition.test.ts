@@ -53,6 +53,16 @@ describe('API class', () => {
         const api = await API.load('examples/valid/asyncapi.v2.5.yml')
         expect(api.version).to.equal('2.5.0')
       })
+
+      it('parses successfully a Flower definition', async () => {
+        const api = await API.load('examples/valid/flower/parking.yml')
+        expect(api.version).to.equal('0.1')
+      })
+
+      it('parses successfully an Arazzo definition', async () => {
+        const api = await API.load('examples/valid/arazzo/wikimedia.json')
+        expect(api.version).to.equal('1.0.1')
+      })
     })
 
     describe('with file & http references', () => {
