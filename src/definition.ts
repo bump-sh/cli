@@ -100,10 +100,10 @@ class API {
   static isSupportedFormat(definition: JSONSchema4Object | JSONSchema6Object): definition is APIDefinition {
     return (
       API.isOpenAPI(definition) ||
-        API.isAsyncAPI(definition) ||
-        API.isOpenAPIOverlay(definition) ||
-        API.isFlower(definition) ||
-        API.isArazzo(definition)
+      API.isAsyncAPI(definition) ||
+      API.isOpenAPIOverlay(definition) ||
+      API.isFlower(definition) ||
+      API.isArazzo(definition)
     )
   }
 
@@ -301,25 +301,6 @@ class API {
     return path === this.location || path === resolvedAbsLocation
   }
 
-  /* Resolve reference absolute paths to the main api location when possible */
-  resolveRelativeLocation(absPath: string): string {
-    const definitionUrl = this.url()
-    const refUrl = this.url(absPath)
-
-    if (
-      (refUrl.hostname === '' && // filesystem path
-        (/^\//.test(absPath) || // Unix style
-          /^[A-Za-z]+:[/\\]/.test(absPath))) || // Windows style
-      (/^https?:\/\//.test(absPath) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
-    ) {
-      const relativeLocation = nodePath.relative(nodePath.dirname(this.location), absPath)
-      debug('bump-cli:definition')(`Resolved relative $ref location: ${relativeLocation}`)
-      return relativeLocation
-    }
-
-    return absPath
-  }
-
   serializeDefinition(outputPath?: string): string {
     if (this.overlayedDefinition) {
       const {comments} = parseWithPointers(this.rawDefinition, {attachComments: true})
@@ -358,7 +339,7 @@ class API {
 
         references.push({
           content: reference.raw,
-          location: this.resolveRelativeLocation(absPath),
+          location: this._resolveRelativeLocation(absPath),
         })
       }
     }
@@ -380,6 +361,27 @@ class API {
     }
 
     return [rawDefinition, definition, references]
+  }
+
+  /* Resolve reference absolute paths to the main api location when possible */
+  private _resolveRelativeLocation(absPath: string): string {
+    const definitionUrl = this.url()
+    const refUrl = this.url(absPath)
+    const unixStyle: boolean = /^\//.test(absPath)
+    const windowsStyle: boolean = /^[A-Za-z]+:[/\\]/.test(absPath)
+    const isUrl = /^https?:\/\//.test(absPath)
+
+    // filesystem path OR same domain URLs
+    if (
+      (refUrl.hostname === '' && (unixStyle || windowsStyle)) ||
+      (isUrl && definitionUrl.hostname === refUrl.hostname)
+    ) {
+      const relativeLocation = nodePath.relative(nodePath.dirname(this.location), absPath)
+      debug('bump-cli:definition')(`Resolved relative $ref location: ${relativeLocation}`)
+      return relativeLocation
+    }
+
+    return absPath
   }
 
   private url(location: string = this.location): {hostname: string} | Location {
