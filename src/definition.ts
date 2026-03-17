@@ -18,12 +18,12 @@ import arazzoSchemas from './core/schemas/arazzo-schemas/index.js'
 import flowerSchemas from './core/schemas/flower-schemas/index.js'
 import openapiSchemas from './core/schemas/oas-schemas/index.js'
 
-type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
+type JSONSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
 
 class SupportedFormat {
-  static readonly arazzo: Record<string, SpecSchema> = arazzoSchemas.schemas
+  static readonly arazzo: Record<string, JSONSchema> = arazzoSchemas.schemas
 
-  static readonly asyncapi: Record<string, SpecSchema> = {
+  static readonly asyncapi: Record<string, JSONSchema> = {
     '2.0': asyncapi.schemas['2.0.0'],
     '2.1': asyncapi.schemas['2.1.0'],
     '2.2': asyncapi.schemas['2.2.0'],
@@ -33,9 +33,9 @@ class SupportedFormat {
     '2.6': asyncapi.schemas['2.6.0'],
   }
 
-  static readonly flower: Record<string, SpecSchema> = flowerSchemas.schemas
+  static readonly flower: Record<string, JSONSchema> = flowerSchemas.schemas
 
-  static readonly openapi: Record<string, SpecSchema> = openapiSchemas.schemas
+  static readonly openapi: Record<string, JSONSchema> = openapiSchemas.schemas
 }
 
 class UnsupportedFormat extends CLIError {
@@ -61,14 +61,14 @@ class API {
   readonly specName?: string
   readonly version?: string
 
-  constructor(location: string, values: SpecSchema) {
+  constructor(location: string, data: Record<string, JSONSchemaWithRaw>) {
     this.location = location
-    this.references = []
 
-    const [raw, parsed] = this.resolveContent(values)
+    const [raw, parsed, references] = this._resolveContentFrom(data)
+    this.references = references || []
     this.rawDefinition = raw as string
-
     this.definition = parsed
+
     this.specName = this.getSpecName(parsed)
     this.version = this.getVersion(parsed)
 
@@ -154,8 +154,17 @@ class API {
         },
       })
       .then(($refs) => {
-        const values = $refs.values()
-        return new API(path, values)
+        // JSON schema refs parser lib doesn't type the output of this
+        // method well (it types it as a generic JSON schema) where as
+        // it builds a Map of string (the path/URLs of each reference)
+        // to JSONSchema (the reference value)
+        //
+        // We also change the reference values in our custom parsers
+        // defined above to include the raw values which gets “widen”
+        // by the lib. We thus need to force the type output to a more
+        // precise type.
+        const data = $refs.values() as Record<string, JSONSchemaWithRaw>
+        return new API(path, data)
       })
       .catch((error: Error) => {
         throw new CLIError(error)
@@ -208,7 +217,7 @@ class API {
     return [this.serializeDefinition(outputPath), references]
   }
 
-  getSpec(definition: APIDefinition): SpecSchema | undefined {
+  getSpec(definition: APIDefinition): JSONSchema | undefined {
     if (API.isArazzo(definition)) {
       return SupportedFormat.arazzo[this.versionWithoutPatch()]
     }
@@ -292,46 +301,6 @@ class API {
     return path === this.location || path === resolvedAbsLocation
   }
 
-  resolveContent(values: SpecSchema): [string, APIDefinition] {
-    let mainReference: JSONSchemaWithRaw = {parsed: {}, raw: ''}
-
-    for (const [absPath, reference] of Object.entries(values)) {
-      if (this.isMainRefPath(absPath)) {
-        // $refs.values is not properly typed so we need to force it
-        // with the resulting type of our custom defined parser
-        mainReference = reference as JSONSchemaWithRaw
-      } else {
-        // $refs.values is not properly typed so we need to force it
-        // with the resulting type of our custom defined parser
-        const {raw} = reference as JSONSchemaWithRaw
-
-        if (!raw) {
-          throw new UnsupportedFormat(`Reference ${absPath} is empty`)
-        }
-
-        this.references.push({
-          content: raw,
-          location: this.resolveRelativeLocation(absPath),
-        })
-      }
-    }
-
-    const {parsed, raw} = mainReference
-
-    if (!parsed || !raw || !(parsed instanceof Object) || !('info' in parsed || 'flower' in parsed)) {
-      debug('bump-cli:definition')(
-        `Main location (${this.location}) not found or empty (within ${JSON.stringify(Object.keys(values))})`,
-      )
-      throw new UnsupportedFormat('Definition needs to be a valid Object')
-    }
-
-    if (!API.isSupportedFormat(parsed)) {
-      throw new UnsupportedFormat()
-    }
-
-    return [raw, parsed]
-  }
-
   /* Resolve reference absolute paths to the main api location when possible */
   resolveRelativeLocation(absPath: string): string {
     const definitionUrl = this.url()
@@ -370,6 +339,47 @@ class API {
     const [major, minor] = this.version.split('.', 3)
 
     return `${major}.${minor}`
+  }
+
+  private _resolveContentFrom(data: Record<string, JSONSchemaWithRaw>): [string, APIDefinition, APIReference[]] {
+    let definition: JSONSchema | string | undefined
+    let rawDefinition: string | undefined
+    const references: APIReference[] = []
+
+    // data contains all refs as a map of paths/URLs and their
+    // correspond values
+    for (const [absPath, reference] of Object.entries(data)) {
+      if (this.isMainRefPath(absPath)) {
+        ;({parsed: definition, raw: rawDefinition} = reference)
+      } else {
+        if (!reference.raw) {
+          throw new UnsupportedFormat(`Reference ${absPath} is empty`)
+        }
+
+        references.push({
+          content: reference.raw,
+          location: this.resolveRelativeLocation(absPath),
+        })
+      }
+    }
+
+    if (
+      !definition ||
+      !rawDefinition ||
+      !(definition instanceof Object) ||
+      !('info' in definition || 'flower' in definition)
+    ) {
+      debug('bump-cli:definition')(
+        `Main location (${this.location}) not found or empty (within ${JSON.stringify(Object.keys(data))})`,
+      )
+      throw new UnsupportedFormat('Definition needs to be a valid Object')
+    }
+
+    if (!API.isSupportedFormat(definition)) {
+      throw new UnsupportedFormat()
+    }
+
+    return [rawDefinition, definition, references]
   }
 
   private url(location: string = this.location): {hostname: string} | Location {
