@@ -82,6 +82,10 @@ export interface DiffItem {
 
 export interface WorkflowVersionRequest {
   definition: string // workflowDefinition
+  // List of API references attached to the
+  // workflow (source descriptions in Arazzo
+  // vocabulary)
+  references?: Reference[]
 }
 
 export interface WorkflowVersionResponse {

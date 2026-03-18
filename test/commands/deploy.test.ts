@@ -3,6 +3,8 @@ import {expect} from 'chai'
 import nock from 'nock'
 import {stub} from 'sinon'
 
+import {API} from '../../src/definition'
+
 nock.disableNetConnect()
 
 process.env.BUMP_TOKEN = process.env.BUMP_TOKEN || 'BAR'
@@ -110,11 +112,38 @@ describe('deploy subcommand', () => {
   })
 
   describe('Successful runs with MCP server', () => {
-    it('sends new workflow definition to Bump', async () => {
+    it('sends new workflow definition (flower) to Bump', async () => {
       nock('https://bump.sh').post('/api/v1/mcp_servers/crab/deploy').reply(201, {})
 
       const {stderr, stdout} = await runCommand(
         ['deploy', 'examples/valid/flower/parking.yml', '--mcp-server', 'crab'].join(' '),
+      )
+
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stdout).to.contain(
+        'Your crab MCP server...has received a new workflow definition which will soon be ready.',
+      )
+    })
+
+    it('sends new workflow definition with openapi sources (arazzo) to Bump', async () => {
+      const [definition, references] = await (
+        await API.load('examples/valid/arazzo/wikimedia.json')
+      ).extractDefinition()
+      nock('https://bump.sh')
+        .post('/api/v1/mcp_servers/crab/deploy', (body) => {
+          const {content: expectedContent, location: expectedLocation, name: expectedName} = references[0]
+          const {content: actualContent, location: actualLocation, name: actualName} = body.references[0]
+          return (
+            body.definition === definition &&
+            expectedContent === actualContent &&
+            expectedName === actualName &&
+            expectedLocation === actualLocation
+          )
+        })
+        .reply(201, {})
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/arazzo/wikimedia.json', '--mcp-server', 'crab'].join(' '),
       )
 
       expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
