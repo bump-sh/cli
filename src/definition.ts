@@ -99,11 +99,11 @@ class API {
 
   static isSupportedFormat(definition: JSONSchema4Object | JSONSchema6Object): definition is APIDefinition {
     return (
-      API.isOpenAPI(definition) ||
+      API.isArazzo(definition) ||
       API.isAsyncAPI(definition) ||
-      API.isOpenAPIOverlay(definition) ||
       API.isFlower(definition) ||
-      API.isArazzo(definition)
+      API.isOpenAPI(definition) ||
+      API.isOpenAPIOverlay(definition)
     )
   }
 
@@ -227,16 +227,16 @@ class API {
       return SupportedFormat.asyncapi[this.versionWithoutPatch()]
     }
 
-    if (API.isOpenAPIOverlay(definition)) {
-      return {overlay: {type: 'string'}}
-    }
-
     if (API.isFlower(definition)) {
       return SupportedFormat.flower[this.versionWithoutPatch()]
     }
 
     if (API.isOpenAPI(definition)) {
       return SupportedFormat.openapi[this.versionWithoutPatch()]
+    }
+
+    if (API.isOpenAPIOverlay(definition)) {
+      return {overlay: {type: 'string'}}
     }
 
     return undefined
@@ -252,11 +252,11 @@ class API {
     if (API.isFlower(definition)) {
       return 'Flower'
     }
-    if (API.isOpenAPIOverlay(definition)) {
-      return 'OpenAPIOverlay'
-    }
     if (API.isOpenAPI(definition)) {
       return 'OpenAPI'
+    }
+    if (API.isOpenAPIOverlay(definition)) {
+      return 'OpenAPIOverlay'
     }
 
     return undefined
@@ -275,12 +275,12 @@ class API {
       return definition.flower
     }
 
-    if (API.isOpenAPIOverlay(definition)) {
-      return definition.overlay
-    }
-
     if (API.isOpenAPI(definition)) {
       return (definition.openapi || definition.swagger) as string
+    }
+
+    if (API.isOpenAPIOverlay(definition)) {
+      return definition.overlay
     }
 
     return undefined
