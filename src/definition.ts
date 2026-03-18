@@ -207,11 +207,8 @@ class API {
     const references = []
 
     for (let i = 0; i < this.references.length; i++) {
-      const reference = this.references[i]
-      references.push({
-        content: reference.content,
-        location: reference.location,
-      })
+      const {content, location, name} = this.references[i]
+      references.push({content, location, name})
     }
 
     return [this.serializeDefinition(outputPath), references]
