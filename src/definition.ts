@@ -363,25 +363,30 @@ class API {
     return [rawDefinition, definition, references]
   }
 
-  /* Resolve reference absolute paths to the main api location when possible */
-  private _resolveRelativeLocation(absPath: string): string {
+  /* Resolve reference paths to the main api location when possible */
+  private _resolveRelativeLocation(path: string): string {
     const definitionUrl = this.url()
-    const refUrl = this.url(absPath)
-    const unixStyle: boolean = /^\//.test(absPath)
-    const windowsStyle: boolean = /^[A-Za-z]+:[/\\]/.test(absPath)
-    const isUrl = /^https?:\/\//.test(absPath)
+    const refUrl = this.url(path)
+    const unixStyle: boolean = /^\//.test(path)
+    const windowsStyle: boolean = /^[A-Za-z]+:[/\\]/.test(path)
+    const isUrl = /^https?:\/\//.test(path)
 
-    // filesystem path OR same domain URLs
-    if (
-      (refUrl.hostname === '' && (unixStyle || windowsStyle)) ||
-      (isUrl && definitionUrl.hostname === refUrl.hostname)
-    ) {
-      const relativeLocation = nodePath.relative(nodePath.dirname(this.location), absPath)
-      debug('bump-cli:definition')(`Resolved relative $ref location: ${relativeLocation}`)
-      return relativeLocation
+    // Guard: Absolute URL on different domain we return an untouched
+    // path
+    if (isUrl && definitionUrl.hostname !== refUrl.hostname) {
+      return path
     }
 
-    return absPath
+    const isAbsolutePath: boolean = refUrl.hostname === '' && (unixStyle || windowsStyle)
+    // Absolute path or URL on **same domain**
+    const isAbsolute: boolean = isAbsolutePath || isUrl
+
+    const relativeLocation: string = isAbsolute
+      ? nodePath.relative(nodePath.dirname(this.location), path)
+      : nodePath.join(nodePath.dirname(this.location), path)
+
+    debug('bump-cli:definition')(`Resolved relative $ref location: ${relativeLocation}`)
+    return relativeLocation
   }
 
   private url(location: string = this.location): {hostname: string} | Location {
