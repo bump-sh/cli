@@ -50,9 +50,9 @@ export class WorkflowDeploy {
   ): Promise<WorkflowVersionResponse | undefined> {
     let version: WorkflowVersionResponse | undefined
 
-    const request: WorkflowVersionRequest = {
-      definition: workflowDefinition.rawDefinition,
-    }
+    const [definition, references] = await workflowDefinition.extractDefinition()
+
+    const request: WorkflowVersionRequest = {definition, references}
 
     // eslint-disable-next-line prefer-const
     version = await this.createWorkflowVersion(mcpServer, request, token)
