@@ -14,13 +14,16 @@ import {
 import {default as nodePath} from 'node:path'
 
 import {Overlay} from './core/overlay.js'
+import arazzoSchemas from './core/schemas/arazzo-schemas/index.js'
 import flowerSchemas from './core/schemas/flower-schemas/index.js'
 import openapiSchemas from './core/schemas/oas-schemas/index.js'
 
-type SpecSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
+type JSONSchema = JSONSchema4 | JSONSchema6 | JSONSchema7
 
 class SupportedFormat {
-  static readonly asyncapi: Record<string, SpecSchema> = {
+  static readonly arazzo: Record<string, JSONSchema> = arazzoSchemas.schemas
+
+  static readonly asyncapi: Record<string, JSONSchema> = {
     '2.0': asyncapi.schemas['2.0.0'],
     '2.1': asyncapi.schemas['2.1.0'],
     '2.2': asyncapi.schemas['2.2.0'],
@@ -30,16 +33,9 @@ class SupportedFormat {
     '2.6': asyncapi.schemas['2.6.0'],
   }
 
-  static readonly flower: Record<string, SpecSchema> = {
-    '0.1': flowerSchemas.schemas['0.1'],
-  }
+  static readonly flower: Record<string, JSONSchema> = flowerSchemas.schemas
 
-  static readonly openapi: Record<string, SpecSchema> = {
-    '2.0': openapiSchemas.schemas['2.0'],
-    '3.0': openapiSchemas.schemas['3.0'],
-    '3.1': openapiSchemas.schemas['3.1'],
-    '3.2': openapiSchemas.schemas['3.2'],
-  }
+  static readonly openapi: Record<string, JSONSchema> = openapiSchemas.schemas
 }
 
 class UnsupportedFormat extends CLIError {
@@ -65,20 +61,24 @@ class API {
   readonly specName?: string
   readonly version?: string
 
-  constructor(location: string, values: SpecSchema) {
+  constructor(location: string, data: Record<string, JSONSchemaWithRaw>) {
     this.location = location
-    this.references = []
 
-    const [raw, parsed] = this.resolveContent(values)
+    const [raw, parsed, references] = this._resolveContentFrom(data)
+    this.references = references || []
     this.rawDefinition = raw as string
-
     this.definition = parsed
+
     this.specName = this.getSpecName(parsed)
     this.version = this.getVersion(parsed)
 
     if (!this.getSpec(parsed)) {
       throw new UnsupportedFormat(`${this.specName} ${this.version}`)
     }
+  }
+
+  static isArazzo(definition: JSONSchema4Object | JSONSchema6Object): definition is Arazzo {
+    return 'arazzo' in definition
   }
 
   static isAsyncAPI(definition: JSONSchema4Object | JSONSchema6Object): definition is AsyncAPI {
@@ -95,6 +95,16 @@ class API {
 
   static isOpenAPIOverlay(definition: JSONSchema4Object | JSONSchema6Object): definition is OpenAPIOverlay {
     return 'overlay' in definition
+  }
+
+  static isSupportedFormat(definition: JSONSchema4Object | JSONSchema6Object): definition is APIDefinition {
+    return (
+      API.isArazzo(definition) ||
+      API.isAsyncAPI(definition) ||
+      API.isFlower(definition) ||
+      API.isOpenAPI(definition) ||
+      API.isOpenAPIOverlay(definition)
+    )
   }
 
   static async load(path: string): Promise<API> {
@@ -144,8 +154,17 @@ class API {
         },
       })
       .then(($refs) => {
-        const values = $refs.values()
-        return new API(path, values)
+        // JSON schema refs parser lib doesn't type the output of this
+        // method well (it types it as a generic JSON schema) where as
+        // it builds a Map of string (the path/URLs of each reference)
+        // to JSONSchema (the reference value)
+        //
+        // We also change the reference values in our custom parsers
+        // defined above to include the raw values which gets “widen”
+        // by the lib. We thus need to force the type output to a more
+        // precise type.
+        const data = $refs.values() as Record<string, JSONSchemaWithRaw>
+        return new API(path, data)
       })
       .catch((error: Error) => {
         throw new CLIError(error)
@@ -185,26 +204,27 @@ class API {
       /* eslint-enable no-await-in-loop */
     }
 
+    if (API.isArazzo(this.definition)) {
+      await this._resolveArazzoSourceDescriptions()
+    }
+
     const references = []
 
     for (let i = 0; i < this.references.length; i++) {
-      const reference = this.references[i]
-      references.push({
-        content: reference.content,
-        location: reference.location,
-      })
+      const {content, location, name} = this.references[i]
+      references.push({content, location, name})
     }
 
     return [this.serializeDefinition(outputPath), references]
   }
 
-  getSpec(definition: APIDefinition): SpecSchema | undefined {
-    if (API.isAsyncAPI(definition)) {
-      return SupportedFormat.asyncapi[this.versionWithoutPatch()]
+  getSpec(definition: APIDefinition): JSONSchema | undefined {
+    if (API.isArazzo(definition)) {
+      return SupportedFormat.arazzo[this.versionWithoutPatch()]
     }
 
-    if (API.isOpenAPIOverlay(definition)) {
-      return {overlay: {type: 'string'}}
+    if (API.isAsyncAPI(definition)) {
+      return SupportedFormat.asyncapi[this.versionWithoutPatch()]
     }
 
     if (API.isFlower(definition)) {
@@ -215,27 +235,38 @@ class API {
       return SupportedFormat.openapi[this.versionWithoutPatch()]
     }
 
+    if (API.isOpenAPIOverlay(definition)) {
+      return {overlay: {type: 'string'}}
+    }
+
     return undefined
   }
 
   getSpecName(definition: APIDefinition): string | undefined {
+    if (API.isArazzo(definition)) {
+      return 'Arazzo'
+    }
     if (API.isAsyncAPI(definition)) {
       return 'AsyncAPI'
     }
     if (API.isFlower(definition)) {
       return 'Flower'
     }
-    if (API.isOpenAPIOverlay(definition)) {
-      return 'OpenAPIOverlay'
-    }
     if (API.isOpenAPI(definition)) {
       return 'OpenAPI'
+    }
+    if (API.isOpenAPIOverlay(definition)) {
+      return 'OpenAPIOverlay'
     }
 
     return undefined
   }
 
   getVersion(definition: APIDefinition): string | undefined {
+    if (API.isArazzo(definition)) {
+      return definition.arazzo
+    }
+
     if (API.isAsyncAPI(definition)) {
       return definition.asyncapi
     }
@@ -244,12 +275,12 @@ class API {
       return definition.flower
     }
 
-    if (API.isOpenAPIOverlay(definition)) {
-      return definition.overlay
-    }
-
     if (API.isOpenAPI(definition)) {
       return (definition.openapi || definition.swagger) as string
+    }
+
+    if (API.isOpenAPIOverlay(definition)) {
+      return definition.overlay
     }
 
     return undefined
@@ -269,65 +300,6 @@ class API {
       .join(nodePath?.posix?.sep ?? '/')
 
     return path === this.location || path === resolvedAbsLocation
-  }
-
-  resolveContent(values: SpecSchema): [string, APIDefinition] {
-    let mainReference: JSONSchemaWithRaw = {parsed: {}, raw: ''}
-
-    for (const [absPath, reference] of Object.entries(values)) {
-      if (this.isMainRefPath(absPath)) {
-        // $refs.values is not properly typed so we need to force it
-        // with the resulting type of our custom defined parser
-        mainReference = reference as JSONSchemaWithRaw
-      } else {
-        // $refs.values is not properly typed so we need to force it
-        // with the resulting type of our custom defined parser
-        const {raw} = reference as JSONSchemaWithRaw
-
-        if (!raw) {
-          throw new UnsupportedFormat(`Reference ${absPath} is empty`)
-        }
-
-        this.references.push({
-          content: raw,
-          location: this.resolveRelativeLocation(absPath),
-        })
-      }
-    }
-
-    const {parsed, raw} = mainReference
-
-    if (!parsed || !raw || !(parsed instanceof Object) || !('info' in parsed || 'flower' in parsed)) {
-      debug('bump-cli:definition')(
-        `Main location (${this.location}) not found or empty (within ${JSON.stringify(Object.keys(values))})`,
-      )
-      throw new UnsupportedFormat('Definition needs to be a valid Object')
-    }
-
-    if (!API.isOpenAPI(parsed) && !API.isAsyncAPI(parsed) && !API.isOpenAPIOverlay(parsed) && !API.isFlower(parsed)) {
-      throw new UnsupportedFormat()
-    }
-
-    return [raw, parsed]
-  }
-
-  /* Resolve reference absolute paths to the main api location when possible */
-  resolveRelativeLocation(absPath: string): string {
-    const definitionUrl = this.url()
-    const refUrl = this.url(absPath)
-
-    if (
-      (refUrl.hostname === '' && // filesystem path
-        (/^\//.test(absPath) || // Unix style
-          /^[A-Za-z]+:[/\\]/.test(absPath))) || // Windows style
-      (/^https?:\/\//.test(absPath) && definitionUrl.hostname === refUrl.hostname) // Same domain URLs
-    ) {
-      const relativeLocation = nodePath.relative(nodePath.dirname(this.location), absPath)
-      debug('bump-cli:definition')(`Resolved relative $ref location: ${relativeLocation}`)
-      return relativeLocation
-    }
-
-    return absPath
   }
 
   serializeDefinition(outputPath?: string): string {
@@ -351,6 +323,97 @@ class API {
     return `${major}.${minor}`
   }
 
+  private async _resolveArazzoSourceDescriptions(): Promise<void> {
+    if (!API.isArazzo(this.definition)) {
+      debug('bump-cli:definition')('This is not an Arazzo definition, no source descriptions to resolve')
+    } else if (this.definition.sourceDescriptions) {
+      const sources = this.definition.sourceDescriptions as ArazzoSourceDescription[]
+      for (const {name, type: sourceType, url: location} of sources) {
+        if (sourceType === 'openapi') {
+          const relativeLocation = this._resolveRelativeLocation(location)
+
+          /* eslint-disable no-await-in-loop */
+          const api = await API.load(relativeLocation)
+          const [content] = await api.extractDefinition()
+          /* eslint-enable no-await-in-loop */
+
+          this.references.push({content, location: relativeLocation, name})
+        } else {
+          debug('bump-cli:definition')(`Arazzo source description of type ${sourceType} is not yet supported.`)
+        }
+      }
+    } else {
+      debug('bump-cli:definition')("Arazzo definition doesn't have any sourceDescriptions")
+    }
+  }
+
+  private _resolveContentFrom(data: Record<string, JSONSchemaWithRaw>): [string, APIDefinition, APIReference[]] {
+    let definition: JSONSchema | string | undefined
+    let rawDefinition: string | undefined
+    const references: APIReference[] = []
+
+    // data contains all refs as a map of paths/URLs and their
+    // correspond values
+    for (const [absPath, reference] of Object.entries(data)) {
+      if (this.isMainRefPath(absPath)) {
+        ;({parsed: definition, raw: rawDefinition} = reference)
+      } else {
+        if (!reference.raw) {
+          throw new UnsupportedFormat(`Reference ${absPath} is empty`)
+        }
+
+        references.push({
+          content: reference.raw,
+          location: this._resolveRelativeLocation(absPath),
+        })
+      }
+    }
+
+    if (
+      !definition ||
+      !rawDefinition ||
+      !(definition instanceof Object) ||
+      !('info' in definition || 'flower' in definition)
+    ) {
+      debug('bump-cli:definition')(
+        `Main location (${this.location}) not found or empty (within ${JSON.stringify(Object.keys(data))})`,
+      )
+      throw new UnsupportedFormat('Definition needs to be a valid Object')
+    }
+
+    if (!API.isSupportedFormat(definition)) {
+      throw new UnsupportedFormat()
+    }
+
+    return [rawDefinition, definition, references]
+  }
+
+  /* Resolve reference paths to the main api location when possible */
+  private _resolveRelativeLocation(path: string): string {
+    const definitionUrl = this.url()
+    const refUrl = this.url(path)
+    const unixStyle: boolean = /^\//.test(path)
+    const windowsStyle: boolean = /^[A-Za-z]+:[/\\]/.test(path)
+    const isUrl = /^https?:\/\//.test(path)
+
+    // Guard: Absolute URL on different domain we return an untouched
+    // path
+    if (isUrl && definitionUrl.hostname !== refUrl.hostname) {
+      return path
+    }
+
+    const isAbsolutePath: boolean = refUrl.hostname === '' && (unixStyle || windowsStyle)
+    // Absolute path or URL on **same domain**
+    const isAbsolute: boolean = isAbsolutePath || isUrl
+
+    const relativeLocation: string = isAbsolute
+      ? nodePath.relative(nodePath.dirname(this.location), path)
+      : nodePath.join(nodePath.dirname(this.location), path)
+
+    debug('bump-cli:definition')(`Resolved relative $ref location: ${relativeLocation}`)
+    return relativeLocation
+  }
+
   private url(location: string = this.location): {hostname: string} | Location {
     try {
       return new URL(location)
@@ -368,9 +431,10 @@ type JSONSchemaWithRaw = {
 type APIReference = {
   content: string
   location: string
+  name?: string
 }
 
-type APIDefinition = AsyncAPI | Flower | OpenAPI | OpenAPIOverlay
+type APIDefinition = Arazzo | AsyncAPI | Flower | OpenAPI | OpenAPIOverlay
 
 type InfoObject = {
   readonly description?: string
@@ -400,5 +464,16 @@ type AsyncAPI = {
 type Flower = {
   readonly flower: string
 } & JSONSchema4Object
+
+type Arazzo = {
+  readonly arazzo: string
+  readonly info: InfoObject
+} & JSONSchema4Object
+
+type ArazzoSourceDescription = {
+  readonly name: string
+  readonly type?: string
+  readonly url: string
+}
 
 export {API, APIDefinition, OpenAPI, OpenAPIOverlay, SupportedFormat}

@@ -53,6 +53,16 @@ describe('API class', () => {
         const api = await API.load('examples/valid/asyncapi.v2.5.yml')
         expect(api.version).to.equal('2.5.0')
       })
+
+      it('parses successfully a Flower definition', async () => {
+        const api = await API.load('examples/valid/flower/parking.yml')
+        expect(api.version).to.equal('0.1')
+      })
+
+      it('parses successfully an Arazzo definition', async () => {
+        const api = await API.load('examples/valid/arazzo/wikimedia.json')
+        expect(api.version).to.equal('1.0.1')
+      })
     })
 
     describe('with file & http references', () => {
@@ -122,6 +132,24 @@ describe('API class', () => {
             expect(message).to.match(new RegExp(error))
           }
         }
+      })
+    })
+  })
+
+  describe('extractDefinition()', () => {
+    describe('with an Arazzo definition with sources', () => {
+      it('returns the raw definition of the arazzo definition and the list of source descriptions', async () => {
+        const api = await API.load('examples/valid/arazzo/wikimedia.json')
+        const [definition, sources] = await api.extractDefinition()
+        expect(sources[0].name).to.equal('openapi_source')
+        expect(sources[0].location).to.equal(
+          ['examples', 'valid', 'arazzo', 'wikimedia', 'openapi.json'].join(path.sep),
+        )
+
+        expect(sources[0].content).to.include(
+          "By using this API, you agree to Wikimedia's [Terms of Use](https://wikimediafoundation.org/wiki/Terms_of_Use)",
+        )
+        expect(definition).to.equal(api.rawDefinition)
       })
     })
   })

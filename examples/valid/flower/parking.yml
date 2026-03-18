@@ -45,7 +45,7 @@ flows:
           url: https://data.angers.fr/api/explore/v2.1/catalog/datasets/parking-angers/records
           query:
             limit: "20"
-            refine: nom%3A"$inputs.parking"
+            refine: 'nom:"$inputs.parking"'
         outputs:
           remaining_slots: $response.body.results.0.disponible
 
