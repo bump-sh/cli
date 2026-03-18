@@ -136,6 +136,24 @@ describe('API class', () => {
     })
   })
 
+  describe('extractDefinition()', () => {
+    describe('with an Arazzo definition with sources', () => {
+      it('returns the raw definition of the arazzo definition and the list of source descriptions', async () => {
+        const api = await API.load('examples/valid/arazzo/wikimedia.json')
+        const [definition, sources] = await api.extractDefinition()
+        expect(sources[0].name).to.equal('openapi_source')
+        expect(sources[0].location).to.equal(
+          ['examples', 'valid', 'arazzo', 'wikimedia', 'openapi.json'].join(path.sep),
+        )
+
+        expect(sources[0].content).to.include(
+          "By using this API, you agree to Wikimedia's [Terms of Use](https://wikimediafoundation.org/wiki/Terms_of_Use)",
+        )
+        expect(definition).to.equal(api.rawDefinition)
+      })
+    })
+  })
+
   describe('serializeDefinition()', () => {
     describe('with no overlay applied', () => {
       it('returns the rawDefinition, no matter the argument', async () => {

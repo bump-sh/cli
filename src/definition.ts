@@ -204,6 +204,10 @@ class API {
       /* eslint-enable no-await-in-loop */
     }
 
+    if (API.isArazzo(this.definition)) {
+      await this._resolveArazzoSourceDescriptions()
+    }
+
     const references = []
 
     for (let i = 0; i < this.references.length; i++) {
@@ -319,6 +323,30 @@ class API {
     return `${major}.${minor}`
   }
 
+  private async _resolveArazzoSourceDescriptions(): Promise<void> {
+    if (!API.isArazzo(this.definition)) {
+      debug('bump-cli:definition')('This is not an Arazzo definition, no source descriptions to resolve')
+    } else if (this.definition.sourceDescriptions) {
+      const sources = this.definition.sourceDescriptions as ArazzoSourceDescription[]
+      for (const {name, type: sourceType, url: location} of sources) {
+        if (sourceType === 'openapi') {
+          const relativeLocation = this._resolveRelativeLocation(location)
+
+          /* eslint-disable no-await-in-loop */
+          const api = await API.load(relativeLocation)
+          const [content] = await api.extractDefinition()
+          /* eslint-enable no-await-in-loop */
+
+          this.references.push({content, location: relativeLocation, name})
+        } else {
+          debug('bump-cli:definition')(`Arazzo source description of type ${sourceType} is not yet supported.`)
+        }
+      }
+    } else {
+      debug('bump-cli:definition')("Arazzo definition doesn't have any sourceDescriptions")
+    }
+  }
+
   private _resolveContentFrom(data: Record<string, JSONSchemaWithRaw>): [string, APIDefinition, APIReference[]] {
     let definition: JSONSchema | string | undefined
     let rawDefinition: string | undefined
@@ -403,6 +431,7 @@ type JSONSchemaWithRaw = {
 type APIReference = {
   content: string
   location: string
+  name?: string
 }
 
 type APIDefinition = Arazzo | AsyncAPI | Flower | OpenAPI | OpenAPIOverlay
@@ -440,5 +469,11 @@ type Arazzo = {
   readonly arazzo: string
   readonly info: InfoObject
 } & JSONSchema4Object
+
+type ArazzoSourceDescription = {
+  readonly name: string
+  readonly type?: string
+  readonly url: string
+}
 
 export {API, APIDefinition, OpenAPI, OpenAPIOverlay, SupportedFormat}
