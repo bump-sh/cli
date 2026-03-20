@@ -15,7 +15,7 @@
     "@types/jsonpath": "^0.2.4",
     "@types/mocha": "^10",
     "@types/node": "^24",
-    "@types/sinon": "^17.0.3",
+    "@types/sinon": "^21.0.0",
     "@typescript-eslint/eslint-plugin": "^8.13.0",
     "chai": "^6.2.2",
     "eslint": "^8",
