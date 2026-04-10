@@ -9,14 +9,18 @@
   <a href="https://bump.sh/users/sign_up">Sign up</a>
 </p>
 
-The Bump.sh CLI is used to interact with API documentation and hubs hosted on Bump.sh from your choice of popular API description formats: OpenAPI, Swagger, or AsyncAPI.
+The Bump.sh CLI is used to interact with API documentation, hubs and workflows hosted on Bump.sh from your choice of popular API description formats: OpenAPI, Swagger, or AsyncAPI for API documentation. Flower or Arazzo for API workflows.
 
 Using [OpenAPI](https://github.com/OAI/OpenAPI-Specification) (v3.x and v2.0) or [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) (2.x), you can do any of the following:
 
 - Validate an API document before publishing to your documentation.
-- Publish an API document to your Bump.sh documentation or hubs.
-- Compare two API documents to generate a human-readable diff from your API definition.
+- [Publish an API document](#the-deploy-command) to your Bump.sh documentation or hubs.
+- [Compare two API documents](#the-diff-command) to generate a human-readable diff from your API definition.
 Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.sh). And is built with the [`oclif`](https://oclif.io) framework in Typescript.
+
+Using [Flower](https://docs.bump.sh/help/mcp-servers/specification-support/flower-support/) or [Arazzo](https://docs.bump.sh/arazzo/v1.0/), you can:
+
+- [Deploy a workflow document](#deploy-a-workflow-document-on-your-mcp-server) to your Bump.sh MCP server
 
 [![Version](https://img.shields.io/npm/v/bump-cli.svg)](https://npmjs.org/package/bump-cli)
 [![Tests](https://github.com/bump-sh/cli/actions/workflows/checks.yml/badge.svg)](https://github.com/bump-sh/cli/actions/workflows/checks.yml)
@@ -177,9 +181,13 @@ Please check `bump deploy --help` for more usage details.
 
 #### Deploy a workflow document on your MCP server
 
-Use the `bump deploy` command with the `--mcp-server` flag to push a workflow definition to your MCP server,
-following [Flower](https://docs.bump.sh/help/mcp-servers/specification-support/flower-support/)
-or [Arazzo](https://docs.bump.sh/arazzo/v1.0/) specification.
+Use the `bump deploy` command with the `--mcp-server` flag to push a
+workflow definition to your MCP server.
+
+Documents following either [Arazzo](https://docs.bump.sh/arazzo/v1.0/)
+or
+[Flower](https://docs.bump.sh/help/mcp-servers/specification-support/flower-support/)
+specification are supported.
 
 
 ```shell
@@ -189,7 +197,8 @@ bump deploy path/to/flower-or-arazzo-document.yml --mcp-server my-mcp-server-id-
 > [!NOTE]
 > You can find your own `mcp-server-id-or-slug` and `$BUMP_TOKEN` api key from your [MCP server settings](https://bump.sh/dashboard) at 'https://bump.sh/{your-organization}/workflow/set/{mcp-server-id}/tokens'.
 
-More details about the MCP server feature are available on [this dedicated help section](https://docs.bump.sh/help/mcp-servers/).
+More details about the MCP server feature are available on [this
+dedicated help section](https://docs.bump.sh/help/mcp-servers/).
 
 This feature is currently in closed beta.
 Request an early access at hello@bump.sh
