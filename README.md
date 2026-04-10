@@ -22,6 +22,8 @@ Using [Flower](https://docs.bump.sh/help/mcp-servers/specification-support/flowe
 
 - [Deploy a workflow document](#deploy-a-workflow-document-on-your-mcp-server) to your Bump.sh MCP server
 
+Have fun designing APIs ✨.
+
 [![Version](https://img.shields.io/npm/v/bump-cli.svg)](https://npmjs.org/package/bump-cli)
 [![Tests](https://github.com/bump-sh/cli/actions/workflows/checks.yml/badge.svg)](https://github.com/bump-sh/cli/actions/workflows/checks.yml)
 [![License](https://img.shields.io/npm/l/bump-cli.svg)](https://github.com/bump-sh/cli/blob/master/package.json)
