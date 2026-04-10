@@ -23,8 +23,9 @@ export interface PreviewRequest {
 }
 
 export interface Reference {
-  content?: string
-  location?: string
+  content: string
+  location: string
+  name?: string
 }
 
 export interface VersionRequest {
@@ -82,6 +83,10 @@ export interface DiffItem {
 
 export interface WorkflowVersionRequest {
   definition: string // workflowDefinition
+  // List of API references attached to the
+  // workflow (source descriptions in Arazzo
+  // vocabulary)
+  references?: Reference[]
 }
 
 export interface WorkflowVersionResponse {
