@@ -39,7 +39,7 @@ class BumpApi {
     body: WorkflowVersionRequest,
     token: string,
   ): Promise<AxiosResponse<WorkflowVersionResponse>> =>
-    this.client.post<WorkflowVersionResponse>(`/mcp_servers/${mcpServerIdOrSlug}/deploy`, body, {
+    this.client.post<WorkflowVersionResponse>(`/mcp-servers/${mcpServerIdOrSlug}/deploy`, body, {
       headers: this.authorizationHeader(token),
     })
 
