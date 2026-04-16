@@ -113,7 +113,7 @@ describe('deploy subcommand', () => {
 
   describe('Successful runs with MCP server', () => {
     it('sends new workflow definition (flower) to Bump', async () => {
-      nock('https://bump.sh').post('/api/v1/mcp_servers/crab/deploy').reply(201, {})
+      nock('https://bump.sh').post('/api/v1/mcp-servers/crab/deploy').reply(201, {})
 
       const {stderr, stdout} = await runCommand(
         ['deploy', 'examples/valid/flower/parking.yml', '--mcp-server', 'crab'].join(' '),
@@ -130,7 +130,7 @@ describe('deploy subcommand', () => {
         await API.load('examples/valid/arazzo/wikimedia.json')
       ).extractDefinition()
       nock('https://bump.sh')
-        .post('/api/v1/mcp_servers/crab/deploy', (body) => {
+        .post('/api/v1/mcp-servers/crab/deploy', (body) => {
           const {content: expectedContent, location: expectedLocation, name: expectedName} = references[0]
           const {content: actualContent, location: actualLocation, name: actualName} = body.references[0]
           return (
@@ -153,7 +153,7 @@ describe('deploy subcommand', () => {
     })
 
     it('sends unchanged workflow definition to Bump', async () => {
-      nock('https://bump.sh').post('/api/v1/mcp_servers/crab/deploy').reply(204)
+      nock('https://bump.sh').post('/api/v1/mcp-servers/crab/deploy').reply(204)
 
       const {stderr, stdout} = await runCommand(
         ['deploy', 'examples/valid/flower/parking.yml', '--mcp-server', 'crab'].join(' '),
