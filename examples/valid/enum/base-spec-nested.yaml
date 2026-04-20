@@ -14,6 +14,7 @@ paths:
               properties:
                 config:
                   type: object
+                  x-values: [base, test]
                   properties:
                     method:
                       type: string

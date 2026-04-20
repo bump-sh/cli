@@ -5,6 +5,7 @@ info:
 actions:
   - target: $.paths['/items/{id}'].put.requestBody.content['application/json'].schema.properties.config
     update:
+      x-values: [base, overlay]
       properties:
         method:
           type: string

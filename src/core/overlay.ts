@@ -112,6 +112,19 @@ export class Overlay {
     return action.description ? `Action '${action.description}'` : 'Action'
   }
 
+  // Deep merge objects using a module (built-in spread operator is only shallow)
+  private mergeWithEnumDedup(target: JSONSchema4Object, update: JSONSchema4Object): JSONSchema4Object {
+    const merger = mergician({
+      afterEach(options: {key: string; mergeVal: unknown}) {
+        if (options.key === 'enum' && Array.isArray(options.mergeVal)) {
+          return [...new Set(options.mergeVal)]
+        }
+      },
+      appendArrays: true,
+    })
+    return merger(target, update) as JSONSchema4Object
+  }
+
   // The last path entry (e.g. "'price']" or '0]') contains a final
   // ']' so we need to remove it AND we need to replace single quotes
   // to double quotes AND FINALLY parse the element to transform the
@@ -138,13 +151,11 @@ export class Overlay {
     property_or_index: number | string,
   ): APIDefinition {
     try {
-      // Deep merge objects using a module (built-in spread operator is only shallow)
-      const merger = mergician({appendArrays: true, dedupArrays: true})
       if (property_or_index === '$') {
         // You can't actually merge an update on a root object
         // target with the jsonpathly lib, this is just us merging
         // the given update with the whole spec.
-        spec = merger(spec, update)
+        spec = this.mergeWithEnumDedup(spec, update as JSONSchema4Object) as APIDefinition
       } else if (property_or_index !== undefined) {
         const targetObject = parent[property_or_index]
 
@@ -152,7 +163,7 @@ export class Overlay {
           parent[property_or_index] =
             Array.isArray(targetObject) && Array.isArray(update)
               ? [...targetObject, ...update]
-              : merger(targetObject, update)
+              : this.mergeWithEnumDedup(targetObject as JSONSchema4Object, update as JSONSchema4Object)
         } else {
           parent[property_or_index] = update
         }
