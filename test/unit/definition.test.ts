@@ -219,7 +219,10 @@ describe('API class', () => {
         const overlayed = api.overlayedDefinition as any
         const {schema} = overlayed.paths['/items/{id}'].put.requestBody.content['application/json']
 
+        // enum arrays are deduped
         expect(schema.properties.config.properties.method.enum).to.deep.equal(['GET', 'POST', 'PUT', 'DELETE'])
+        // other arrays are still appended (not deduped)
+        expect(schema.properties.config['x-values']).to.deep.equal(['base', 'test', 'base', 'overlay'])
       })
 
       it('sets the overlayedDefinition with the given overlay file path', async () => {
