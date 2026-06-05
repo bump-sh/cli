@@ -16,7 +16,7 @@ Using [OpenAPI](https://github.com/OAI/OpenAPI-Specification) (v3.x and v2.0) or
 - Validate an API document before publishing to your documentation.
 - [Publish an API document](#the-deploy-command) to your Bump.sh documentation or hubs.
 - [Compare two API documents](#the-diff-command) to generate a human-readable diff from your API definition.
-Under the hood, it uses the API of [developers.bump.sh](https://developers.bump.sh). And is built with the [`oclif`](https://oclif.io) framework in Typescript.
+Under the hood, it uses the workspace API of [developers.bump.sh](https://developers.bump.sh/doc/workspace/). And is built with the [`oclif`](https://oclif.io) framework in Typescript.
 
 Using [Flower](https://docs.bump.sh/help/mcp-servers/specification-support/flower-support/) or [Arazzo](https://docs.bump.sh/arazzo/v1.0/), you can:
 
@@ -83,7 +83,7 @@ npx bump --help
 
 ### Can I install Bump.sh CLI without using NodeJS?
 
-Unfortunately, at the moment we only support the Node environment. However, you can download a standalone package directly from the [latest Github release](https://github.com/bump-sh/cli/releases) assets which you can run as a standalone binary. Or you can push your documentation using [our API](https://developers.bump.sh/) (advanced usage only).
+Unfortunately, at the moment we only support the Node environment. However, you can download a standalone package directly from the [latest Github release](https://github.com/bump-sh/cli/releases) assets which you can run as a standalone binary. Or you can push your documentation using [our API](https://developers.bump.sh/doc/workspace/) (advanced usage only).
 
 ## Usage
 
@@ -284,7 +284,7 @@ bump preview path/to/file.json
 You can also preview a document available via a URL:
 
 ```shell
-bump preview https://developers.bump.sh/source.yaml
+bump preview https://developers.bump.sh/doc/workspace/source.yaml
 ```
 
 #### Live preview
@@ -384,7 +384,7 @@ For example to generate a preview:
   > Your preview is visible at: https://bump.sh/preview/42
   ```
 
-Please note that even if CLI is running locally, by default requests are sent to [Bump.sh API](https://developers.bump.sh/).
+Please note that even if CLI is running locally, by default requests are sent to [Bump.sh API](https://developers.bump.sh/doc/workspace/).
 
 If you have a local version of the Bump.sh API, you can run CLI 100% in local environment
 by setting the environment variable `BUMP_HOST`:

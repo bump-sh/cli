@@ -1,5 +1,5 @@
 /*
-   Please see https://developers.bump.sh/ for the API documentation
+   Please see https://developers.bump.sh/doc/workspace/ for the API documentation
    The types defined here should align with the API definition
 */
 export interface PingResponse {

@@ -192,14 +192,14 @@ describe('deploy subcommand', () => {
         .post('/api/v1/versions', (body) => body.documentation === 'coucou' && !body.branch_name)
         .reply(201, {doc_public_url: 'http://localhost/doc/1'})
 
-      nock('https://developers.bump.sh')
+      nock('https://developers.bump.sh/doc/workspace/')
         .get('/source.json')
         .replyWithFile(200, 'examples/valid/asyncapi.no-refs.v2.yml', {
           'Content-Type': 'application/json',
         })
 
       const {stdout} = await runCommand(
-        ['deploy', 'https://developers.bump.sh/source.json', '--doc', 'coucou'].join(' '),
+        ['deploy', 'https://developers.bump.sh/doc/workspace/source.json', '--doc', 'coucou'].join(' '),
       )
       expect(stdout).to.contain(
         'Your coucou documentation...has received a new deployment which will soon be ready at:\nhttp://localhost/doc/1',

@@ -603,7 +603,7 @@ components:
         humanUrl:
           type: string
           description: public documentation URL
-          example: https://developers.bump.sh/
+          example: https://developers.bump.sh/doc/workspace/
         tags:
           type: array
           items:
@@ -635,7 +635,7 @@ components:
                 description: Content of the extra property (`data` or `url`)
             example:
               type: "OpenAPI"
-              url: "https://developers.bump.sh/source.json"
+              url: "https://developers.bump.sh/doc/workspace/source.json"
         created:
           type: date
           description: Creation date of this API
@@ -751,11 +751,11 @@ components:
         previous_version_url:
           type: string
           description: URL of previous version specification, in JSON format
-          example: https://developers.bump.sh/changes/750f15d8/previous.json
+          example: https://developers.bump.sh/doc/workspace/changes/750f15d8/previous.json
         current_version_url:
           type: string
           description: URL of current version specification, in JSON format
-          example: https://developers.bump.sh/changes/750f15d8/current.json
+          example: https://developers.bump.sh/doc/workspace/changes/750f15d8/current.json
     DiffItem:
       properties:
         id:
