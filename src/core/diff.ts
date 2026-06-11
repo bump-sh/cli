@@ -113,6 +113,7 @@ export class Diff {
     return {
       breaking: versionWithDiff.diff_breaking,
       details: versionWithDiff.diff_details,
+      doc_name: versionWithDiff.doc_name,
       id: versionWithDiff.id,
       markdown: versionWithDiff.diff_markdown,
       public_url: versionWithDiff.diff_public_url,

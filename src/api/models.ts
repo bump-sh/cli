@@ -42,6 +42,7 @@ export interface VersionRequest {
 }
 
 export interface VersionResponse {
+  doc_name: string
   doc_public_url?: string
   id: string
 }
@@ -65,6 +66,7 @@ export interface DiffRequest {
 export interface DiffResponse {
   breaking?: boolean
   details?: DiffItem[]
+  doc_name?: string
   html?: string
   id: string
   markdown?: string
@@ -92,4 +94,5 @@ export interface WorkflowVersionRequest {
 export interface WorkflowVersionResponse {
   id: string
   mcp_server_id: string
+  mcp_server_name: string
 }

@@ -174,17 +174,18 @@ ${chalk.dim('$ bump deploy FILE --mcp-server <your_mcp_server_id_or_slug> --toke
       overlay,
       temporary,
     )
+    const docName = response?.doc_name || documentation
 
     if (dryRun) {
       ux.stdout(ux.colorize('green', 'Definition is valid'))
     } else if (response) {
-      process.stdout.write(ux.colorize('green', `Your ${documentation} documentation...`))
+      process.stdout.write(ux.colorize('green', `Your ${docName} documentation...`))
       ux.stdout(
         ux.colorize('green', `has received a new ${temporary ? 'preview' : 'deployment'} which will soon be ready at:`),
       )
       ux.stdout(ux.colorize('underline', response.doc_public_url!))
     } else {
-      ux.warn(`Your ${documentation} documentation has not changed`)
+      ux.warn(`Your ${docName} documentation has not changed`)
     }
   }
 
@@ -196,9 +197,10 @@ ${chalk.dim('$ bump deploy FILE --mcp-server <your_mcp_server_id_or_slug> --toke
       mcpServer,
       token,
     )
+    const mcpServerName = response?.mcp_server_name || mcpServer
 
     if (response) {
-      process.stdout.write(ux.colorize('green', `Your ${mcpServer} MCP server...`))
+      process.stdout.write(ux.colorize('green', `Your ${mcpServerName} MCP server...`))
       ux.stdout(ux.colorize('green', `has received a new workflow definition which will soon be ready.`))
     } else {
       ux.warn(`Your ${mcpServer} MCP server has not changed.`)

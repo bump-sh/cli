@@ -41,6 +41,20 @@ describe('deploy subcommand', () => {
       expect(stdout).to.contain('http://localhost/doc/1')
     })
 
+    it('sends new version to Bump, and use docName from response', async () => {
+      nock('https://bump.sh')
+        .post('/api/v1/versions', (body) => body.documentation === '42' && !body.branch_name)
+        .reply(201, {doc_name: 'Cou Cou', doc_public_url: 'http://localhost/doc/1'})
+
+      const {stderr, stdout} = await runCommand(['deploy', 'examples/valid/openapi.v3.json', '--doc', '42'].join(' '))
+
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stdout).to.contain(
+        'Your Cou Cou documentation...has received a new deployment which will soon be ready at:',
+      )
+      expect(stdout).to.contain('http://localhost/doc/1')
+    })
+
     it('sends new version to Bump on given branch', async () => {
       nock('https://bump.sh')
         .post('/api/v1/versions', (body) => body.documentation === 'coucou' && body.branch_name === 'next')
@@ -122,6 +136,19 @@ describe('deploy subcommand', () => {
       expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
       expect(stdout).to.contain(
         'Your crab MCP server...has received a new workflow definition which will soon be ready.',
+      )
+    })
+
+    it('sends new workflow definition (flower) to Bump, and display doc name', async () => {
+      nock('https://bump.sh').post('/api/v1/mcp-servers/crab/deploy').reply(201, {mcp_server_name: 'Flower Power'})
+
+      const {stderr, stdout} = await runCommand(
+        ['deploy', 'examples/valid/flower/parking.yml', '--mcp-server', 'crab'].join(' '),
+      )
+
+      expect(stderr).to.contain("Let's deploy on Bump.sh... done\n")
+      expect(stdout).to.contain(
+        'Your Flower Power MCP server...has received a new workflow definition which will soon be ready.',
       )
     })
 
