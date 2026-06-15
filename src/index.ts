@@ -10,7 +10,7 @@ export const COMMANDS = {
   preview: Preview,
 }
 
-export {DiffResponse, PreviewResponse, VersionResponse, WithDiff} from './api/models.js'
+export {PreviewResponse, VersionResponse, WithDiff} from './api/models.js'
 
 export {default as Deploy} from './commands/deploy.js'
 export {default as Preview} from './commands/preview.js'

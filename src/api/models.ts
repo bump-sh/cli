@@ -66,7 +66,6 @@ export interface DiffRequest {
 export interface DiffResponse {
   breaking?: boolean
   details?: DiffItem[]
-  doc_name?: string
   html?: string
   id: string
   markdown?: string

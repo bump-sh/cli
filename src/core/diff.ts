@@ -7,6 +7,10 @@ import {BumpApi} from '../api/index.js'
 import {DiffRequest, DiffResponse, VersionRequest, VersionResponse, WithDiff} from '../api/models.js'
 import {API} from '../definition.js'
 
+export interface DiffResult extends DiffResponse {
+  doc_name?: string
+}
+
 export class Diff {
   // 120 seconds = 2 minutes
   static readonly TIMEOUT = 120
@@ -108,7 +112,7 @@ export class Diff {
     return debug(`bump-cli:core:diff`)(formatter, ...args)
   }
 
-  extractDiff(versionWithDiff: VersionResponse & WithDiff): DiffResponse {
+  extractDiff(versionWithDiff: VersionResponse & WithDiff): DiffResult {
     // TODO: return a real diff_id in the GET /version API
     return {
       breaking: versionWithDiff.diff_breaking,
@@ -145,7 +149,7 @@ export class Diff {
     expires?: string | undefined,
     overlays1?: string[] | undefined,
     overlays2?: string[] | undefined,
-  ): Promise<DiffResponse | undefined> {
+  ): Promise<DiffResult | undefined> {
     if (!this._config) this._config = await Config.load(resolve(import.meta.dirname, './../../'))
 
     let diffVersion: DiffResponse | VersionResponse | undefined
@@ -183,13 +187,14 @@ export class Diff {
   }
 
   async waitResult(
-    result: DiffResponse | VersionResponse,
+    apiResponse: DiffResponse | VersionResponse,
     token: string | undefined,
     opts: {format: string; timeout: number},
-  ): Promise<DiffResponse> {
-    const pollingResponse = await (this.isVersion(result) && token
-      ? this.bumpClient.getVersion(result.id, token)
-      : this.bumpClient.getDiff(result.id, opts.format))
+  ): Promise<DiffResult> {
+    let diffResult: DiffResult = {id: apiResponse.id}
+    const pollingResponse = await (this.isVersion(apiResponse) && token
+      ? this.bumpClient.getVersion(apiResponse.id, token)
+      : this.bumpClient.getDiff(apiResponse.id, opts.format))
 
     if (opts.timeout <= 0) {
       throw new CLIError(
@@ -199,22 +204,20 @@ export class Diff {
 
     switch (pollingResponse.status) {
       case 200: {
-        let diff: DiffResponse | (VersionResponse & WithDiff) = pollingResponse.data
+        const diff: DiffResponse | (VersionResponse & WithDiff) = pollingResponse.data
 
-        if (this.isVersionWithDiff(diff)) {
-          diff = this.extractDiff(diff)
-        }
+        diffResult = this.isVersionWithDiff(diff) ? this.extractDiff(diff) : diff
 
         this.d('Received diff:')
-        this.d(diff)
-        return diff
+        this.d(diffResult)
+        return diffResult
         break
       }
 
       case 202: {
         this.d('Waiting 1 sec before next poll')
         await this.pollingDelay()
-        return this.waitResult(result, token, {
+        return this.waitResult(apiResponse, token, {
           format: opts.format,
           timeout: opts.timeout - 1,
         })
@@ -222,7 +225,7 @@ export class Diff {
       }
     }
 
-    return {} as DiffResponse
+    return diffResult
   }
 
   private async delay(ms: number): Promise<void> {
