@@ -16,7 +16,7 @@
     "@types/mocha": "^10",
     "@types/node": "^25",
     "@types/sinon": "^21.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.13.0",
+    "@typescript-eslint/eslint-plugin": "^8.61.1",
     "chai": "^6.2.2",
     "eslint": "^8",
     "eslint-config-oclif": "^5",
