@@ -202,9 +202,6 @@ bump deploy path/to/flower-or-arazzo-document.yml --mcp-server my-mcp-server-id-
 More details about the MCP server feature are available on [this
 dedicated help section](https://docs.bump.sh/help/mcp-servers/).
 
-This feature is currently in closed beta.
-Request an early access at hello@bump.sh
-
 ### The `diff` command
 
 Using the `diff` command can help to spot differences between the local API
