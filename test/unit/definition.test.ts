@@ -63,6 +63,11 @@ describe('API class', () => {
         const api = await API.load('examples/valid/arazzo/wikimedia.json')
         expect(api.version).to.equal('1.0.1')
       })
+
+      it('parses successfully an Arazzo v1.1 definition', async () => {
+        const api = await API.load('examples/valid/arazzo/wikimedia_1.1.json')
+        expect(api.version).to.equal('1.1.0')
+      })
     })
 
     describe('with file & http references', () => {
