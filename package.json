@@ -80,7 +80,7 @@
     "pack": "oclif pack tarballs",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
-    "prepack": "npm run clean && npm run build && oclif manifest && oclif readme",
+    "prepack": "npm run clean && npm run build && env -u BUMP_TOKEN oclif manifest && oclif readme",
     "pretest": "npm run clean && npm run build",
     "release": "np --no-release-draft",
     "test": "mocha --forbid-only \"test/**/*.test.ts\"",
