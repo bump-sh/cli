@@ -54,6 +54,16 @@ describe('API class', () => {
         expect(api.version).to.equal('2.5.0')
       })
 
+      it('parses successfully an AsyncAPI 3.0 contract', async () => {
+        const api = await API.load('examples/valid/asyncapi.v3.0.yml')
+        expect(api.version).to.equal('3.0.0')
+      })
+
+      it('parses successfully an AsyncAPI 3.1 contract', async () => {
+        const api = await API.load('examples/valid/asyncapi.v3.1.yml')
+        expect(api.version).to.equal('3.1.0')
+      })
+
       it('parses successfully a Flower definition', async () => {
         const api = await API.load('examples/valid/flower/parking.yml')
         expect(api.version).to.equal('0.1')
@@ -125,9 +135,9 @@ describe('API class', () => {
       it(`throws an error with details`, async () => {
         for (const [example, error] of Object.entries({
           './examples/invalid/array.yml': 'Unsupported API specification',
+          './examples/invalid/asyncapi.yml': 'Unsupported API specification',
           './examples/invalid/openapi.yml': 'Unsupported API specification',
           './examples/invalid/string.yml': 'Unsupported API specification',
-          './examples/valid/asyncapi.v3.yml': 'Unsupported API specification',
         })) {
           try {
             /* eslint-disable-next-line no-await-in-loop */

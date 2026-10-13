@@ -31,6 +31,8 @@ class SupportedFormat {
     '2.4': asyncapi.schemas['2.4.0'],
     '2.5': asyncapi.schemas['2.5.0'],
     '2.6': asyncapi.schemas['2.6.0'],
+    '3.0': asyncapi.schemas['3.0.0'],
+    '3.1': asyncapi.schemas['3.1.0'],
   }
 
   static readonly flower: Record<string, JSONSchema> = flowerSchemas.schemas
