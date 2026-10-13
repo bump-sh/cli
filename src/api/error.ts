@@ -26,13 +26,18 @@ export default class APIError extends CLIError {
         }
 
         case 409: {
-          ;[info, exit] = APIError.conflict(httpError.response?.data as {message?: string})
+          ;[info, exit] = APIError.conflict(httpError.response?.data as Error)
           break
         }
 
         case 404:
         case 400: {
           ;[info, exit] = APIError.notFound(httpError.response?.data as Error)
+          break
+        }
+
+        default: {
+          ;[info, exit] = APIError.genericErrorFromMessage(httpError.response?.data as Error)
           break
         }
       }
@@ -47,10 +52,14 @@ export default class APIError extends CLIError {
     }
   }
 
-  static conflict(error: {message?: string} | undefined): MessagesAndExitCode {
+  static conflict(error: Error | undefined): MessagesAndExitCode {
     const genericMessage = error?.message || 'Conflict: the operation may already be running.'
 
     return [[genericMessage], 109]
+  }
+
+  static genericErrorFromMessage(error: Error): MessagesAndExitCode {
+    return error.message ? [[error.message], 100] : [[], 100]
   }
 
   static humanAttributeError(attribute: string, messages: unknown): string[] {
