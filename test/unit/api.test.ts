@@ -6,7 +6,7 @@ import * as os from 'node:os'
 import {resolve} from 'node:path'
 import {spy, stub} from 'sinon'
 
-import {BumpApi} from '../../src/api'
+import {APIError, BumpApi} from '../../src/api'
 import {PreviewRequest} from '../../src/api/models'
 
 nock.disableNetConnect()
@@ -128,6 +128,23 @@ describe('BumpApi HTTP client class', () => {
         expect(message).to.match(/references 0.location not a filepath, 1.content is invalid/)
 
         expect(message).to.match(/param invalid, too small, wrong/)
+      }
+    })
+
+    it('displays the API message error when provided, for other errors codes', async () => {
+      nock('https://bump.sh').post('/api/v1/previews').reply(402, {
+        message: 'You need to upgrade your subscription plan to perform this request.',
+      })
+
+      try {
+        await new BumpApi(config).postPreview({
+          definition: '{}',
+        } as PreviewRequest)
+        expect.fail('expected an API error')
+      } catch (error) {
+        const apiError = error as APIError
+        expect(apiError.oclif?.exit).to.equal(100)
+        expect(apiError.message).to.equal('You need to upgrade your subscription plan to perform this request.')
       }
     })
   })
