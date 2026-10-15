@@ -32,6 +32,38 @@ describe('BumpApi HTTP client class', () => {
 
       expect(matchAuthorizationHeader.firstCall.args[0]).to.equal('Token my-secret-token')
     })
+
+    it('releases a version with a valid Authorization header', async () => {
+      const matchAuthorizationHeader = spy(stub().returns(true))
+
+      nock('https://bump.sh', {
+        reqheaders: {
+          Authorization: matchAuthorizationHeader,
+        },
+      })
+        .post('/api/v1/versions/version-id/release')
+        .reply(202, {id: 'version-id'})
+
+      await new BumpApi(config).postVersionRelease('version-id', 'my-secret-token')
+
+      expect(matchAuthorizationHeader.firstCall.args[0]).to.equal('Token my-secret-token')
+    })
+
+    it('unreleases a version with a valid Authorization header', async () => {
+      const matchAuthorizationHeader = spy(stub().returns(true))
+
+      nock('https://bump.sh', {
+        reqheaders: {
+          Authorization: matchAuthorizationHeader,
+        },
+      })
+        .post('/api/v1/versions/version-id/unrelease')
+        .reply(202, {id: 'version-id'})
+
+      await new BumpApi(config).postVersionUnrelease('version-id', 'my-secret-token')
+
+      expect(matchAuthorizationHeader.firstCall.args[0]).to.equal('Token my-secret-token')
+    })
   })
 
   describe('Customizing the API client with env variables', () => {

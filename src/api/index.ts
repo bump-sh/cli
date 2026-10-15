@@ -56,6 +56,16 @@ class BumpApi {
       headers: this.authorizationHeader(token),
     })
 
+  public postVersionRelease = (versionId: string, token: string): Promise<AxiosResponse<VersionResponse>> =>
+    this.client.post<VersionResponse>(`/versions/${versionId}/release`, undefined, {
+      headers: this.authorizationHeader(token),
+    })
+
+  public postVersionUnrelease = (versionId: string, token: string): Promise<AxiosResponse<VersionResponse>> =>
+    this.client.post<VersionResponse>(`/versions/${versionId}/unrelease`, undefined, {
+      headers: this.authorizationHeader(token),
+    })
+
   public putPreview = (versionId: string, body?: PreviewRequest): Promise<AxiosResponse<PreviewResponse>> =>
     this.client.put<PreviewResponse>(`/previews/${versionId}`, body)
 

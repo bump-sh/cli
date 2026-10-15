@@ -42,9 +42,11 @@ export interface VersionRequest {
 }
 
 export interface VersionResponse {
+  doc_id?: string
   doc_name: string
   doc_public_url?: string
   id: string
+  state?: string
 }
 
 export interface WithDiff {

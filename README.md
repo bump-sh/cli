@@ -100,11 +100,13 @@ USAGE
   $ bump [COMMAND]
 
 COMMANDS
-  deploy   Create a new version of your documentation from the given file or URL.
-  diff     Get a comparison diff with your documentation from the given file or URL.
-  help     Display help for bump.
-  overlay  Apply an OpenAPI specified overlay to your API definition.
-  preview  Create a documentation preview from the given file or URL.
+  deploy     Create a new version of your documentation from the given file or URL.
+  diff       Get a comparison diff with your documentation from the given file or URL.
+  help       Display help for bump.
+  overlay    Apply an OpenAPI specified overlay to your API definition.
+  preview    Create a documentation preview from the given file or URL.
+  release    Release a deployed version, which becomes publicly visible.
+  unrelease  Unrelease a released version, which is no longer publicly visible.
 ```
 
  You can also get some help anytime by adding `--help` to any command. Example: `bump deploy --help`.
@@ -121,6 +123,8 @@ Head over to your Documentation settings in the “CI deployment” section or y
 * [`bump diff [FILE]`](#the-diff-command)
 * [`bump preview [FILE]`](#the-preview-command)
 * [`bump overlay [DEFINITION_FILE] [OVERLAY_FILE]`](#the-overlay-command)
+* [`bump release [VERSION_ID]`](#the-release-command)
+* [`bump unrelease [VERSION_ID]`](#the-unrelease-command)
 
 ### The `deploy` command
 
@@ -201,6 +205,30 @@ bump deploy path/to/flower-or-arazzo-document.yml --mcp-server my-mcp-server-id-
 
 More details about the MCP server feature are available on [this
 dedicated help section](https://docs.bump.sh/help/mcp-servers/).
+
+### The `release` command
+
+Release a deployed version so it becomes publicly visible in your documentation. Pass the version UUID:
+
+```shell
+bump release 2361df99-3467-4c80-a0cc-45c9fe565812 --token $DOC_TOKEN
+```
+
+The operation is asynchronous. The version moves to the `releasing` state, then to `released` once processed. If the version is already released, the command succeeds and does nothing.
+
+This operation requires a plan that allows manual releases. See [pricing](https://bump.sh/pricing).
+
+### The `unrelease` command
+
+Unrelease a released version so it is no longer publicly visible:
+
+```shell
+bump unrelease 2361df99-3467-4c80-a0cc-45c9fe565812 --token $DOC_TOKEN
+```
+
+The version moves to the `releasing` state, then back to `deployed` once processed. If the version is already deployed, the command succeeds and does nothing.
+
+This operation requires a plan that allows unreleasing versions. See [pricing](https://bump.sh/pricing).
 
 ### The `diff` command
 

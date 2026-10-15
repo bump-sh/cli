@@ -18,4 +18,10 @@ const overlayFileArg = Args.string({
   required: true,
 })
 
-export {fileArg, otherFileArg, overlayFileArg}
+const versionIdArg = Args.string({
+  description: 'UUID of an existing documentation version.',
+  name: 'VERSION_ID',
+  required: true,
+})
+
+export {fileArg, otherFileArg, overlayFileArg, versionIdArg}
