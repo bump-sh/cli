@@ -7,8 +7,8 @@
             "schema": {
               "properties": {
                 "definition": {
-                  "description": "Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x file serialized as a string, in YAML or JSON.\n",
-                  "example": "{asyncapi: \"2.0\", \"info\": { \"title: ... }}\n",
+                  "description": "Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x, 3.x file serialized as a string, in YAML or JSON.\n",
+                  "example": "{asyncapi: \"3.0.0\", \"info\": { \"title: ... }}\n",
                   "type": "string"
                 },
                 "references": {
@@ -53,7 +53,7 @@
                   "type": "boolean"
                 },
                 "definition": {
-                  "description": "Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x file serialized as a string, in YAML or JSON.\n",
+                  "description": "Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x, 3.x file serialized as a string, in YAML or JSON.\n",
                   "example": "{openapi: \"3.0\", \"info\": { \"title: ... }}\n",
                   "type": "string"
                 },

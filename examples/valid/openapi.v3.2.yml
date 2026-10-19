@@ -905,7 +905,7 @@ components:
         definition:
           type: string
           description: >
-            Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x file
+            Serialized definition of the version. This should be an OpenAPI 2.x, 3.x or AsyncAPI 2.x, 3.x file
             serialized as a string, in YAML or JSON.
           example: |
             {"openapi": "3.0", "info": { "title": … }}
@@ -931,7 +931,7 @@ components:
             <small>==**REQUIRED**==</small> if `url` is not present.
 
             Serialized definition. This should be an OpenAPI 2.x, 3.x
-            or AsyncAPI 2.x file serialized as a string, in YAML or
+            or AsyncAPI 2.x, 3.x file serialized as a string, in YAML or
             JSON.
           example: |
             {"openapi": "3.0", "info": { "title": … }}
@@ -1005,7 +1005,7 @@ components:
             <small>==**REQUIRED**==</small> if `url` is not present.
 
             Serialized definition of the previous version. This should
-            be an OpenAPI 2.x, 3.x or AsyncAPI 2.x file serialized as
+            be an OpenAPI 2.x, 3.x or AsyncAPI 2.x, 3.x file serialized as
             a string, in YAML or JSON.
           example: |
             {"openapi": "3.0", "info": { "title": … }}
@@ -1020,7 +1020,7 @@ components:
             <small>==**REQUIRED**==</small> if `url` is not present.
 
             Serialized definition of the current version. This should
-            be an OpenAPI 2.x, 3.x or AsyncAPI 2.x file serialized as
+            be an OpenAPI 2.x, 3.x or AsyncAPI 2.x, 3.x file serialized as
             a string, in YAML or JSON.
           example: |
             {"openapi": "3.0", "info": { "title": … }}

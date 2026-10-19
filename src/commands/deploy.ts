@@ -37,7 +37,7 @@ ${chalk.dim('$ bump deploy DIR --filename-pattern *-{slug}-api --hub <hub_slug> 
 We've found 2 valid API definitions to deploy
 └─ DIR
    └─ source-my-service-api.yml (OpenAPI spec version 3.1.0)
-   └─ source-my-jobs-service-api.yml (AsyncAPI spec version 2.6.0)
+   └─ source-my-jobs-service-api.yml (AsyncAPI spec version 3.0.0)
 
 Let's deploy those documentations to your <hub_slug> hub on Bump.sh
 
