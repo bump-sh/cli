@@ -11,7 +11,7 @@
 
 The Bump.sh CLI is used to interact with API documentation, hubs and workflows hosted on Bump.sh from your choice of popular API description formats: OpenAPI, Swagger, or AsyncAPI for API documentation. Flower or Arazzo for API workflows.
 
-Using [OpenAPI](https://github.com/OAI/OpenAPI-Specification) (v3.x and v2.0) or [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) (2.x), you can do any of the following:
+Using [OpenAPI](https://github.com/OAI/OpenAPI-Specification) (v3.x and v2.0) or [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) (2.x or 3.x), you can do any of the following:
 
 - Validate an API document before publishing to your documentation.
 - [Publish an API document](#the-deploy-command) to your Bump.sh documentation or hubs.
