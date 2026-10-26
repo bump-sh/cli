@@ -94,7 +94,7 @@
     "@asyncapi/specs": "^6.11",
     "@clack/prompts": "^1.0.0",
     "@oclif/core": "^4",
-    "@oclif/plugin-help": "^6",
+    "@oclif/plugin-help": "^7",
     "@oclif/plugin-warn-if-update-available": "^3.1.20",
     "@stoplight/yaml": "^4.3.0",
     "async-mutex": "^0.5.0",
