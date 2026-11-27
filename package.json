@@ -15,7 +15,7 @@
     "@types/jsonpath": "^0.2.4",
     "@types/mocha": "^10",
     "@types/node": "^26",
-    "@types/sinon": "^21.0.0",
+    "@types/sinon": "^22.0.2",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
     "chai": "^6.2.2",
     "eslint": "^8",
@@ -30,7 +30,7 @@
     "nyc": "^18.0.0",
     "oclif": "^4",
     "shx": "^0.4.0",
-    "sinon": "^21.0.1",
+    "sinon": "^22.1.0",
     "ts-node": "^10",
     "typescript": "^5"
   },
