@@ -1,4 +1,4 @@
-name: Release tag pushes on Github
+name: Release tag pushes on GitHub
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
       - run: npm run pack
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
-      - name: Create draft Github Release
+      - name: Create draft GitHub Release
         if: ${{ steps.version-check.outputs.skipped == 'false' }}
         uses: softprops/action-gh-release@v1
         with:

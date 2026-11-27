@@ -41,11 +41,11 @@ Have fun designing APIs ✨.
 
 The Bump.sh CLI is a node package currently distributed via NPM. This means you must have the Node v20+ interpreter installed on your computer or CI servers.
 
-_If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our Github Action](https://github.com/marketplace/actions/bump-sh-api-documentation-changelog)._
+_If you are looking to use Bump.sh in a continuous integration environment you might be interested by [our GitHub Action](https://github.com/marketplace/actions/bump-sh-api-documentation-changelog)._
 
 > [!NOTE]
 > You can download a standalone package directly from the latest
-> Github release assets if you don’t use Node.
+> GitHub release assets if you don’t use Node.
 
 ### Global installation
 
@@ -83,7 +83,7 @@ npx bump --help
 
 ### Can I install Bump.sh CLI without using NodeJS?
 
-Unfortunately, at the moment we only support the Node environment. However, you can download a standalone package directly from the [latest Github release](https://github.com/bump-sh/cli/releases) assets which you can run as a standalone binary. Or you can push your documentation using [our API](https://developers.bump.sh/doc/workspace/) (advanced usage only).
+Unfortunately, at the moment we only support the Node environment. However, you can download a standalone package directly from the [latest GitHub release](https://github.com/bump-sh/cli/releases) assets which you can run as a standalone binary. Or you can push your documentation using [our API](https://developers.bump.sh/doc/workspace/) (advanced usage only).
 
 ## Usage
 
@@ -262,8 +262,8 @@ You can also test this feature in our dedicated web application at
 
 #### GitHub Integration
 
-If you want to receive automatic `bump diff` results on Github Pull Requests you
-might be interested by [our Github
+If you want to receive automatic `bump diff` results on GitHub Pull Requests you
+might be interested by [our GitHub
 Action](https://github.com/marketplace/actions/bump-sh-api-documentation-changelog#deploy-documentation--diff-on-pull-requests)
 which has support for the diff command.
 
